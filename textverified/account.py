@@ -1,4 +1,11 @@
-from .action import _ActionPerformer
+from .action import _Action, _ActionPerformer
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class AccountDetails:
+    """A snapshot of account details."""
+    username: str
+    current_balance: float
 
 class AccountAPI:
     """API endpoints related to account management."""
@@ -8,12 +15,19 @@ class AccountAPI:
     
     def get_details(self):
         """Get account details."""
-        # Implementation here - you can access:
-        # self.client.api_key
-        # self.client.base_url
-        # self.client.perform_action(action)
-        pass
+        action = _Action(method="GET", href="/api/pub/v2/account/me")
+        response = self.client._perform_action(action)
+        return AccountDetails(**response)
     
-    def update_account(self, **kwargs):
-        """Update account information."""
-        pass
+    @property
+    def balance(self) -> float:
+        """Get the current account balance."""
+        details = self.get_details()
+        return details.current_balance
+    
+    @property
+    def username(self) -> str:
+        """Get the account username."""
+        # Realistically, this is the only request we could cache
+        details = self.get_details()
+        return details.username

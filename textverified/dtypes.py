@@ -59,7 +59,7 @@ class ReservationType(Enum):
 class LineStatus(Enum):
     """Enum representing the status of a line, either renewable, non-renewable, or verification."""
     # This may not be the best way to represent this. It mirrors api behavior (list verifications, list renewable/non-)
-    # However, it may be better to split into RentalStatus and VerificationStatus and parse into (ReservationType, Status)
+    # However, it may be better to split into RentalStatus and VerificationStatus and use tuple keys (ReservationType, Status)
     # Yet, it may be beneficial to have a single enum that mirrors API behavior IF a LineStatus is ever used as an input (which it currently is not)
     VERIFICATION_PENDING = "verificationPending"
     VERIFICATION_COMPLETED = "verificationCompleted"
@@ -92,6 +92,8 @@ class RentalDuration(Enum):
     NINETY_DAYS = datetime.timedelta(days=90)
     ONE_YEAR = datetime.timedelta(days=365)
 
+    # This is never returned by the API, so no need for a from_string method.
+    
     @classmethod
     def from_timedelta(cls, duration: datetime.timedelta) -> 'RentalDuration':
         for option in cls:

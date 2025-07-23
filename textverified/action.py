@@ -1,17 +1,26 @@
 from dataclasses import dataclass
-from typing import Dict, Union, Protocol
+from typing import Any, Dict, Union, Protocol
+from requests.structures import CaseInsensitiveDict
+
+
+@dataclass(frozen=True)
+class _ActionResponse:
+    """Internal Protocol for API responses."""
+    
+    data: Any
+    headers: CaseInsensitiveDict[str, Union[str, int]]
 
 class _ActionPerformer(Protocol):
-    """Protocol for objects that can perform API actions."""
+    """Internal Protocol for objects that can perform API actions."""
     
-    def _perform_action(self, action: '_Action') -> Dict:
+    def _perform_action(self, action: '_Action') -> _ActionResponse:
         """
         Perform an API action and return the result.
         :param action: The action to perform
         :return: Dictionary containing the API response
         """
-        ...
-
+        pass
+ 
 @dataclass(frozen=True)
 class _Action:
     """Single API action. Often returned by the API but also used internally."""
