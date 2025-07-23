@@ -1,0 +1,8 @@
+{
+  "post": {
+    "response": {
+      "method": "string",
+      "href": "string"
+    }
+  }
+}

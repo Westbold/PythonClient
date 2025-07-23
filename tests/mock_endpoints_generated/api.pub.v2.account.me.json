@@ -1,0 +1,8 @@
+{
+  "get": {
+    "response": {
+      "username": "string",
+      "currentBalance": 0.0
+    }
+  }
+}

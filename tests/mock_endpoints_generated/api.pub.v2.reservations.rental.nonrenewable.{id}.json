@@ -1,0 +1,35 @@
+{
+  "get": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "sms": {
+        "method": "string",
+        "href": "string"
+      },
+      "createdAt": "1970-01-01T00:00:00+00:00",
+      "endsAt": "1970-01-01T00:00:00+00:00",
+      "id": "string",
+      "refund": {
+        "canRefund": false,
+        "link": {
+          "method": "string",
+          "href": "string"
+        },
+        "refundableUntil": "1970-01-01T00:00:00+00:00"
+      },
+      "saleId": "string",
+      "serviceName": "string",
+      "state": "verificationPending",
+      "number": "string",
+      "alwaysOn": false
+    }
+  },
+  "post": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {}
+  }
+}

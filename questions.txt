@@ -1,0 +1,19 @@
+Some questions that we can answer through implementing things with the API
+
+1. Does it make sense for the enums / dataclasses to have methods?
+- There are several ways we could do this, each with their own challenges
+  - Injecting existing api methods based on typing, requires reflections but mirrors current api
+  - Using swagger schema to determine methods (link return type), but hard to find return val & hard to conform to current pkg
+- May be better to not have methods
+  - less clear what is actually performing a request
+
+2. Should we add unified methods for renewables / non-renewable rentals?
+
+
+3. Should api calls that can fail (such as refund) return True / False OR return nothing and throw error?
+
+4. Should we generate mock endpoints from swagger schema as well?
+ - compelling case that we Should
+ - handling ID is relatively hard -> would require a PB commit
+ - however, verifying if a response is correct in testing would be harder
+   - if we just use compare dicts and to_api method, should be easy?

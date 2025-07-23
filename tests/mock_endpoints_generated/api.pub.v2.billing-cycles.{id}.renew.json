@@ -1,0 +1,169 @@
+{
+  "post": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "createdAt": "1970-01-01T00:00:00+00:00",
+      "id": "string",
+      "excludedRentals": [
+        {
+          "number": "string",
+          "rental": {
+            "method": "string",
+            "href": "string"
+          },
+          "renewalCost": 0.0,
+          "serviceName": "string",
+          "alreadyRenewed": false,
+          "includedAddOns": [
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            },
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            }
+          ],
+          "excludedAddOns": [
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            },
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            }
+          ]
+        },
+        {
+          "number": "string",
+          "rental": {
+            "method": "string",
+            "href": "string"
+          },
+          "renewalCost": 0.0,
+          "serviceName": "string",
+          "alreadyRenewed": false,
+          "includedAddOns": [
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            },
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            }
+          ],
+          "excludedAddOns": [
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            },
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            }
+          ]
+        }
+      ],
+      "includedRentals": [
+        {
+          "number": "string",
+          "rental": {
+            "method": "string",
+            "href": "string"
+          },
+          "renewalCost": 0.0,
+          "serviceName": "string",
+          "alreadyRenewed": false,
+          "includedAddOns": [
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            },
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            }
+          ],
+          "excludedAddOns": [
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            },
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            }
+          ]
+        },
+        {
+          "number": "string",
+          "rental": {
+            "method": "string",
+            "href": "string"
+          },
+          "renewalCost": 0.0,
+          "serviceName": "string",
+          "alreadyRenewed": false,
+          "includedAddOns": [
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            },
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            }
+          ],
+          "excludedAddOns": [
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            },
+            {
+              "addOnId": "string",
+              "description": "string",
+              "renewalCost": 0.0,
+              "alreadyRenewed": false
+            }
+          ]
+        }
+      ],
+      "isPaidFor": false,
+      "totalCost": 0.0
+    }
+  }
+}

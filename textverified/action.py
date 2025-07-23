@@ -1,41 +1,47 @@
 from dataclasses import dataclass
-from typing import Dict, Union, Protocol
+from typing import Any, Dict, Union
+from requests.structures import CaseInsensitiveDict
 
-class _ActionPerformer(Protocol):
-    """Protocol for objects that can perform API actions."""
-    
-    def _perform_action(self, action: '_Action') -> Dict:
+
+@dataclass(frozen=True)
+class _ActionResponse:
+    """Internal Protocol for API responses."""
+
+    data: Any
+    headers: "CaseInsensitiveDict[str, Union[str, int]]"
+
+
+class _ActionPerformer:
+    """Internal Protocol for objects that can perform API actions."""
+
+    def _perform_action(self, action: "_Action", **kwargs) -> _ActionResponse:
         """
         Perform an API action and return the result.
         :param action: The action to perform
         :return: Dictionary containing the API response
         """
-        ...
+        pass
+
 
 @dataclass(frozen=True)
 class _Action:
     """Single API action. Often returned by the API but also used internally."""
+
     method: str
     href: str
 
-    @staticmethod
-    def from_dict(data: dict) -> '_Action':
+    def to_api(self) -> dict:
         """
-        Create an Action instance from a dictionary.
-        :param data: Dictionary containing action details.
+        Convert the Action instance to an API-compatible dictionary.
+        :return: Dictionary representation of the Action for API requests.
+        """
+        return {"method": self.method, "href": self.href}
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> "_Action":
+        """
+        Create an Action instance from API data.
+        :param data: Dictionary containing the API data.
         :return: Action instance.
         """
-        if not isinstance(data, dict) or "method" not in data or "href" not in data:
-            raise ValueError("Invalid data for Action creation. Must be a dictionary containing 'method' and 'href'.")
-        
-        return _Action(method=data.get("method"), href=data.get("href"))
-
-    def to_dict(self) -> dict:
-        """
-        Convert the Action instance to a dictionary.
-        :return: Dictionary representation of the Action.
-        """
-        return {
-            "method": self.method,
-            "href": self.href
-        }
+        return cls(method=data["method"], href=data["href"])

@@ -1,0 +1,8 @@
+{
+  "post": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {}
+  }
+}

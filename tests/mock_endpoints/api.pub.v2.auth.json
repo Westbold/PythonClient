@@ -1,0 +1,9 @@
+{
+  "post": {
+    "response": {
+      "token": "eyJhLLLLLLL",
+      "expiresIn": 900,
+      "expiresAt": "9999-12-30T23:50:00.000000+00:00"
+    }
+  }
+}

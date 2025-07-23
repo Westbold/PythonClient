@@ -4,5 +4,22 @@
     "editor.formatOnSave": true
   },
   "editor.rulers": [120],
-  "python.formatting.blackArgs": ["--line-length=120"]
+  "python.formatting.blackArgs": [
+    "--line-length=120"
+  ],
+  "python-envs.defaultEnvManager": "ms-python.python:conda",
+  "python-envs.defaultPackageManager": "ms-python.python:conda",
+  "python-envs.pythonProjects": [],
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestArgs": [
+    "-v",
+    "-s",
+    "./tests",
+    "-p",
+    "test_*.py"
+  ]
 }

@@ -2,20 +2,36 @@
 # -*- coding: utf-8 -*-
 
 import setuptools
+from pathlib import Path
+import sys
 
-with open("README.md", "r") as fh:
+if sys.version_info < (3, 11):
+    import tomli as tomllib
+else:
+    import tomllib
+
+# Load project metadata from pyproject.toml
+pyproject_path = Path(__file__).parent / "pyproject.toml"
+with open(pyproject_path, "rb") as f:
+    pyproject_data = tomllib.load(f)
+
+project = pyproject_data["project"]
+
+# Load readme for description in PyPI
+readme_path = Path(__file__).parent / "README.md"
+with open(readme_path, "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="textverified",
-    version="a0.0.x",
-    url="https://github.com/pyasi/textverified",
-    download_url="https://github.com/pyasi/textverified/archive/master.zip",
-    author="Westbold LLC",
+    name=project["name"],
+    version=project["version"],
+    url=project["urls"]["Homepage"],
+    download_url=project["urls"]["Download"],
+    author=project["authors"][0]["name"],
     packages=["textverified"],
-    description="Python wrapper for the Textverified API",
+    description=project["description"],
     long_description=long_description,
     long_description_content_type="text/markdown",
-    keywords=["Textverified", "Verification", "Web Scraping", "API", "webhook", "python"],
-    install_requires=["requests"],
+    keywords=project["keywords"],
+    install_requires=project["dependencies"],
 )
