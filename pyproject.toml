@@ -1,0 +1,45 @@
+[project]
+name = "textverified"
+version = "a0.0.x"
+description = "Python wrapper for the TextVerified API"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Westbold LLC" },
+]
+
+keywords = ["Textverified", "Verification", "Web Scraping", "API", "webhook", "python"]
+
+dependencies = ["requests>=2.32.2"]
+
+[project.optional-dependencies]
+dev = [
+    "black==25.1.0",
+    "pytest==8.4.1",
+    "pytest-cov==6.2.1",
+]
+
+[project.urls]
+Homepage = "https://textverified.com"
+Download = "https://pypi.org"
+
+[tool.black]
+line-length = 120
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  \.eggs
+  | \.git
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.pytest.ini_options]
+addopts = """
+--verbose \
+--cov=textverified \
+--cov-report=xml"""
+python_files = ["tests/*.py"]

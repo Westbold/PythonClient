@@ -1,0 +1,60 @@
+from typing import Generic, TypeVar, Callable, Iterator, Optional, List
+from .action import _Action, _ActionPerformer
+
+T = TypeVar('T')
+class PaginatedList(Generic[T], Iterator[T]):
+    def __init__(self, request_json:dict, parse_item: Callable[[dict], T], api_context: _ActionPerformer):
+        self.parse_item = parse_item
+        self.api_context = api_context
+
+        self.__items = [self.parse_item(item) for item in request_json.get("data", [])]
+        self.__next_page = _Action.from_dict(request_json.get("next_page")) if request_json.get("next_page") else None
+        self.__current_index = 0
+
+    def __iter__(self) -> Iterator[T]:
+        """Make the PaginatedList iterable."""
+        self.__current_index = 0
+        return self
+
+    def __next__(self) -> T:
+        """Get the next item, fetching the next page if necessary."""
+        # If we're at the end of current items and there's a next page, fetch it
+        if self.__current_index >= len(self.__items) and self.__next_page is not None:
+            self._fetch_next_page()
+        
+        # If we still don't have items, we're done
+        if self.__current_index >= len(self.__items):
+            raise StopIteration
+        
+        item = self.__items[self.__current_index]
+        self.__current_index += 1
+        return item
+
+    def __getitem__(self, index: int) -> T:
+        """Get item by index, fetching pages as needed."""
+        # If requesting an index beyond current items and there's a next page
+        while index >= len(self.__items) and self.__next_page is not None:
+            self._fetch_next_page()
+        
+        if index >= len(self.__items):
+            raise IndexError("list index out of range")
+        
+        return self.__items[index]
+
+    def _fetch_next_page(self) -> None:
+        """Fetch the next page of results and append to current items."""
+        if self.__next_page is None:
+            return
+        
+        next_page_json = self.api_context._perform_action(self.__next_page)
+        
+        # Parse next items
+        new_items = [self.parse_item(item) for item in next_page_json.get("data", [])]
+        self.__items.extend(new_items)
+        self.__next_page = _Action.from_dict(next_page_json.get("next_page")) if next_page_json.get("next_page") else None
+
+    def get_all_items(self) -> List[T]:
+        """Fetch all remaining pages and return all items."""
+        while self.__next_page is not None:
+            self._fetch_next_page()
+        return self.__items.copy()

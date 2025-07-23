@@ -1,0 +1,73 @@
+# Create new release and publish Python package to PyPI and GitHub Releases
+# https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+# oh also this is completely untested
+
+name: Build & Publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-release:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+
+    steps:
+    
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel
+    
+    - name: Build Release
+      run: |
+        python setup.py sdist bdist_wheel
+
+
+  release-pypi:
+    needs: build-release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install Twine
+        run: |
+          python -m pip install --upgrade pip
+          pip install twine
+      
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload dist/*
+
+  release-github:
+    needs: build-release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          release_name: ${{ github.event.release.name }}
+          body: ${{ github.event.release.body }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
