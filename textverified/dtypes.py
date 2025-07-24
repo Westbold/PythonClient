@@ -93,7 +93,7 @@ class RentalDuration(Enum):
     ONE_YEAR = datetime.timedelta(days=365)
 
     # This is never returned by the API, so no need for a from_string method.
-    
+
     @classmethod
     def from_timedelta(cls, duration: datetime.timedelta) -> 'RentalDuration':
         for option in cls:
@@ -190,3 +190,8 @@ class BillingCycleState(Enum):
         
     def __str__(self) -> str:
         return self.value
+    
+@dataclass(frozen=True)
+class Service:
+    name: str
+    capability: Capability

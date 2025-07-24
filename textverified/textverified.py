@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional, Dict
 from .action import _ActionPerformer, _Action, _ActionResponse
-from .account import AccountAPI
-from .billing_cycles import BillingCyclesAPI
+from .account_api import AccountAPI
+from .billing_cycle_api import BillingCyclesAPI
 import requests
 import datetime
 from requests.adapters import HTTPAdapter
