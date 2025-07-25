@@ -4,7 +4,7 @@ from .action import _Action, _ActionPerformer
 T = TypeVar('T')
 class PaginatedList(Generic[T], Iterator[T]):
 
-    # Consider supporting a union of paginated lists (to allow for returning all renewable and non-renewable reservations in one api call)
+    # Consider supporting a union of paginated lists (to allow for returning all renewable and non-renewable reservations in one method call)
     
     def __init__(self, request_json:dict, parse_item: Callable[[dict], T], api_context: _ActionPerformer):
         self.parse_item = parse_item

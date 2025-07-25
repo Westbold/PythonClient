@@ -234,7 +234,7 @@ class EnumNode(CompilerNode):
         return to_class_name(self.name)
 
     def compile(self) -> str:
-        enum_class = f"class {self.type_name}(Enum, SupportsAPI):\n"
+        enum_class = f"class {self.type_name}(Enum):\n"
         
         # Description Docstring
         if self.description:
@@ -251,7 +251,7 @@ class EnumNode(CompilerNode):
         enum_class += f"        return self.value\n"
         enum_class += "\n"
         enum_class += f"    @classmethod\n"
-        enum_class += f"    def from_api(cls, value: str) -> {self.annotation_name}:\n"
+        enum_class += f"    def from_api(cls, value: str) -> '{self.annotation_name}':\n"
         enum_class += f"        return cls(value)\n"
 
         return enum_class
@@ -283,7 +283,7 @@ class ObjectNode(CompilerNode):
 
     def compile(self) -> str:
         obj_class  = f"@dataclass(frozen=True)\n"
-        obj_class += f"class {self.type_name}(SupportsAPI):\n"
+        obj_class += f"class {self.type_name}:\n"
 
         # Docstring
         obj_class += f"    \"\"\""
@@ -314,7 +314,7 @@ class ObjectNode(CompilerNode):
 
         # Add from_api method
         obj_class += f"    @classmethod\n"
-        obj_class += f"    def from_api(cls, data: Dict[str, Any]) -> {self.annotation_name}:\n"
+        obj_class += f"    def from_api(cls, data: Dict[str, Any]) -> '{self.annotation_name}':\n"
         obj_class += f"        return cls(\n"
         for name, prop in self.properties.items():
             obj_class += f"            {to_var_name(name)}={prop.get_from_api_method(f'data.get({chr(34)}{name}{chr(34)}, None)')},\n"
@@ -539,16 +539,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Protocol, Optional, Dict, List, Any
 import datetime
-
-class SupportsAPI(Protocol):
-    def to_api(self) -> Any:
-        \"\"\"Convert this object to an API-compatible format.\"\"\"
-        ...
-    @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'SupportsAPI':
-        \"\"\"Create an instance from API data.\"\"\"
-        ...
-
         """.strip())
         f.write("\n\n")
         for node in compile_list:
