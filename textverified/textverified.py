@@ -3,6 +3,12 @@ from typing import Optional, Dict
 from .action import _ActionPerformer, _Action, _ActionResponse
 from .account_api import AccountAPI
 from .billing_cycle_api import BillingCyclesAPI
+from .reservations_api import ReservationsAPI
+from .sales_api import SalesAPI
+from .services_api import ServicesAPI
+from .sms_api import SMSApi
+from .verifications_api import VerificationsAPI
+from .wake_api import WakeAPI
 import requests
 import datetime
 from requests.adapters import HTTPAdapter
@@ -11,17 +17,17 @@ from urllib3.util.retry import Retry
 @dataclass(frozen=True)
 class BearerToken:
     token: str
-    expiresAt: datetime.datetime
+    expires_at: datetime.datetime
 
     def __post_init__(self):
-        if not isinstance(self.expiresAt, datetime.datetime):
-            raise ValueError("expiresAt must be a datetime object")
-        if self.expiresAt.tzinfo is None:
-            raise ValueError("expiresAt must be timezone-aware (UTC)")
-        
+        if not isinstance(self.expires_at, datetime.datetime):
+            raise ValueError("expires_at must be a datetime object")
+        if self.expires_at.tzinfo is None:
+            raise ValueError("expires_at must be timezone-aware (UTC)")
+
     def is_expired(self) -> bool:
         """Check if the bearer token is expired."""
-        return datetime.datetime.now(datetime.timezone.utc) >= self.expiresAt 
+        return datetime.datetime.now(datetime.timezone.utc) >= self.expires_at
 
 @dataclass(frozen=False)
 class TextVerified(_ActionPerformer):
@@ -31,10 +37,39 @@ class TextVerified(_ActionPerformer):
     base_url: str = "https://www.textverified.com"
     user_agent: str = "TextVerified-Python"
     
+    @property
+    def accounts(self) -> AccountAPI:
+        return AccountAPI(self)
+
+    @property
+    def billing_cycles(self) -> BillingCyclesAPI:
+        return BillingCyclesAPI(self)
+
+    @property
+    def reservations(self) -> ReservationsAPI:
+        return ReservationsAPI(self)
+
+    @property
+    def sales(self) -> SalesAPI:
+        return SalesAPI(self)
+
+    @property
+    def services(self) -> ServicesAPI:
+        return ServicesAPI(self)
+
+    @property
+    def verifications(self) -> VerificationsAPI:
+        return VerificationsAPI(self)
+
+    @property
+    def wake_requests(self) -> WakeAPI:
+        return WakeAPI(self)
+
+    @property
+    def sms(self) -> SMSApi:
+        return SMSApi(self)
+
     def __post_init__(self):
-        # Initialize all API categories
-        self.accounts = AccountAPI(self)
-        self.billing_cycles = BillingCyclesAPI(self)
         self.bearer = None
         
         # Mount session with basic retry strategy for 429 and 5xx errors

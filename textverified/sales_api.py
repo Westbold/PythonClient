@@ -1,23 +1,30 @@
 from .action import _ActionPerformer, _Action
 from typing import List
-from .dtypes import AreaCode, Service, Capability
+from .generated.generated_enums import ReservationSaleCompact, ReservationSaleExpanded
+from .paginated_list import PaginatedList
 
-class ServicesAPI:
-    """API endpoints related to services."""
+class SalesAPI:
+    """API endpoints related to sales."""
     
     def __init__(self, client: _ActionPerformer):
         self.client = client
     
-    def get_area_codes(self) -> List[AreaCode]:
-        """Get area codes for services."""
-        action = _Action(method="GET", href="/api/pub/v2/area-codes")
+    def get_all_sales(self) -> PaginatedList[ReservationSaleCompact]:
+        """Get a list of your reservation sales."""
+        action = _Action(method="GET", href="/api/pub/v2/sales")
         response = self.client._perform_action(action)
-        return [AreaCode(i.get("areaCode"), i.get("state")) for i in response.data]
+        
+        return PaginatedList(
+            request_json=response.data,
+            parse_item=ReservationSaleCompact.from_api,
+            api_context=self.client
+        )
 
-    def get_services(self) -> List[Service]:
-        """Get services."""
-        action = _Action(method="GET", href="/api/pub/v2/services")
+    def get_sale(self, sale_id: str) -> ReservationSaleExpanded:
+        """Gets more information about a specific sale."""
+        action = _Action(method="GET", href=f"/api/pub/v2/sales/{sale_id}")
         response = self.client._perform_action(action)
-        return [Service(i.get("name"), Capability.from_string(i.get("capability"))) for i in response.data]
 
-    # Pricing endpoints in verifications and rentals
+        return ReservationSaleExpanded.from_api(response.data)
+
+    # Can we move this to .reservations instead of .sales?

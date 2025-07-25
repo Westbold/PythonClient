@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict, Union, Protocol
 from requests.structures import CaseInsensitiveDict
-
+from .generated.generated_enums import SupportsAPI
 
 @dataclass(frozen=True)
 class _ActionResponse:
@@ -22,29 +22,29 @@ class _ActionPerformer(Protocol):
         pass
  
 @dataclass(frozen=True)
-class _Action:
+class _Action(SupportsAPI):
     """Single API action. Often returned by the API but also used internally."""
     method: str
     href: str
 
-    @staticmethod
-    def from_dict(data: dict) -> '_Action':
+    def to_api(self) -> dict:
         """
-        Create an Action instance from a dictionary.
-        :param data: Dictionary containing action details.
-        :return: Action instance.
-        """
-        if not isinstance(data, dict) or "method" not in data or "href" not in data:
-            raise ValueError("Invalid data for Action creation. Must be a dictionary containing 'method' and 'href'.")
-        
-        return _Action(method=data.get("method"), href=data.get("href"))
-
-    def to_dict(self) -> dict:
-        """
-        Convert the Action instance to a dictionary.
-        :return: Dictionary representation of the Action.
+        Convert the Action instance to an API-compatible dictionary.
+        :return: Dictionary representation of the Action for API requests.
         """
         return {
             "method": self.method,
             "href": self.href
         }
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> _Action:
+        """
+        Create an Action instance from API data.
+        :param data: Dictionary containing the API data.
+        :return: Action instance.
+        """
+        return cls(
+            method=data["method"],
+            href=data["href"]
+        )

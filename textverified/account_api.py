@@ -1,11 +1,6 @@
 from .action import _Action, _ActionPerformer
 from dataclasses import dataclass
-
-@dataclass(frozen=True)
-class AccountDetails:
-    """A snapshot of account details."""
-    username: str
-    current_balance: float
+from .generated.generated_enums import Account
 
 class AccountAPI:
     """API endpoints related to account management."""
@@ -17,7 +12,7 @@ class AccountAPI:
         """Get account details."""
         action = _Action(method="GET", href="/api/pub/v2/account/me")
         response = self.client._perform_action(action)
-        return AccountDetails(username=response.get("username"), current_balance=response.get("currentBalance"))
+        return Account.from_api(response.data)
 
     @property
     def balance(self) -> float:

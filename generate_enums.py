@@ -5,12 +5,102 @@ import datetime
 from enum import Enum
 from dataclasses import dataclass, field
 from itertools import chain
-# generates enums from Swagger schemas
-# Step 1: Parse the Swagger schema into graph nodes, url -> node
-# Step 2: Add edges between nodes based on $ref links
-# Step 3: For each node in reverse topo order, 
-
+import os
 import networkx as nx
+
+def compare_graphs(graph1: nx.DiGraph, graph2: nx.DiGraph) -> Dict[str, Any]:
+    """Compare two NetworkX graphs and return the differences."""
+    
+    # Node differences
+    nodes_g1 = set(graph1.nodes())
+    nodes_g2 = set(graph2.nodes())
+    
+    # Edge differences
+    edges_g1 = set(graph1.edges())
+    edges_g2 = set(graph2.edges())
+    
+    # Node attribute differences for common nodes
+    common_nodes = nodes_g1 & nodes_g2
+    node_attr_diffs = {}
+    
+    for node in common_nodes:
+        attrs_g1 = graph1.nodes[node]
+        attrs_g2 = graph2.nodes[node]
+        
+        if attrs_g1 != attrs_g2:
+            node_attr_diffs[node] = {
+                'graph1': attrs_g1,
+                'graph2': attrs_g2
+            }
+    
+    # Edge attribute differences for common edges
+    common_edges = edges_g1 & edges_g2
+    edge_attr_diffs = {}
+    
+    for edge in common_edges:
+        attrs_g1 = graph1.edges[edge]
+        attrs_g2 = graph2.edges[edge]
+        
+        if attrs_g1 != attrs_g2:
+            edge_attr_diffs[edge] = {
+                'graph1': attrs_g1,
+                'graph2': attrs_g2
+            }
+    
+    return {
+        'nodes': {
+            'only_in_graph1': nodes_g1 - nodes_g2,
+            'only_in_graph2': nodes_g2 - nodes_g1,
+            'common': common_nodes,
+            'attribute_differences': node_attr_diffs
+        },
+        'edges': {
+            'only_in_graph1': edges_g1 - edges_g2,
+            'only_in_graph2': edges_g2 - edges_g1,
+            'common': common_edges,
+            'attribute_differences': edge_attr_diffs
+        }
+    }
+
+def print_graph_diff(diff: Dict[str, Any]):
+    """Pretty print graph differences."""
+    print("=== GRAPH COMPARISON ===")
+    
+    # Node differences
+    if diff['nodes']['only_in_graph1']:
+        print(f"\nNodes only in Graph 1: {diff['nodes']['only_in_graph1']}")
+    
+    if diff['nodes']['only_in_graph2']:
+        print(f"\nNodes only in Graph 2: {diff['nodes']['only_in_graph2']}")
+    
+    if diff['nodes']['attribute_differences']:
+        print(f"\nNodes with different attributes:")
+        for node, attrs in diff['nodes']['attribute_differences'].items():
+            print(f"  {node}:")
+            print(f"    Graph 1: {attrs['graph1']}")
+            print(f"    Graph 2: {attrs['graph2']}")
+    
+    # Edge differences
+    if diff['edges']['only_in_graph1']:
+        print(f"\nEdges only in Graph 1: {diff['edges']['only_in_graph1']}")
+    
+    if diff['edges']['only_in_graph2']:
+        print(f"\nEdges only in Graph 2: {diff['edges']['only_in_graph2']}")
+    
+    if diff['edges']['attribute_differences']:
+        print(f"\nEdges with different attributes:")
+        for edge, attrs in diff['edges']['attribute_differences'].items():
+            print(f"  {edge}:")
+            print(f"    Graph 1: {attrs['graph1']}")
+            print(f"    Graph 2: {attrs['graph2']}")
+    
+    if (not diff['nodes']['only_in_graph1'] and 
+        not diff['nodes']['only_in_graph2'] and 
+        not diff['edges']['only_in_graph1'] and 
+        not diff['edges']['only_in_graph2'] and
+        not diff['nodes']['attribute_differences'] and
+        not diff['edges']['attribute_differences']):
+        print("\nGraphs are identical!")
 
 
 
@@ -144,24 +234,24 @@ class EnumNode(CompilerNode):
         return to_class_name(self.name)
 
     def compile(self) -> str:
-        enum_class = f"class {self.type_name}(Enum):\n"
+        enum_class = f"class {self.type_name}(Enum, SupportsAPI):\n"
         
         # Description Docstring
         if self.description:
             enum_class += f"    \"\"\"{self.description}\"\"\"\n"
-        enum_class += "\n"
         
         # Add enum values
         for value in self.values:
             enum_class += f"    {to_enum_name(value)} = {repr(value)}\n"
+        if self.values:
+            enum_class += "\n"
         
         # make to_api and from_api methods
-        enum_class += "\n"
         enum_class += f"    def to_api(self) -> str:\n"
         enum_class += f"        return self.value\n"
         enum_class += "\n"
         enum_class += f"    @classmethod\n"
-        enum_class += f"    def from_api(cls, value: str) -> '{self.type_name}':\n"
+        enum_class += f"    def from_api(cls, value: str) -> {self.annotation_name}:\n"
         enum_class += f"        return cls(value)\n"
 
         return enum_class
@@ -187,9 +277,13 @@ class ObjectNode(CompilerNode):
     def type_name(self) -> str:
         return to_class_name(self.name)
 
+    @property
+    def is_useful(self) -> bool:
+        return len(self.properties) > 0
+
     def compile(self) -> str:
         obj_class  = f"@dataclass(frozen=True)\n"
-        obj_class += f"class {self.type_name}:\n"
+        obj_class += f"class {self.type_name}(SupportsAPI):\n"
 
         # Docstring
         obj_class += f"    \"\"\""
@@ -211,7 +305,7 @@ class ObjectNode(CompilerNode):
         obj_class += "\n"
 
         # Add to_api method
-        obj_class += f"    def to_api(self) -> Dict:\n"
+        obj_class += f"    def to_api(self) -> Dict[str, Any]:\n"
         obj_class += f"        api_dict = dict()\n"
         for name, prop in self.properties.items():
             obj_class += f"        api_dict['{name}'] = {prop.get_to_api_method(f'self.{to_var_name(name)}')}\n"
@@ -220,7 +314,7 @@ class ObjectNode(CompilerNode):
 
         # Add from_api method
         obj_class += f"    @classmethod\n"
-        obj_class += f"    def from_api(cls, data: Dict) -> '{self.type_name}':\n"
+        obj_class += f"    def from_api(cls, data: Dict[str, Any]) -> {self.annotation_name}:\n"
         obj_class += f"        return cls(\n"
         for name, prop in self.properties.items():
             obj_class += f"            {to_var_name(name)}={prop.get_from_api_method(f'data.get({chr(34)}{name}{chr(34)}, None)')},\n"
@@ -388,6 +482,19 @@ def create_dependency_graph(swagger_schema: dict, patterns_to_ignore=[r"^Link$",
                 graph.remove_edge(node_name, neighbor_name)
         graph.remove_node(node_name)
 
+    # Remove "useless" nodes, topo order
+    # An object node is useless if it has no predecessors (i.e. no properties)
+    # Enums are useless if the have no values
+    for node_name in list(nx.topological_sort(graph)):
+        node = graph.nodes[node_name]["node"]
+        is_useful = True
+        if isinstance(node, ObjectNode):
+            is_useful = len(list(graph.predecessors(node_name))) > 0
+        elif isinstance(node, EnumNode):
+            is_useful = len(node.values) > 0
+        if not is_useful:
+            graph.remove_node(node_name)
+        
     # Finalize properties, topo order
     for node_name in nx.topological_sort(graph):
         node = graph.nodes[node_name]["node"]
@@ -421,14 +528,29 @@ if __name__ == "__main__":
             compile_list.append(node)
     
     # Compile all nodes into Python classes
-    with open("generated_enumsiiiii.py", "w") as f:
-        f.write("\"\"\"\n")
-        f.write("Generated enums and dataclasses from Swagger schema\n")
-        f.write("\"\"\"\n\n")
-        f.write("from dataclasses import dataclass\n")
-        f.write("from enum import Enum\n")
-        f.write("from typing import Optional, Dict, List\n")
-        f.write("import datetime\n\n")
+    os.makedirs("./textverified/generated/", exist_ok=True)
+    with open("./textverified/generated/generated_enums.py", "w") as f:
+        f.write("""
+\"\"\"
+Generated enums and dataclasses from Swagger schema
+This file is auto-generated. Do not edit manually.
+\"\"\"
+from dataclasses import dataclass
+from enum import Enum
+from typing import Protocol, Optional, Dict, List, Any
+import datetime
+
+class SupportsAPI(Protocol):
+    def to_api(self) -> Any:
+        \"\"\"Convert this object to an API-compatible format.\"\"\"
+        ...
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'SupportsAPI':
+        \"\"\"Create an instance from API data.\"\"\"
+        ...
+
+        """.strip())
+        f.write("\n\n")
         for node in compile_list:
             compiled_code = node.compile()
             if compiled_code.strip():
