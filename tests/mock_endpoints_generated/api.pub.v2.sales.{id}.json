@@ -1,0 +1,54 @@
+{
+  "get": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "createdAt": "1970-01-01T00:00:00+00:00",
+      "id": "string",
+      "backOrderReservations": [
+        {
+          "link": {
+            "method": "string",
+            "href": "string"
+          },
+          "id": "string",
+          "serviceName": "string",
+          "status": "created"
+        },
+        {
+          "link": {
+            "method": "string",
+            "href": "string"
+          },
+          "id": "string",
+          "serviceName": "string",
+          "status": "created"
+        }
+      ],
+      "reservations": [
+        {
+          "id": "string",
+          "link": {
+            "method": "string",
+            "href": "string"
+          },
+          "reservationType": "renewable",
+          "serviceName": "string"
+        },
+        {
+          "id": "string",
+          "link": {
+            "method": "string",
+            "href": "string"
+          },
+          "reservationType": "renewable",
+          "serviceName": "string"
+        }
+      ],
+      "state": "created",
+      "total": 0.0,
+      "updatedAt": "1970-01-01T00:00:00+00:00"
+    }
+  }
+}

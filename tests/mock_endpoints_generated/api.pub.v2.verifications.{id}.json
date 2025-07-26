@@ -1,0 +1,48 @@
+{
+  "get": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "number": "string",
+      "sale": {
+        "method": "string",
+        "href": "string"
+      },
+      "createdAt": "1970-01-01T00:00:00+00:00",
+      "endsAt": "1970-01-01T00:00:00+00:00",
+      "id": "string",
+      "cancel": {
+        "canCancel": false,
+        "link": {
+          "method": "string",
+          "href": "string"
+        }
+      },
+      "reactivate": {
+        "canReactivate": false,
+        "link": {
+          "method": "string",
+          "href": "string"
+        }
+      },
+      "report": {
+        "canReport": false,
+        "link": {
+          "method": "string",
+          "href": "string"
+        }
+      },
+      "reuse": {
+        "link": {
+          "method": "string",
+          "href": "string"
+        },
+        "reusableUntil": "1970-01-01T00:00:00+00:00"
+      },
+      "serviceName": "string",
+      "state": "verificationPending",
+      "totalCost": 0.0
+    }
+  }
+}

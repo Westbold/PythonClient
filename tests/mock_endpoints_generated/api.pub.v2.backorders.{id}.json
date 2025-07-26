@@ -1,0 +1,18 @@
+{
+  "get": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "reservation": {
+        "method": "string",
+        "href": "string"
+      },
+      "id": "string",
+      "serviceName": "string",
+      "saleId": "string",
+      "reservationId": "string",
+      "status": "created"
+    }
+  }
+}

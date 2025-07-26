@@ -1,0 +1,22 @@
+{
+  "get": {
+    "data": [
+      {
+        "serviceName": "yahoo",
+        "capability": "Sms"
+      },
+      {
+        "serviceName": "facebook",
+        "capability": "Sms"
+      },
+      {
+        "serviceName": "google",
+        "capability": "Sms"
+      }
+    ],
+    "status_code": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

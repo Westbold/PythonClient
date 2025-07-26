@@ -1,0 +1,14 @@
+{
+  "get": {
+    "response": [
+      {
+        "areaCode": "205",
+        "state": "Alabama"
+      },
+      {
+        "areaCode": "205",
+        "state": "Alabama"
+      }
+    ]
+  }
+}

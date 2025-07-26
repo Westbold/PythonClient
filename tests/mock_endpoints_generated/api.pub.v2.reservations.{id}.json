@@ -1,0 +1,14 @@
+{
+  "get": {
+    "path_params": {
+      "id": "string"
+    },
+    "query_params": {
+      "type": "renewable"
+    },
+    "response": {
+      "method": "string",
+      "href": "string"
+    }
+  }
+}

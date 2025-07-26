@@ -11,7 +11,7 @@ class PaginatedList(Generic[T], Iterator[T]):
         self.api_context = api_context
 
         self.__items = [self.parse_item(item) for item in request_json.get("data", [])]
-        self.__next_page = _Action.from_dict(request_json.get("next_page")) if request_json.get("next_page") else None
+        self.__set_next_page(request_json)
         self.__current_index = 0
 
     def __iter__(self) -> Iterator[T]:
@@ -49,13 +49,26 @@ class PaginatedList(Generic[T], Iterator[T]):
         if self.__next_page is None:
             return
         
-        next_page_json = self.api_context._perform_action(self.__next_page)
+        next_page_json = self.api_context._perform_action(self.__next_page).data
         
         # Parse next items
         new_items = [self.parse_item(item) for item in next_page_json.get("data", [])]
         self.__items.extend(new_items)
-        self.__next_page = _Action.from_dict(next_page_json.get("next_page")) if next_page_json.get("next_page") else None
+        self.__set_next_page(next_page_json)
 
+    def __set_next_page(self, current_page: dict) -> None:
+        """Set the next page action based on the current page response."""
+        if not current_page.get("hasNext", False):
+            self.__next_page = None
+            
+
+        elif current_page.get("links", {}).get("next", {}):
+            self.__next_page = _Action.from_api(current_page["links"]["next"])
+            if not self.__next_page.href or not self.__next_page.method:
+                self.__next_page = None
+        print("Current page set to:", current_page)
+        print(f"Next page set to: {self.__next_page}")
+        
     def get_all_items(self) -> List[T]:
         """Fetch all remaining pages and return all items."""
         while self.__next_page is not None:

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, Dict
 from .action import _ActionPerformer, _Action, _ActionResponse
 from .account_api import AccountAPI
-from .billing_cycle_api import BillingCyclesAPI
+from .billing_cycle_api import BillingCycleAPI
 from .reservations_api import ReservationsAPI
 from .sales_api import SalesAPI
 from .services_api import ServicesAPI
@@ -42,8 +42,8 @@ class TextVerified(_ActionPerformer):
         return AccountAPI(self)
 
     @property
-    def billing_cycles(self) -> BillingCyclesAPI:
-        return BillingCyclesAPI(self)
+    def billing_cycles(self) -> BillingCycleAPI:
+        return BillingCycleAPI(self)
 
     @property
     def reservations(self) -> ReservationsAPI:
@@ -78,7 +78,6 @@ class TextVerified(_ActionPerformer):
         retry_strategy = Retry(
             total=3,
             status_forcelist=[429, 500, 502, 503, 504],
-            method_whitelist=["GET", "POST"],
             backoff_factor=1, # 1, 2, 4s 
         )
         
@@ -100,7 +99,7 @@ class TextVerified(_ActionPerformer):
             data = response.json()
             self.bearer = BearerToken(
                 token=data["token"],
-                expiresAt=datetime.datetime.fromisoformat(data["expiresAt"])
+                expires_at=datetime.datetime.fromisoformat(data["expiresAt"])
             )
 
     def _perform_action(self, action: _Action) -> _ActionResponse:
@@ -109,7 +108,14 @@ class TextVerified(_ActionPerformer):
         :param action: The action to perform
         :return: Dictionary containing the API response
         """
-        # Check if bearer token is set and valid
+        if "://" in action.href:
+            return self.__perform_action_external(action.method, action.href)
+        else:
+            return self.__perform_action_internal(action.method, f"{self.base_url}{action.href}")
+
+    def __perform_action_internal(self, method: str, href: str, **kwargs) -> _ActionResponse:
+        """ Internal action performance with authorization"""
+                # Check if bearer token is set and valid
         self.refresh_bearer()
         
         # Prepare and perform the request
@@ -119,9 +125,27 @@ class TextVerified(_ActionPerformer):
         }
 
         response = self.session.request(
-            method=action.method,
-            url=f"{self.base_url}{action.href}",
-            headers=headers
+            method=method,
+            url=href,
+            headers=headers,
+            **kwargs
+        )
+        
+        response.raise_for_status()
+        return _ActionResponse(
+            data=response.json(),
+            headers=response.headers
+        )
+
+    def __perform_action_external(self, method: str, href: str, **kwargs) -> _ActionResponse:
+        """ External action performance without authorization"""
+        response = self.session.request(
+            method=method,
+            url=href,
+            headers={
+                "User-Agent": self.user_agent
+            },
+            **kwargs
         )
         
         response.raise_for_status()

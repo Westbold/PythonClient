@@ -1,0 +1,12 @@
+{
+  "get": {
+    "data": {
+      "username": "john_doe@example.com",
+      "currentBalance": 1234.56
+    },
+    "status_code": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

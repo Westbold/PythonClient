@@ -1,0 +1,8 @@
+{
+  "post": {
+    "response": {
+      "serviceName": "myservice",
+      "price": 5.0
+    }
+  }
+}

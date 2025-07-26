@@ -1,0 +1,21 @@
+{
+  "get": {
+    "data": {
+      "data": [
+        { "id": "3", "name": "Item 3" },
+        { "id": "4", "name": "Item 4" }
+      ],
+      "hasNext": false,
+      "links": {
+        "next": {
+          "method": null,
+          "href": null
+        }
+      }
+    },
+    "status_code": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

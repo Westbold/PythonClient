@@ -1,0 +1,13 @@
+{
+  "post": {
+    "header_params": {
+      "X-API-USERNAME": "example@example.com",
+      "X-API-KEY": "APIKey12345"
+    },
+    "response": {
+      "token": "eyJh...",
+      "expiresIn": 899.0,
+      "expiresAt": "1970-01-01T00:00:00+00:00"
+    }
+  }
+}

@@ -1,11 +1,15 @@
 from .action import _ActionPerformer, _Action
 from typing import List, Union
+from .paginated_list import PaginatedList
 from .generated.generated_enums import (
     RenewableRentalCompact, RenewableRentalExpanded, 
-    NonRenewableRentalCompact, NonRenewableRentalExpanded,
+    NonrenewableRentalCompact, NonrenewableRentalExpanded,
     BackOrderReservationCompact, BackOrderReservationExpanded,
     LineHealth, RentalExtensionRequest, RentalDuration,
-    NewRentalRequest, RentalPriceCheckRequest, PricingSnapshot
+    NewRentalRequest, RentalPriceCheckRequest, PricingSnapshot,
+    NumberType, ReservationCapability,
+    ReservationSaleExpanded, RenewableRentalUpdateRequest,
+    NonrenewableRentalUpdateRequest
 )
 
 class ReservationsAPI:
@@ -42,7 +46,7 @@ class ReservationsAPI:
             capability=capability
         )
 
-        if not data or data.allow_back_order_reservations is None or data.always_on is None or data.duration is None, or data.is_renewable is None or data.number_type is None or data.service_name is None or data.capability is None:
+        if not data or data.allow_back_order_reservations is None or data.always_on is None or data.duration is None or data.is_renewable is None or data.number_type is None or data.service_name is None or data.capability is None:
             raise ValueError("All required fields must be provided: allow_back_order_reservations, always_on, duration, is_renewable, number_type, service_name, capability.")
 
         action = _Action(method="POST", href="/api/pub/v2/reservations/rental")
@@ -122,12 +126,12 @@ class ReservationsAPI:
         response = self.client._perform_action(action)
         return BackOrderReservationExpanded.from_api(response.data)
 
-    def get_reservation_details(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonRenewableRentalCompact, NonRenewableRentalExpanded]) -> Union[RenewableRentalExpanded, NonRenewableRentalExpanded]:
+    def get_reservation_details(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]) -> Union[RenewableRentalExpanded, NonrenewableRentalExpanded]:
         """Get reservation details."""
-        reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded, NonRenewableRentalCompact, NonRenewableRentalExpanded)) else reservation_id
+        reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded)) else reservation_id
 
         if not reservation_id:
-            raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded or NonRenewableRentalCompact/Expanded.")
+            raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded or NonrenewableRentalCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/reservations/{reservation_id}")
         response = self.client._perform_action(action)
@@ -138,7 +142,7 @@ class ReservationsAPI:
         response = self.client._perform_action(action)
 
         if 'reservations/rental/nonrenewable/' in action.href:
-            return NonRenewableRentalExpanded.from_api(response.data)
+            return NonrenewableRentalExpanded.from_api(response.data)
 
         elif 'reservations/rental/renewable/' in action.href:
             return RenewableRentalExpanded.from_api(response.data)
@@ -154,14 +158,14 @@ class ReservationsAPI:
             api_context=self.client
         )
 
-    def get_nonrenewable_reservations(self) -> PaginatedList[NonRenewableRentalCompact]:
+    def get_nonrenewable_reservations(self) -> PaginatedList[NonrenewableRentalCompact]:
         """Get a list of non-renewable reservations."""
         action = _Action(method="GET", href="/api/pub/v2/reservations/rental/nonrenewable")
         response = self.client._perform_action(action)
 
         return PaginatedList(
             request_json=response.data,
-            parse_item=NonRenewableRentalCompact.from_api,
+            parse_item=NonrenewableRentalCompact.from_api,
             api_context=self.client
         )
 
@@ -177,24 +181,24 @@ class ReservationsAPI:
 
         return RenewableRentalExpanded.from_api(response.data)
 
-    def get_nonrenewable_reservation_details(self, reservation_id: Union[str, NonRenewableRentalCompact, NonRenewableRentalExpanded]) -> NonRenewableRentalExpanded:
+    def get_nonrenewable_reservation_details(self, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded]) -> NonrenewableRentalExpanded:
         """Get non-renewable reservation details."""
-        reservation_id = reservation_id.id if isinstance(reservation_id, (NonRenewableRentalCompact, NonRenewableRentalExpanded)) else reservation_id
+        reservation_id = reservation_id.id if isinstance(reservation_id, (NonrenewableRentalCompact, NonrenewableRentalExpanded)) else reservation_id
 
         if not reservation_id:
-            raise ValueError("reservation_id must be a valid ID or instance of NonRenewableRentalCompact/Expanded.")
+            raise ValueError("reservation_id must be a valid ID or instance of NonrenewableRentalCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/reservations/rental/nonrenewable/{reservation_id}")
         response = self.client._perform_action(action)
 
-        return NonRenewableRentalExpanded.from_api(response.data)
+        return NonrenewableRentalExpanded.from_api(response.data)
 
-    def check_reservation_health(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonRenewableRentalCompact, NonRenewableRentalExpanded]) -> LineHealth:
+    def check_reservation_health(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]) -> LineHealth:
         """Check the health of a reservation."""
-        reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded, NonRenewableRentalCompact, NonRenewableRentalExpanded)) else reservation_id
+        reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded)) else reservation_id
 
         if not reservation_id:
-            raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded or NonRenewableRentalCompact/Expanded.")
+            raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded or NonrenewableRentalCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/reservations/{reservation_id}/health")
         response = self.client._perform_action(action)
@@ -228,17 +232,17 @@ class ReservationsAPI:
 
     # Possibility for unified update method?
 
-    def update_nonrenewable_reservation(self, reservation_id: Union[str, NonRenewableRentalCompact, NonRenewableRentalExpanded], data: NonRenewableRentalUpdateRequest = None, *, user_notes: str = None, mark_sms_read: bool = None) -> bool:
+    def update_nonrenewable_reservation(self, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded], data: NonrenewableRentalUpdateRequest = None, *, user_notes: str = None, mark_sms_read: bool = None) -> bool:
         """Update a non-renewable reservation."""
-        reservation_id = reservation_id.id if isinstance(reservation_id, (NonRenewableRentalCompact, NonRenewableRentalExpanded)) else reservation_id
+        reservation_id = reservation_id.id if isinstance(reservation_id, (NonrenewableRentalCompact, NonrenewableRentalExpanded)) else reservation_id
 
         if not reservation_id:
-            raise ValueError("reservation_id must be a valid ID or instance of NonRenewableRentalCompact/Expanded.")
+            raise ValueError("reservation_id must be a valid ID or instance of NonrenewableRentalCompact/Expanded.")
 
-        update_request = NonRenewableRentalUpdateRequest(
+        update_request = NonrenewableRentalUpdateRequest(
             user_notes=user_notes or data.user_notes,
             mark_sms_read=mark_sms_read if mark_sms_read is not None else data.mark_sms_read
-        ) if data else NonRenewableRentalUpdateRequest(
+        ) if data else NonrenewableRentalUpdateRequest(
             user_notes=user_notes,
             mark_sms_read=mark_sms_read
         )
@@ -263,12 +267,12 @@ class ReservationsAPI:
 
         return True
 
-    def refund_nonrenewable_reservation(self, reservation_id: Union[str, NonRenewableRentalCompact, NonRenewableRentalExpanded]) -> bool:
+    def refund_nonrenewable_reservation(self, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded]) -> bool:
         """Refund a non-renewable reservation."""
-        reservation_id = reservation_id.id if isinstance(reservation_id, (NonRenewableRentalCompact, NonRenewableRentalExpanded)) else reservation_id
+        reservation_id = reservation_id.id if isinstance(reservation_id, (NonrenewableRentalCompact, NonrenewableRentalExpanded)) else reservation_id
 
         if not reservation_id:
-            raise ValueError("reservation_id must be a valid ID or instance of NonRenewableRentalCompact/Expanded.")
+            raise ValueError("reservation_id must be a valid ID or instance of NonrenewableRentalCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/nonrenewable/{reservation_id}/refund")
         self.client._perform_action(action)
@@ -287,7 +291,7 @@ class ReservationsAPI:
 
         return True
 
-    def extend_nonrenewable_reservation(self, data: RentalExtensionRequest = None, *, extension_duration: RentalDuration = None, reservation_id: Union[str, NonRenewableRentalCompact, NonRenewableRentalExpanded] = None) -> bool:
+    def extend_nonrenewable_reservation(self, data: RentalExtensionRequest = None, *, extension_duration: RentalDuration = None, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded] = None) -> bool:
         """Extend a non-renewable reservation."""
         data = RentalExtensionRequest(
             extension_duration=extension_duration or data.extension_duration,

@@ -1,16 +1,15 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Union, Protocol
+from typing import Any, Dict, Union
 from requests.structures import CaseInsensitiveDict
-from .generated.generated_enums import SupportsAPI
 
 @dataclass(frozen=True)
 class _ActionResponse:
     """Internal Protocol for API responses."""
     
     data: Any
-    headers: CaseInsensitiveDict[str, Union[str, int]]
+    headers: 'CaseInsensitiveDict[str, Union[str, int]]'
 
-class _ActionPerformer(Protocol):
+class _ActionPerformer:
     """Internal Protocol for objects that can perform API actions."""
     
     def _perform_action(self, action: '_Action') -> _ActionResponse:
@@ -22,7 +21,7 @@ class _ActionPerformer(Protocol):
         pass
  
 @dataclass(frozen=True)
-class _Action(SupportsAPI):
+class _Action:
     """Single API action. Often returned by the API but also used internally."""
     method: str
     href: str
@@ -38,7 +37,7 @@ class _Action(SupportsAPI):
         }
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> _Action:
+    def from_api(cls, data: Dict[str, Any]) -> '_Action':
         """
         Create an Action instance from API data.
         :param data: Dictionary containing the API data.

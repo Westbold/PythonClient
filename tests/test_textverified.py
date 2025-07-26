@@ -1,0 +1,87 @@
+import pytest
+from .fixtures import tv, mock_http_from_disk, mock_http
+from textverified.textverified import TextVerified, BearerToken
+from textverified.action import _Action
+import datetime
+
+def test_bearer_get(tv, mock_http_from_disk):
+    tv.refresh_bearer()
+
+    assert isinstance(tv.bearer, BearerToken)
+    assert not tv.bearer.is_expired()
+    mock_http_from_disk.assert_called_once_with(
+        "POST",
+        "https://www.textverified.com/api/pub/v2/auth",
+        data=None,
+        json=None,
+        headers={
+            "X-API-KEY": "test-key",
+            "X-API-USERNAME": "test-user"
+        }
+    )
+
+
+def test_expired_bearer_refreshed(tv, mock_http_from_disk):
+    tv.bearer = BearerToken(
+        token="expired-token",
+        expires_at=datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(seconds=1)
+    )
+
+    assert tv.bearer.is_expired()
+    tv.refresh_bearer()
+    assert not tv.bearer.is_expired()
+    mock_http_from_disk.assert_called_once_with(
+        "POST",
+        "https://www.textverified.com/api/pub/v2/auth",
+        data=None,
+        json=None,
+        headers={
+            "X-API-KEY": "test-key",
+            "X-API-USERNAME": "test-user"
+        }
+    )
+
+def test_valid_bearer_not_refreshed(tv, mock_http_from_disk):
+    tv.bearer = BearerToken(
+        token="valid-token",
+        expires_at=datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=3600)
+    )
+
+    assert not tv.bearer.is_expired()
+    tv.refresh_bearer()
+    assert not tv.bearer.is_expired()
+    mock_http_from_disk.assert_not_called()
+
+def test_api_performs_action(tv, mock_http_from_disk):
+    action = _Action(
+        method="GET",
+        href="/api/pub/v2/fake-endpoint"
+    )
+    tv._perform_action(action)
+
+def test_refresh_bearer_before_action(tv, mock_http_from_disk):
+    # Ensure bearer is refreshed before performing an action
+    tv.bearer = BearerToken(
+        token="expired-token",
+        expires_at=datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(seconds=1)
+    )
+
+    assert tv.bearer.is_expired()
+    tv._perform_action(_Action(method="GET", href="/api/pub/v2/fake-endpoint"))
+    assert not tv.bearer.is_expired()
+
+def test_no_leak_external_request(tv, mock_http):
+    # If we request to something that isn't base_url, it doesn't leak the bearer token
+    action = _Action(
+        method="GET",
+        href="https://www.example.com/api/pub/v2/external-endpoint"
+    )
+
+    tv._perform_action(action)
+
+    mock_http.assert_called_once_with(
+        method="GET",
+        url="https://www.example.com/api/pub/v2/external-endpoint",
+        headers={"User-Agent": tv.user_agent}
+    )
+

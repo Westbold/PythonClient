@@ -1,0 +1,25 @@
+{
+  "get": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "id": "string",
+      "renewedThrough": "1970-01-01T00:00:00+00:00",
+      "billingCycleEndsAt": "1970-01-01T00:00:00+00:00",
+      "nextAutoRenewAttempt": "1970-01-01T00:00:00+00:00",
+      "emailNotificationsEnabled": false,
+      "state": "string",
+      "invoices": {
+        "method": "string",
+        "href": "string"
+      }
+    }
+  },
+  "post": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {}
+  }
+}

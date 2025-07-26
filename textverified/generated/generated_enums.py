@@ -4,7 +4,7 @@ This file is auto-generated. Do not edit manually.
 """
 from dataclasses import dataclass
 from enum import Enum
-from typing import Protocol, Optional, Dict, List, Any
+from typing import Optional, Dict, List, Any
 import datetime
 
 class BackOrderState(Enum):

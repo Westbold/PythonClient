@@ -11,3 +11,9 @@ Some questions that we can answer through implementing things with the API
 
 
 3. Should api calls that can fail (such as refund) return True / False OR return nothing and throw error?
+
+4. Should we generate mock endpoints from swagger schema as well?
+ - compelling case that we Should
+ - handling ID is relatively hard -> would require a PB commit
+ - however, verifying if a response is correct in testing would be harder
+   - if we just use compare dicts and to_api method, should be easy?

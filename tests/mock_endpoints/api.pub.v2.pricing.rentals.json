@@ -1,0 +1,12 @@
+{
+  "post": {
+    "data": {
+      "serviceName": "hotmail",
+      "price": 5
+    },
+    "status_code": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

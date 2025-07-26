@@ -1,0 +1,14 @@
+{
+  "get": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "id": "string",
+      "usageWindowStart": "1970-01-01T00:00:00+00:00",
+      "usageWindowEnd": "1970-01-01T00:00:00+00:00",
+      "isScheduled": false,
+      "reservationId": "string"
+    }
+  }
+}

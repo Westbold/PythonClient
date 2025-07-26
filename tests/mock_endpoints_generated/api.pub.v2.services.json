@@ -1,0 +1,18 @@
+{
+  "get": {
+    "query_params": {
+      "numberType": "mobile",
+      "reservationType": "renewable"
+    },
+    "response": [
+      {
+        "serviceName": "myservice",
+        "capability": "sms"
+      },
+      {
+        "serviceName": "myservice",
+        "capability": "sms"
+      }
+    ]
+  }
+}

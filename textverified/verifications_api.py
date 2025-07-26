@@ -3,7 +3,8 @@ from typing import List, Union
 from .paginated_list import PaginatedList
 from .generated.generated_enums import (
     VerificationPriceCheckRequest, NewVerificationRequest,
-    PricingSnapshot, ReservationCapability, NumberType
+    PricingSnapshot, ReservationCapability, NumberType,
+    VerificationCompact, VerificationExpanded
 )
 
 class VerificationsAPI:
@@ -13,12 +14,12 @@ class VerificationsAPI:
         self.client = client
     
     def create_verification(self, data: NewVerificationRequest = None, *,
-        area_code_select_option: List[str]
-        carrier_select_option: List[str]
-        service_name: str
-        capability: ReservationCapability
-        service_not_listed_name: str
-        max_price: float
+        area_code_select_option: List[str] = None,
+        carrier_select_option: List[str] = None,
+        service_name: str = None,
+        capability: ReservationCapability = None,
+        service_not_listed_name: str = None,
+        max_price: float = None
     ) -> VerificationExpanded:
         """Creates a new verification."""
 
@@ -27,8 +28,15 @@ class VerificationsAPI:
             carrier_select_option=carrier_select_option if carrier_select_option is not None else data.carrier_select_option,
             service_name=service_name or data.service_name,
             capability=capability or data.capability,
-            service_not_listed_name=data.service_not_listed_name,
+            service_not_listed_name=service_not_listed_name if service_not_listed_name is not None else data.service_not_listed_name,
             max_price=max_price if max_price is not None else data.max_price
+        ) if data else NewVerificationRequest(
+            area_code_select_option=area_code_select_option,
+            carrier_select_option=carrier_select_option,
+            service_name=service_name,
+            capability=capability,
+            service_not_listed_name=service_not_listed_name,
+            max_price=max_price
         )
 
         if not data or not data.service_name or not data.capability:

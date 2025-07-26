@@ -8,102 +8,6 @@ from itertools import chain
 import os
 import networkx as nx
 
-def compare_graphs(graph1: nx.DiGraph, graph2: nx.DiGraph) -> Dict[str, Any]:
-    """Compare two NetworkX graphs and return the differences."""
-    
-    # Node differences
-    nodes_g1 = set(graph1.nodes())
-    nodes_g2 = set(graph2.nodes())
-    
-    # Edge differences
-    edges_g1 = set(graph1.edges())
-    edges_g2 = set(graph2.edges())
-    
-    # Node attribute differences for common nodes
-    common_nodes = nodes_g1 & nodes_g2
-    node_attr_diffs = {}
-    
-    for node in common_nodes:
-        attrs_g1 = graph1.nodes[node]
-        attrs_g2 = graph2.nodes[node]
-        
-        if attrs_g1 != attrs_g2:
-            node_attr_diffs[node] = {
-                'graph1': attrs_g1,
-                'graph2': attrs_g2
-            }
-    
-    # Edge attribute differences for common edges
-    common_edges = edges_g1 & edges_g2
-    edge_attr_diffs = {}
-    
-    for edge in common_edges:
-        attrs_g1 = graph1.edges[edge]
-        attrs_g2 = graph2.edges[edge]
-        
-        if attrs_g1 != attrs_g2:
-            edge_attr_diffs[edge] = {
-                'graph1': attrs_g1,
-                'graph2': attrs_g2
-            }
-    
-    return {
-        'nodes': {
-            'only_in_graph1': nodes_g1 - nodes_g2,
-            'only_in_graph2': nodes_g2 - nodes_g1,
-            'common': common_nodes,
-            'attribute_differences': node_attr_diffs
-        },
-        'edges': {
-            'only_in_graph1': edges_g1 - edges_g2,
-            'only_in_graph2': edges_g2 - edges_g1,
-            'common': common_edges,
-            'attribute_differences': edge_attr_diffs
-        }
-    }
-
-def print_graph_diff(diff: Dict[str, Any]):
-    """Pretty print graph differences."""
-    print("=== GRAPH COMPARISON ===")
-    
-    # Node differences
-    if diff['nodes']['only_in_graph1']:
-        print(f"\nNodes only in Graph 1: {diff['nodes']['only_in_graph1']}")
-    
-    if diff['nodes']['only_in_graph2']:
-        print(f"\nNodes only in Graph 2: {diff['nodes']['only_in_graph2']}")
-    
-    if diff['nodes']['attribute_differences']:
-        print(f"\nNodes with different attributes:")
-        for node, attrs in diff['nodes']['attribute_differences'].items():
-            print(f"  {node}:")
-            print(f"    Graph 1: {attrs['graph1']}")
-            print(f"    Graph 2: {attrs['graph2']}")
-    
-    # Edge differences
-    if diff['edges']['only_in_graph1']:
-        print(f"\nEdges only in Graph 1: {diff['edges']['only_in_graph1']}")
-    
-    if diff['edges']['only_in_graph2']:
-        print(f"\nEdges only in Graph 2: {diff['edges']['only_in_graph2']}")
-    
-    if diff['edges']['attribute_differences']:
-        print(f"\nEdges with different attributes:")
-        for edge, attrs in diff['edges']['attribute_differences'].items():
-            print(f"  {edge}:")
-            print(f"    Graph 1: {attrs['graph1']}")
-            print(f"    Graph 2: {attrs['graph2']}")
-    
-    if (not diff['nodes']['only_in_graph1'] and 
-        not diff['nodes']['only_in_graph2'] and 
-        not diff['edges']['only_in_graph1'] and 
-        not diff['edges']['only_in_graph2'] and
-        not diff['nodes']['attribute_differences'] and
-        not diff['edges']['attribute_differences']):
-        print("\nGraphs are identical!")
-
-
-
 # String helper method to convert forms of strings between each other
 import re
 def normalize_string(s: str) -> str:
@@ -176,6 +80,11 @@ class CompilerNode:
         """Snippet for converting this node from an API-compatible format."""
         return f"{self.type_name}.from_api({args})"
 
+    @property
+    def api_example(self):
+        """Get an example of the API representation of this node"""
+        return self.example
+
 @dataclass(frozen=False)
 class DtypeNode(CompilerNode):
     """Represents a simple python dtype node in the compiler (bool, str, int, float, etc.)."""
@@ -199,6 +108,21 @@ class DtypeNode(CompilerNode):
     def get_from_api_method(self, args) -> str:
         return f"{self.type_name}({args})"
 
+    @property
+    def api_example(self):
+        """Get an example of the API representation of this node"""
+        if self.example is not None:
+            return self.dtype(self.example)
+        if self.dtype is bool:
+            return False
+        elif self.dtype is int:
+            return 0
+        elif self.dtype is float:
+            return 0.0
+        elif self.dtype is str:
+            return "string"
+        return None
+
 @dataclass(frozen=False)
 class DateTimeNode(CompilerNode):
     """Represents a datetime data type in the compiler."""
@@ -216,6 +140,11 @@ class DateTimeNode(CompilerNode):
 
     def get_from_api_method(self, args) -> str:
         return f"datetime.datetime.fromisoformat({args})"
+
+    @property
+    def api_example(self):
+        """Get an example of the API representation of this node"""
+        return datetime.datetime.fromtimestamp(0, tz=datetime.timezone.utc).isoformat()
 
 @dataclass(frozen=False)
 class EnumNode(CompilerNode):
@@ -261,6 +190,10 @@ class EnumNode(CompilerNode):
     
     def get_from_api_method(self, args) -> str:
         return f"{self.type_name}.from_api({args})"
+
+    @property
+    def api_example(self):
+        return next(iter(self.values), None)
     
 @dataclass(frozen=False)
 class ObjectNode(CompilerNode):
@@ -328,6 +261,15 @@ class ObjectNode(CompilerNode):
     def get_from_api_method(self, args) -> str:
         return f"{self.type_name}.from_api({args})"
 
+    @property
+    def api_example(self):
+        if not self.properties:
+            print(f"Warning: ObjectNode {self.name} has no properties, returning empty dict as API example.")
+            return dict()
+        else: return {
+            name: prop.api_example for name, prop in self.properties.items()
+        } 
+
 @dataclass(frozen=False)
 class ArrayNode(CompilerNode):
     """Represents a typed array in the compiler."""
@@ -357,6 +299,12 @@ class ArrayNode(CompilerNode):
         # Create a list comprehension of the from api methods
         # Assumes that args is a list of items
         return f"[{self.item_type.get_from_api_method(f'item')} for item in {args}]"
+
+    @property
+    def api_example(self):
+        if self.item_type.api_example is None:
+            return []
+        return [self.item_type.api_example] * 2
     
 @dataclass(frozen=False)
 class OptionalNode(CompilerNode):
@@ -385,6 +333,10 @@ class OptionalNode(CompilerNode):
     def get_from_api_method(self, args):
         return f"{self.item_type.get_from_api_method(args)} if {args} is not None else None"
 
+    @property
+    def api_example(self):
+        return None
+
 
 def create_dependency_graph(swagger_schema: dict, patterns_to_ignore=[r"^Link$", r"^PaginatedData\."]) -> nx.DiGraph:
     """Creates a graph representation of swagger schema nodes, with edges based on $ref links
@@ -408,7 +360,6 @@ def create_dependency_graph(swagger_schema: dict, patterns_to_ignore=[r"^Link$",
         # objects must know their name for compilation, unused otherwise
         if "$ref" in schema:
             ref_name = schema["$ref"].split("/")[-1]
-            print(f"Found $ref in schema {name}: {schema['$ref']} -> {ref_name}")
             if ref_name in graph:
                 node = graph.nodes[ref_name]["node"]
             else:
@@ -429,7 +380,9 @@ def create_dependency_graph(swagger_schema: dict, patterns_to_ignore=[r"^Link$",
         elif schema["type"] == "array":
             pname, predecessor = parse_schema(f"{name}_arrayitem", schema.get("items", {}))
             node = ArrayNode(item_type=predecessor)
-            graph.add_node(name, node=node)
+            if name not in graph:
+                graph.add_node(name, node=node)
+
             graph.add_edge(pname, name)
         elif schema["type"] == "string":
             if "enum" in schema:
@@ -448,7 +401,6 @@ def create_dependency_graph(swagger_schema: dict, patterns_to_ignore=[r"^Link$",
 
             for prop_name, prop_schema in schema.get("properties", {}).items():
                 prop_node_name, prop_node = parse_schema(f"{name}_{to_var_name(prop_name)}", prop_schema)
-                print(f"Prop {prop_name} ({prop_node_name}): {type(prop_node)}")
                 graph.nodes[name]["properties"][to_var_name(prop_name)] = prop_node_name
                 graph.add_edge(prop_node_name, name, name=prop_name)
 
@@ -499,18 +451,94 @@ def create_dependency_graph(swagger_schema: dict, patterns_to_ignore=[r"^Link$",
     for node_name in nx.topological_sort(graph):
         node = graph.nodes[node_name]["node"]
         
-        #  Incoming edges
         if isinstance(node, ObjectNode):
+            #  Incoming edges
             for prop_node in graph.predecessors(node_name):
                 prop_name = graph.get_edge_data(prop_node, node_name)['name']
                 prop_cnode = graph.nodes[prop_node]["node"]
-                print(f"Adding property {prop_name} to {node_name} (type: {prop_cnode})")
 
                 node.properties[prop_name] = prop_cnode
 
+        if isinstance(node, ArrayNode):
+            # Update the item type to be a fully resolved node
+            if isinstance(node.item_type, ObjectNode):
+                node.item_type = graph.nodes[node.item_type.name]["node"]
+
         
-    
+        if isinstance(node, OptionalNode):
+            # Update the item type to be a fully resolved node
+            if isinstance(node.item_type, ObjectNode):
+                node.item_type = graph.nodes[node.item_type.name]["node"]
+
     return graph
+
+def parse_schema_with_graph(graph: nx.DiGraph, schema: dict) -> CompilerNode:
+    """Parse a node with a fully-parsed swagger context. Does not change graph."""
+    if "$ref" in schema:
+        ref_name = schema["$ref"].split("/")[-1]
+        if ref_name in graph:
+            return graph.nodes[ref_name]["node"]
+        else:
+            raise ValueError(f"Reference {ref_name} not found in graph. Schema: {schema}")
+
+    # Basic nodes
+    if schema["type"] == "integer":
+        return DtypeNode(dtype=int, description=schema.get("description", None), example=schema.get("example", None))
+    elif schema["type"] == "number":
+        return DtypeNode(dtype=float, description=schema.get("description", None), example=schema.get("example", None))
+    elif schema["type"] == "boolean":
+        return DtypeNode(dtype=bool, description=schema.get("description", None), example=schema.get("example", None))
+    elif schema["type"] == "array":
+        predecessor = parse_schema_with_graph(graph, schema.get("items", {}))
+        return ArrayNode(item_type=predecessor)
+    elif schema["type"] == "string":
+        if "enum" in schema:
+            node = EnumNode(name="InlineEnum", values=schema["enum"])
+            node.compile = lambda: 1 / 0
+            return node
+        elif schema.get("format", '') == 'date-time':
+            return DateTimeNode(description=schema.get("description", None), example=schema.get("example", None))
+        else:
+            return DtypeNode(dtype=str, description=schema.get("description", None), example=schema.get("example", None))
+    elif schema["type"] == "object":
+        # Object nodes - we now can use the graph to fully resolve properties
+        node = ObjectNode(name="UnnamedObject", description=schema.get("description", None), example=schema.get("example", None), properties={})
+
+        for prop_name, prop_schema in schema.get("properties", {}).items():
+            prop_node = parse_schema_with_graph(graph, prop_schema)
+            node.properties[to_var_name(prop_name)] = prop_node
+
+        # illegal to compile this object to python code
+        node.compile = lambda: 1 / 0
+        return node
+
+def render_mock_call(graph, path: str, path_data:dict) -> str:
+    # Renders the api method into a mocked api call
+    mock_call_json = dict()
+    for method, data in path_data.items():
+        mock_call_json[method] = dict()
+
+        for param in data.get("parameters", []):
+            cnode = parse_schema_with_graph(graph, param.get("schema", {}))
+            if "example" in param: cnode.example = param["example"]
+            mocked_param = cnode.api_example
+            if param.get("in") == "path":
+                mock_call_json[method].setdefault("path_params", {})[param["name"]] = mocked_param
+            elif param.get("in") == "query":
+                mock_call_json[method].setdefault("query_params", {})[param["name"]] = mocked_param
+            elif param.get("in") == "header":
+                mock_call_json[method].setdefault("header_params", {})[param["name"]] = mocked_param
+
+        for response_code, response in data.get("responses", {}).items():
+            if not response_code.startswith("2"): continue # Only mock successful responses
+            if not response.get("content", {}).get("application/json", None):
+                mock_call_json[method].setdefault("response", dict())  
+                continue # No JSON response, add empty iff dne
+            response_schema = response["content"]["application/json"]
+            response_cnode = parse_schema_with_graph(graph, response_schema.get("schema", {}))
+            if "example" in response_schema: response_cnode.example = response_schema["example"]
+            mock_call_json[method]["response"] = response_cnode.api_example
+    return mock_call_json
 
 if __name__ == "__main__":
     import json
@@ -537,7 +565,7 @@ This file is auto-generated. Do not edit manually.
 \"\"\"
 from dataclasses import dataclass
 from enum import Enum
-from typing import Protocol, Optional, Dict, List, Any
+from typing import Optional, Dict, List, Any
 import datetime
         """.strip())
         f.write("\n\n")
@@ -546,4 +574,16 @@ import datetime
             if compiled_code.strip():
                 f.write(compiled_code)
                 f.write("\n\n")
+
+
+    # Create mock endpoints
+    os.makedirs("./tests/mock_endpoints_generated/", exist_ok=True)
+    unfiltered_graph = create_dependency_graph(swagger.get("components", {}).get("schemas", {}), patterns_to_ignore=[])
+    for path, path_data in swagger.get("paths", {}).items():
+        path = path.strip("/").replace("/", ".")
+        mock_call_json = render_mock_call(unfiltered_graph, path, path_data)
+        if not mock_call_json: continue
+        with open(f"./tests/mock_endpoints_generated/{path}.json", "w") as f:
+            json.dump(mock_call_json, f, indent=2)
+            print(f"Mock endpoint for {path} written to {f.name}")
     
