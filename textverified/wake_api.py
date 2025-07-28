@@ -2,6 +2,7 @@ from .action import _ActionPerformer, _Action
 from typing import List, Union
 from .generated.generated_enums import (
     RenewableRentalCompact, RenewableRentalExpanded,
+    NonrenewableRentalCompact, NonrenewableRentalExpanded,
     WakeRequest, WakeResponse, UsageWindowEstimateRequest
 )
 
@@ -11,9 +12,9 @@ class WakeAPI:
     def __init__(self, client: _ActionPerformer):
         self.client = client
     
-    def create_wake_request(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]) -> WakeResponse:
+    def create_wake_request(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]) -> WakeResponse:
         """Create a wake request for a specific reservation."""
-        reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded)) else reservation_id
+        reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded)) else reservation_id
 
         if not reservation_id:
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
@@ -42,9 +43,9 @@ class WakeAPI:
 
         return WakeResponse.from_api(response.data)
 
-    def estimate_usage_window(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]) -> UsageWindowEstimateRequest:
+    def estimate_usage_window(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]) -> UsageWindowEstimateRequest:
         """Estimate the usage window for a specific reservation."""
-        reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded)) else reservation_id
+        reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded)) else reservation_id
 
         if not reservation_id:
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")

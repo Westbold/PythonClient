@@ -1,6 +1,6 @@
 {
   "get": {
-    "data": {
+    "response": {
       "data": [
         { "id": "3", "name": "Item 3" },
         { "id": "4", "name": "Item 4" }
@@ -12,10 +12,6 @@
           "href": null
         }
       }
-    },
-    "status_code": 200,
-    "headers": {
-      "Content-Type": "application/json"
     }
   }
 }

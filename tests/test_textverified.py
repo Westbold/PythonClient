@@ -1,14 +1,14 @@
 import pytest
-from .fixtures import tv, mock_http_from_disk, mock_http
+from .fixtures import tv, tv_raw, mock_http_from_disk, mock_http
 from textverified.textverified import TextVerified, BearerToken
 from textverified.action import _Action
 import datetime
 
-def test_bearer_get(tv, mock_http_from_disk):
-    tv.refresh_bearer()
+def test_bearer_get(tv_raw, mock_http_from_disk):
+    tv_raw.refresh_bearer()
 
-    assert isinstance(tv.bearer, BearerToken)
-    assert not tv.bearer.is_expired()
+    assert isinstance(tv_raw.bearer, BearerToken)
+    assert not tv_raw.bearer.is_expired()
     mock_http_from_disk.assert_called_once_with(
         "POST",
         "https://www.textverified.com/api/pub/v2/auth",
@@ -21,15 +21,15 @@ def test_bearer_get(tv, mock_http_from_disk):
     )
 
 
-def test_expired_bearer_refreshed(tv, mock_http_from_disk):
-    tv.bearer = BearerToken(
+def test_expired_bearer_refreshed(tv_raw, mock_http_from_disk):
+    tv_raw.bearer = BearerToken(
         token="expired-token",
         expires_at=datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(seconds=1)
     )
 
-    assert tv.bearer.is_expired()
-    tv.refresh_bearer()
-    assert not tv.bearer.is_expired()
+    assert tv_raw.bearer.is_expired()
+    tv_raw.refresh_bearer()
+    assert not tv_raw.bearer.is_expired()
     mock_http_from_disk.assert_called_once_with(
         "POST",
         "https://www.textverified.com/api/pub/v2/auth",

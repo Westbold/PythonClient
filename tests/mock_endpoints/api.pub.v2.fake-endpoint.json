@@ -1,11 +1,7 @@
 {
   "get": {
-    "data": {
+    "response": {
       "a": "b"
-    },
-    "status_code": 200,
-    "headers": {
-      "Content-Type": "application/json"
     }
   }
 }
