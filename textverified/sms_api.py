@@ -1,5 +1,5 @@
 from .action import _ActionPerformer, _Action
-from typing import List, Union
+from typing import List, Union, Iterator
 from .generated.generated_enums import (
     Sms, NonrenewableRentalCompact, NonrenewableRentalExpanded,
     RenewableRentalCompact, RenewableRentalExpanded,
@@ -7,6 +7,8 @@ from .generated.generated_enums import (
     ReservationType
 )
 from .paginated_list import PaginatedList
+import time
+import datetime
 
 class SMSApi:
     """API endpoints related to SMS"""
@@ -42,11 +44,27 @@ class SMSApi:
             params['reservation_type'] = reservation_type.to_api()
 
         # Construct and perform the action
-        action = _Action(method="GET", href="/api/pub/v2/sms", params=params)
-        response = self.client._perform_action(action)
+        action = _Action(method="GET", href="/api/pub/v2/sms")
+        response = self.client._perform_action(action, params=params)
 
         return PaginatedList(
             request_json=response.data,
             parse_item=Sms.from_api,
             api_context=self.client
         )
+        
+    def incoming_sms(self, data: Union[NonrenewableRentalCompact, NonrenewableRentalExpanded, RenewableRentalCompact, RenewableRentalExpanded, VerificationCompact, VerificationExpanded] = None, *, to_number: str = None, reservation_type: ReservationType = None, timeout: float = 10.0, polling_interval: float = 1.0) -> Iterator[Sms]:
+        """Iterator over future incoming sms"""
+        earliest_msg = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(seconds=3) # allow some leniency
+        start_time = time.monotonic()
+
+        already_seen = set()
+        
+        # wait up to [timeout] seconds for a NEW message
+        while time.monotonic() - start_time < timeout:
+            time.sleep(polling_interval)  # Polling interval
+            new_messages = self.list_sms(data=data, to_number=to_number, reservation_type=reservation_type)
+            for msg in new_messages:
+                if msg.id not in already_seen and msg.created_at > earliest_msg:
+                    already_seen.add(msg.id)
+                    yield msg

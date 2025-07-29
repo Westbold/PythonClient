@@ -102,16 +102,16 @@ class TextVerified(_ActionPerformer):
                 expires_at=datetime.datetime.fromisoformat(data["expiresAt"])
             )
 
-    def _perform_action(self, action: _Action) -> _ActionResponse:
+    def _perform_action(self, action: _Action, **kwargs) -> _ActionResponse:
         """
         Perform an API action and return the result.
         :param action: The action to perform
         :return: Dictionary containing the API response
         """
         if "://" in action.href:
-            return self.__perform_action_external(action.method, action.href)
+            return self.__perform_action_external(action.method, action.href, **kwargs)
         else:
-            return self.__perform_action_internal(action.method, f"{self.base_url}{action.href}")
+            return self.__perform_action_internal(action.method, f"{self.base_url}{action.href}", **kwargs)
 
     def __perform_action_internal(self, method: str, href: str, **kwargs) -> _ActionResponse:
         """ Internal action performance with authorization"""

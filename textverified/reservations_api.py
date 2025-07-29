@@ -53,7 +53,6 @@ class ReservationsAPI:
         response = self.client._perform_action(action, json=data)
 
         # Note - response.data is another action to follow to get Sale details
-        
         action = _Action.from_api(response.data)
         response = self.client._perform_action(action)
 
@@ -205,7 +204,7 @@ class ReservationsAPI:
 
         return LineHealth.from_api(response.data)
 
-    def update_renewable_reservation(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded], data: RenewableRentalUpdateRequest = None, *, user_notes: str = None, include_for_renewal: bool = None, mark_sms_read: bool = None) -> bool:
+    def update_renewable_reservation(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded], data: RenewableRentalUpdateRequest = None, *, user_notes: str = None, include_for_renewal: bool = None, mark_all_sms_read: bool = None) -> bool:
         """Update a renewable reservation."""
         reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded)) else reservation_id
 
@@ -215,24 +214,24 @@ class ReservationsAPI:
         update_request = RenewableRentalUpdateRequest(
             user_notes=user_notes or data.user_notes,
             include_for_renewal=include_for_renewal if include_for_renewal is not None else data.include_for_renewal,
-            mark_sms_read=mark_sms_read if mark_sms_read is not None else data.mark_sms_read
+            mark_all_sms_read=mark_all_sms_read if mark_all_sms_read is not None else data.mark_all_sms_read
         ) if data else RenewableRentalUpdateRequest(
             user_notes=user_notes,
             include_for_renewal=include_for_renewal,
-            mark_sms_read=mark_sms_read
+            mark_all_sms_read=mark_all_sms_read
         )
 
-        if not update_request or (not update_request.user_notes and update_request.include_for_renewal is None and update_request.mark_sms_read is None):
-            raise ValueError("At least one field must be updated: user_notes, include_for_renewal, or mark_sms_read.")
+        if not update_request or (not update_request.user_notes and update_request.include_for_renewal is None and update_request.mark_all_sms_read is None):
+            raise ValueError("At least one field must be updated: user_notes, include_for_renewal, or mark_all_sms_read.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/renewable/{reservation_id}")
-        response = self.client._perform_action(action, json=update_request)
+        response = self.client._perform_action(action, json=update_request.to_api())
 
         return True
 
     # Possibility for unified update method?
 
-    def update_nonrenewable_reservation(self, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded], data: NonrenewableRentalUpdateRequest = None, *, user_notes: str = None, mark_sms_read: bool = None) -> bool:
+    def update_nonrenewable_reservation(self, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded], data: NonrenewableRentalUpdateRequest = None, *, user_notes: str = None, mark_all_sms_read: bool = None) -> bool:
         """Update a non-renewable reservation."""
         reservation_id = reservation_id.id if isinstance(reservation_id, (NonrenewableRentalCompact, NonrenewableRentalExpanded)) else reservation_id
 
@@ -241,17 +240,17 @@ class ReservationsAPI:
 
         update_request = NonrenewableRentalUpdateRequest(
             user_notes=user_notes or data.user_notes,
-            mark_sms_read=mark_sms_read if mark_sms_read is not None else data.mark_sms_read
+            mark_all_sms_read=mark_all_sms_read if mark_all_sms_read is not None else data.mark_all_sms_read
         ) if data else NonrenewableRentalUpdateRequest(
             user_notes=user_notes,
-            mark_sms_read=mark_sms_read
+            mark_all_sms_read=mark_all_sms_read
         )
 
-        if not update_request or (not update_request.user_notes and update_request.mark_sms_read is None):
-            raise ValueError("At least one field must be updated: user_notes or mark_sms_read.")
+        if not update_request or (not update_request.user_notes and update_request.mark_all_sms_read is None):
+            raise ValueError("At least one field must be updated: user_notes or mark_all_sms_read.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/nonrenewable/{reservation_id}")
-        response = self.client._perform_action(action, json=update_request)
+        response = self.client._perform_action(action, json=update_request.to_api())
 
         return True
 
@@ -291,20 +290,20 @@ class ReservationsAPI:
 
         return True
 
-    def extend_nonrenewable_reservation(self, data: RentalExtensionRequest = None, *, extension_duration: RentalDuration = None, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded] = None) -> bool:
+    def extend_nonrenewable_reservation(self, data: RentalExtensionRequest = None, *, extension_duration: RentalDuration = None, rental_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded] = None) -> bool:
         """Extend a non-renewable reservation."""
         data = RentalExtensionRequest(
             extension_duration=extension_duration or data.extension_duration,
-            reservation_id=reservation_id or data.reservation_id
+            rental_id=rental_id or data.rental_id
         ) if data else RentalExtensionRequest(
             extension_duration=extension_duration,
-            reservation_id=reservation_id
+            rental_id=rental_id
         )
 
-        if not data or not data.extension_duration or not data.reservation_id:
-            raise ValueError("Both extension_duration and reservation_id must be provided.")
+        if not data or not data.extension_duration or not data.rental_id:
+            raise ValueError("Both extension_duration and rental_id must be provided.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rentals/extensions")
-        self.client._perform_action(action, json=data)
+        self.client._perform_action(action, json=data.to_api())
 
         return True

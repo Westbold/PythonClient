@@ -22,7 +22,7 @@ class WakeAPI:
         # Actually takes in a WakeRequest, may need to change this later if API spec changes
 
         action = _Action(method="POST", href="/api/pub/v2/wake-requests")
-        response = self.client._perform_action(action, json=WakeRequest(reservation_id=reservation_id))
+        response = self.client._perform_action(action, json=WakeRequest(reservation_id=reservation_id).to_api())
 
         # Note - response.data is another action to get a WakeResponse
 
@@ -51,7 +51,7 @@ class WakeAPI:
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         action = _Action(method="POST", href="/api/pub/v2/wake-requests/estimate")
-        response = self.client._perform_action(action, json=WakeRequest(reservation_id=reservation_id))
+        response = self.client._perform_action(action, json=WakeRequest(reservation_id=reservation_id).to_api())
 
         return UsageWindowEstimateRequest.from_api(response.data)
 

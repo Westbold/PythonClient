@@ -35,7 +35,6 @@ def test_paginated_list_calls_parse_func(tv):
     assert list(list_instance) == ["Item 1", "Item 2"]
 
 def test_paginated_list_next_page(tv, mock_http_from_disk):
-    print(list_initial_response)
     list_instance = PaginatedList(
         request_json=list_initial_response,
         parse_item=lambda item: item["name"],

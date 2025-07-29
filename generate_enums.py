@@ -328,10 +328,10 @@ class OptionalNode(CompilerNode):
         return str()
     
     def get_to_api_method(self, instance_reference) -> str:
-        return f"{self.item_type.get_to_api_method(instance_reference)} if {instance_reference} is not None else None"
+        return f"({self.item_type.get_to_api_method(instance_reference)} if {instance_reference} is not None else None)"
     
     def get_from_api_method(self, args):
-        return f"{self.item_type.get_from_api_method(args)} if {args} is not None else None"
+        return f"({self.item_type.get_from_api_method(args)} if {args} is not None else None)"
 
     @property
     def api_example(self):
@@ -446,6 +446,12 @@ def create_dependency_graph(swagger_schema: dict, patterns_to_ignore=[r"^Link$",
             is_useful = len(node.values) > 0
         if not is_useful:
             graph.remove_node(node_name)
+    
+    # Possible optimization:       
+    # Resolve 1-property objects by transferring them into ForwardedPropertyNode
+    # b/c we want to cut down python objects without modifying API scheme
+    # especially noticeable for Cancel object, which just holds boolean "can_cancel"
+            
         
     # Finalize properties, topo order
     for node_name in nx.topological_sort(graph):

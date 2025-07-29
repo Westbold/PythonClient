@@ -8,7 +8,7 @@ class AccountAPI:
     def __init__(self, client: _ActionPerformer):
         self.client = client
     
-    def get_details(self):
+    def get_details(self) -> Account:
         """Get account details."""
         action = _Action(method="GET", href="/api/pub/v2/account/me")
         response = self.client._perform_action(action)

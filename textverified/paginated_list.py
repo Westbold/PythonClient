@@ -66,8 +66,6 @@ class PaginatedList(Generic[T], Iterator[T]):
             self.__next_page = _Action.from_api(current_page["links"]["next"])
             if not self.__next_page.href or not self.__next_page.method:
                 self.__next_page = None
-        print("Current page set to:", current_page)
-        print(f"Next page set to: {self.__next_page}")
         
     def get_all_items(self) -> List[T]:
         """Fetch all remaining pages and return all items."""

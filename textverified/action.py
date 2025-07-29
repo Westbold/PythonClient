@@ -12,7 +12,7 @@ class _ActionResponse:
 class _ActionPerformer:
     """Internal Protocol for objects that can perform API actions."""
     
-    def _perform_action(self, action: '_Action') -> _ActionResponse:
+    def _perform_action(self, action: '_Action', **kwargs) -> _ActionResponse:
         """
         Perform an API action and return the result.
         :param action: The action to perform
