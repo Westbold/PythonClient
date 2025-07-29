@@ -23,7 +23,11 @@ from .generated.generated_enums import (
 
 
 class ReservationsAPI:
-    """API endpoints related to reservations."""
+    """API endpoints related to reservations.
+    This includes both renewable and non-renewable rentals, as well as backorder reservations.
+
+    Note that reservations which are not always-on require a wakeup to receive sms. To wake a resrvation, use `textverified.wake_requests.create_wake_request(...)`.
+    """
 
     def __init__(self, client: _ActionPerformer):
         self.client = client
@@ -42,7 +46,30 @@ class ReservationsAPI:
         service_name: str = None,
         capability: ReservationCapability = None,
     ) -> ReservationSaleExpanded:
-        """Creates a new sale"""
+        """Purchase a new rental.
+        `service_name` can be found by calling `textverified.ServiceAPI.get_services()`.
+
+        This will cost api balance, so ensure you have sufficient funds before calling this method.
+        To estimate the cost, use `get_rental_pricing()` with the same parameters. You can pass the same NewRentalRequest object to both methods.
+
+        Args:
+            data (NewRentalRequest, optional): The rental details to create. All kwargs will overwrite values in this object. Defaults to None.
+            allow_back_order_reservations (bool, optional): If true, a rental back order will be created if the requested rental is out of stock. Defaults to None.
+            always_on (bool, optional): If set to true, a line that does not require wake up will be assigned if in stock. Otherwise, wakeup will be required. Defaults to None.
+            area_code_select_option (List[str], optional): List of allowed area codes. Defaults to None.
+            duration (RentalDuration, optional): Requested duration of the rental. Defaults to None.
+            is_renewable (bool, optional): Whether the rental is renewable. Defaults to None.
+            number_type (NumberType, optional): The underlying type of the number. Defaults to None.
+            billing_cycle_id_to_assign_to (str, optional): Optional billing cycle to which the rental is assigned. If left empty, a new billing cycle will be created for the rental. Only renewable rentals can be assigned to a billing cycle. Defaults to None.
+            service_name (str, optional): Name of the service. Defaults to None.
+            capability (ReservationCapability, optional): The capabilities (voice, sms, or both) of this rental. Defaults to None.
+
+        Raises:
+            ValueError: If any required fields are missing or invalid.
+
+        Returns:
+            ReservationSaleExpanded: The details of the created rental reservation.
+        """
         data = (
             NewRentalRequest(
                 allow_back_order_reservations=allow_back_order_reservations
@@ -108,7 +135,29 @@ class ReservationsAPI:
         is_renewable: bool = None,
         duration: RentalDuration = None,
     ) -> PricingSnapshot:
-        """Get rental pricing."""
+        """Get rental pricing information for a potential rental reservation.
+
+        This method allows you to check the cost of a rental before purchasing it.
+        You can pass the same parameters used for creating a rental reservation.
+
+        Args:
+            data (Union[NewRentalRequest, RentalPriceCheckRequest], optional): The rental details to price. All kwargs will overwrite values in this object. Defaults to None.
+            service_name (str, optional): Name of the service. Defaults to None.
+            area_code (bool, optional): Whether to request a specific area code. Defaults to None.
+            number_type (NumberType, optional): The underlying type of the number. Defaults to None.
+            capability (ReservationCapability, optional): The capabilities (voice, sms, or both) of this rental. Defaults to None.
+            always_on (bool, optional): If set to true, a line that does not require wake up will be assigned if in stock. Defaults to None.
+            call_forwarding (bool, optional): Whether call forwarding is enabled. Defaults to None.
+            billing_cycle_id_to_assign_to (str, optional): Optional billing cycle to which the rental would be assigned. Defaults to None.
+            is_renewable (bool, optional): Whether the rental is renewable. Defaults to None.
+            duration (RentalDuration, optional): Requested duration of the rental. Defaults to None.
+
+        Raises:
+            ValueError: If any required fields are missing or invalid.
+
+        Returns:
+            PricingSnapshot: The pricing information for the requested rental configuration.
+        """
 
         # If we are provided a NewRentalRequest, convert it to a RentalPriceCheckRequest
         if isinstance(data, NewRentalRequest):
@@ -172,7 +221,17 @@ class ReservationsAPI:
     def get_backorder_reservation(
         self, reservation_id: Union[str, BackOrderReservationCompact, BackOrderReservationExpanded]
     ) -> BackOrderReservationExpanded:
-        """Get backorder reservations."""
+        """Get details of a backorder reservation by ID.
+
+        Args:
+            reservation_id (Union[str, BackOrderReservationCompact, BackOrderReservationExpanded]): The ID or instance of the backorder reservation to retrieve.
+
+        Raises:
+            ValueError: If reservation_id is not a valid ID or instance.
+
+        Returns:
+            BackOrderReservationExpanded: The detailed information about the backorder reservation.
+        """
         reservation_id = (
             reservation_id.id
             if isinstance(reservation_id, (BackOrderReservationCompact, BackOrderReservationExpanded))
@@ -192,7 +251,17 @@ class ReservationsAPI:
             str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
         ],
     ) -> Union[RenewableRentalExpanded, NonrenewableRentalExpanded]:
-        """Get reservation details."""
+        """Get detailed information about a reservation (renewable or non-renewable).
+
+        Args:
+            reservation_id (Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]): The ID or instance of the reservation to retrieve.
+
+        Raises:
+            ValueError: If reservation_id is not a valid ID or instance.
+
+        Returns:
+            Union[RenewableRentalExpanded, NonrenewableRentalExpanded]: The detailed information about the reservation. Type depends on whether the reservation is renewable or not.
+        """
         reservation_id = (
             reservation_id.id
             if isinstance(
@@ -227,7 +296,11 @@ class ReservationsAPI:
             return RenewableRentalExpanded.from_api(response.data)
 
     def get_renewable_reservations(self) -> PaginatedList[RenewableRentalCompact]:
-        """Get a list of renewable reservations."""
+        """Get a paginated list of all renewable reservations associated with this account.
+
+        Returns:
+            PaginatedList[RenewableRentalCompact]: A paginated list of renewable rental reservations.
+        """
         action = _Action(method="GET", href="/api/pub/v2/reservations/rental/renewable")
         response = self.client._perform_action(action)
 
@@ -236,7 +309,11 @@ class ReservationsAPI:
         )
 
     def get_nonrenewable_reservations(self) -> PaginatedList[NonrenewableRentalCompact]:
-        """Get a list of non-renewable reservations."""
+        """Get a paginated list of all non-renewable reservations associated with this account.
+
+        Returns:
+            PaginatedList[NonrenewableRentalCompact]: A paginated list of non-renewable rental reservations.
+        """
         action = _Action(method="GET", href="/api/pub/v2/reservations/rental/nonrenewable")
         response = self.client._perform_action(action)
 
@@ -247,7 +324,17 @@ class ReservationsAPI:
     def get_renewable_reservation_details(
         self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]
     ) -> RenewableRentalExpanded:
-        """Get renewable reservation details."""
+        """Get detailed information about a renewable reservation by ID.
+
+        Args:
+            reservation_id (Union[str, RenewableRentalCompact, RenewableRentalExpanded]): The ID or instance of the renewable reservation to retrieve.
+
+        Raises:
+            ValueError: If reservation_id is not a valid ID or instance.
+
+        Returns:
+            RenewableRentalExpanded: The detailed information about the renewable reservation.
+        """
         reservation_id = (
             reservation_id.id
             if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded))
@@ -265,7 +352,17 @@ class ReservationsAPI:
     def get_nonrenewable_reservation_details(
         self, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded]
     ) -> NonrenewableRentalExpanded:
-        """Get non-renewable reservation details."""
+        """Get detailed information about a non-renewable reservation by ID.
+
+        Args:
+            reservation_id (Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded]): The ID or instance of the non-renewable reservation to retrieve.
+
+        Raises:
+            ValueError: If reservation_id is not a valid ID or instance.
+
+        Returns:
+            NonrenewableRentalExpanded: The detailed information about the non-renewable reservation.
+        """
         reservation_id = (
             reservation_id.id
             if isinstance(reservation_id, (NonrenewableRentalCompact, NonrenewableRentalExpanded))
@@ -286,7 +383,17 @@ class ReservationsAPI:
             str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
         ],
     ) -> LineHealth:
-        """Check the health of a reservation."""
+        """Check the health status of a reservation.
+
+        Args:
+            reservation_id (Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]): The ID or instance of the reservation to check.
+
+        Raises:
+            ValueError: If reservation_id is not a valid ID or instance.
+
+        Returns:
+            LineHealth: The health status information for the reservation.
+        """
         reservation_id = (
             reservation_id.id
             if isinstance(
@@ -320,7 +427,21 @@ class ReservationsAPI:
         include_for_renewal: bool = None,
         mark_all_sms_read: bool = None,
     ) -> bool:
-        """Update a renewable reservation."""
+        """Update properties of a renewable reservation.
+
+        Args:
+            reservation_id (Union[str, RenewableRentalCompact, RenewableRentalExpanded]): The ID or instance of the renewable reservation to update.
+            data (RenewableRentalUpdateRequest, optional): Data to update. All kwargs will overwrite values in this object. Defaults to None.
+            user_notes (str, optional): Custom notes for the reservation. Defaults to None.
+            include_for_renewal (bool, optional): Whether to include this reservation in automatic renewals. Defaults to None.
+            mark_all_sms_read (bool, optional): Whether to mark all SMS messages as read. Defaults to None.
+
+        Raises:
+            ValueError: If reservation_id is not valid or if no fields are provided to update.
+
+        Returns:
+            bool: True if the update was successful, False otherwise.
+        """
         reservation_id = (
             reservation_id.id
             if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded))
@@ -368,7 +489,20 @@ class ReservationsAPI:
         user_notes: str = None,
         mark_all_sms_read: bool = None,
     ) -> bool:
-        """Update a non-renewable reservation."""
+        """Update properties of a non-renewable reservation.
+
+        Args:
+            reservation_id (Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded]): The ID or instance of the non-renewable reservation to update.
+            data (NonrenewableRentalUpdateRequest, optional): Data to update.  All kwargs will overwrite values in this object. Defaults to None.
+            user_notes (str, optional): Custom notes for the reservation. Defaults to None.
+            mark_all_sms_read (bool, optional): Whether to mark all SMS messages as read. Defaults to None.
+
+        Raises:
+            ValueError: If reservation_id is not valid or if no fields are provided to update.
+
+        Returns:
+            bool: True if the update was successful, False otherwise.
+        """
         reservation_id = (
             reservation_id.id
             if isinstance(reservation_id, (NonrenewableRentalCompact, NonrenewableRentalExpanded))
@@ -398,7 +532,17 @@ class ReservationsAPI:
     def refund_renewable_reservation(
         self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]
     ) -> bool:
-        """Refund a renewable reservation."""
+        """Request a refund for a renewable reservation.
+
+        Args:
+            reservation_id (Union[str, RenewableRentalCompact, RenewableRentalExpanded]): The ID or instance of the renewable reservation to refund.
+
+        Raises:
+            ValueError: If reservation_id is not a valid ID or instance.
+
+        Returns:
+            bool: True if the refund request was successful, False otherwise.
+        """
         reservation_id = (
             reservation_id.id
             if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded))
@@ -416,7 +560,17 @@ class ReservationsAPI:
     def refund_nonrenewable_reservation(
         self, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded]
     ) -> bool:
-        """Refund a non-renewable reservation."""
+        """Request a refund for a non-renewable reservation.
+
+        Args:
+            reservation_id (Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded]): The ID or instance of the non-renewable reservation to refund.
+
+        Raises:
+            ValueError: If reservation_id is not a valid ID or instance.
+
+        Returns:
+            bool: True if the refund request was successful, False otherwise.
+        """
         reservation_id = (
             reservation_id.id
             if isinstance(reservation_id, (NonrenewableRentalCompact, NonrenewableRentalExpanded))
@@ -434,7 +588,22 @@ class ReservationsAPI:
     def renew_overdue_renewable_reservation(
         self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]
     ) -> bool:
-        """Renew an overdue renewable reservation."""
+        """Renew an overdue renewable reservation.
+
+        This will cost api balance, so ensure you have sufficient funds before calling this method.
+
+        This method is used to manually renew individual overdue renewable reservations.
+        For bulk renewal of active rentals, use the billing cycle renewal method instead.
+
+        Args:
+            reservation_id (Union[str, RenewableRentalCompact, RenewableRentalExpanded]): The ID or instance of the overdue renewable reservation to renew.
+
+        Raises:
+            ValueError: If reservation_id is not a valid ID or instance.
+
+        Returns:
+            bool: True if the renewal was successful, False otherwise.
+        """
         reservation_id = (
             reservation_id.id
             if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded))
@@ -456,7 +625,21 @@ class ReservationsAPI:
         extension_duration: RentalDuration = None,
         rental_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded] = None,
     ) -> bool:
-        """Extend a non-renewable reservation."""
+        """Extend the duration of a non-renewable reservation.
+
+        This will cost api balance, so ensure you have sufficient funds before calling this method.
+
+        Args:
+            data (RentalExtensionRequest, optional): The extension details. All kwargs will overwrite values in this object. Defaults to None.
+            extension_duration (RentalDuration, optional): The duration to extend the reservation by. Defaults to None.
+            rental_id (Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded], optional): The ID or instance of the non-renewable reservation to extend. Defaults to None.
+
+        Raises:
+            ValueError: If both extension_duration and rental_id are not provided.
+
+        Returns:
+            bool: True if the extension was successful, False otherwise.
+        """
         data = (
             RentalExtensionRequest(
                 extension_duration=extension_duration or data.extension_duration, rental_id=rental_id or data.rental_id

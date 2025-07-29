@@ -11,13 +11,16 @@ from .paginated_list import PaginatedList
 
 
 class BillingCycleAPI:
-    """API endpoints related to billing cycles."""
+    """API endpoints related to billing cycles.
+    Renewable rentals are associated with billing cycles and can be manually assigned on rental creation or automatically assigned.
+    A single billing cycle can have multiple renewable rentals.
+    Billing cycles can be updated, renewed, and queried for invoices."""
 
     def __init__(self, client: _ActionPerformer):
         self.client = client
 
     def get_billing_cycles(self) -> PaginatedList[BillingCycleCompact]:
-        """Get a list of your billing cycles."""
+        """Fetch all billing cycles associated with this account."""
         action = _Action(method="GET", href="/api/pub/v2/billing-cycles")
         response = self.client._perform_action(action)
 
@@ -26,7 +29,14 @@ class BillingCycleAPI:
         )
 
     def get_billing_cycle(self, billing_cycle_id: str) -> BillingCycleExpanded:
-        """Gets more information about a specific billing cycle."""
+        """Get the details of a billing cycle by ID.
+
+        Args:
+            billing_cycle_id (str): The ID of the billing cycle to retrieve.
+
+        Returns:
+            BillingCycleExpanded: The detailed information about the billing cycle.
+        """
         action = _Action(method="GET", href=f"/api/pub/v2/billing-cycles/{billing_cycle_id}")
         response = self.client._perform_action(action)
 
@@ -40,7 +50,20 @@ class BillingCycleAPI:
         reminders_enabled: bool = None,
         nickname: str = None,
     ) -> bool:
-        """Updates a specific billing cycle."""
+        """Update a billing cycle.
+
+        Args:
+            billing_cycle (Union[str, BillingCycleCompact, BillingCycleExpanded]): The ID or instance of the billing cycle to update.
+            data (BillingCycleUpdateRequest, optional): Data to update. Overwritten by kwargs. Defaults to None.
+            reminders_enabled (bool, optional): Whether email reminders are enabled. Defaults to None.
+            nickname (str, optional): Your custom string to identify the billing cycle. Defaults to None.
+
+        Raises:
+            ValueError: If billing_cycle is not a valid ID or instance, or if no fields are provided to update.
+
+        Returns:
+            bool: True if the update was successful, False otherwise.
+        """
         billing_cycle_id = (
             billing_cycle.id
             if isinstance(billing_cycle, (BillingCycleCompact, BillingCycleExpanded))
@@ -70,7 +93,18 @@ class BillingCycleAPI:
     def get_billing_invoices(
         self, billing_cycle_id: Union[str, BillingCycleCompact, BillingCycleExpanded]
     ) -> PaginatedList[BillingCycleRenewalInvoice]:
-        """Get invoices for a specific billing cycle."""
+        """Get invoices for a specific billing cycle.
+
+        Args:
+            billing_cycle_id (Union[str, BillingCycleCompact, BillingCycleExpanded]): The ID or instance of the billing cycle to retrieve invoices for.
+
+        Raises:
+            ValueError: If billing_cycle_id is not a valid ID or instance.
+
+        Returns:
+            PaginatedList[BillingCycleRenewalInvoice]: A paginated list of billing cycle renewal invoices.
+        """
+
         billing_cycle_id = (
             billing_cycle_id.id
             if isinstance(billing_cycle_id, (BillingCycleCompact, BillingCycleExpanded))
@@ -90,7 +124,18 @@ class BillingCycleAPI:
     def preview_next_billing_cycle(
         self, billing_cycle_id: Union[str, BillingCycleCompact, BillingCycleExpanded]
     ) -> BillingCycleRenewalInvoice:
-        """Preview the next billing cycle invoice."""
+        """Preview the next billing cycle invoice.
+
+        Args:
+            billing_cycle_id (Union[str, BillingCycleCompact, BillingCycleExpanded]): The ID or instance of the billing cycle to preview.
+
+        Raises:
+            ValueError: If billing_cycle_id is not a valid ID or instance.
+
+        Returns:
+            BillingCycleRenewalInvoice: The preview of the next billing cycle invoice.
+        """
+
         billing_cycle_id = (
             billing_cycle_id.id
             if isinstance(billing_cycle_id, (BillingCycleCompact, BillingCycleExpanded))
@@ -105,7 +150,19 @@ class BillingCycleAPI:
         return BillingCycleRenewalInvoicePreview.from_api(response.data)
 
     def renew_billing_cycle(self, billing_cycle_id: Union[str, BillingCycleCompact, BillingCycleExpanded]) -> bool:
-        """Renew a specific billing cycle."""
+        """Renew the active rentals on your billing cycle.
+        Will not renew overdue rentals. To renew overdue rentals, you must explicitly call `textverified.reservations.renew_overdue_renewable_reservation` on each overdue rental.
+
+        Args:
+            billing_cycle_id (Union[str, BillingCycleCompact, BillingCycleExpanded]): The ID or instance of the billing cycle to renew.
+
+        Raises:
+            ValueError: If billing_cycle_id is not a valid ID or instance.
+
+        Returns:
+            bool: True if the billing cycle was renewed successfully, False otherwise.
+        """
+
         billing_cycle_id = (
             billing_cycle_id.id
             if isinstance(billing_cycle_id, (BillingCycleCompact, BillingCycleExpanded))

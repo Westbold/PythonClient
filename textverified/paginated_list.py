@@ -5,6 +5,13 @@ T = TypeVar("T")
 
 
 class PaginatedList(Generic[T], Iterator[T]):
+    """Handles paginated API responses, allowing iteration over items and fetching additional pages as needed.
+    You should not need to instantiate this class directly; use the API methods that return it instead.
+
+    Supports iteration and indexing, allowing you to access items as if it were a regular list.
+    To exhaust all items, iterate over it using `list(paginated_list)` or call `paginated_list.get_all_items()`.
+    """
+
     # Consider supporting a union of paginated lists (to allow for returning all renewable and non-renewable reservations in one method call)
 
     def __init__(self, request_json: dict, parse_item: Callable[[dict], T], api_context: _ActionPerformer):
@@ -16,7 +23,7 @@ class PaginatedList(Generic[T], Iterator[T]):
         self.__current_index = 0
 
     def __iter__(self) -> Iterator[T]:
-        """Make the PaginatedList iterable."""
+        """Iterate over items in the paginated list."""
         self.__current_index = 0
         return self
 
@@ -68,7 +75,11 @@ class PaginatedList(Generic[T], Iterator[T]):
                 self.__next_page = None
 
     def get_all_items(self) -> List[T]:
-        """Fetch all remaining pages and return all items."""
+        """Get all items in the paginated list, fetching all pages if necessary.
+
+        Returns:
+            List[T]: A list of all items in the paginated list.
+        """
         while self.__next_page is not None:
             self._fetch_next_page()
         return self.__items.copy()

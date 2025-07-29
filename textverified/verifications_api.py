@@ -29,7 +29,27 @@ class VerificationsAPI:
         service_not_listed_name: str = None,
         max_price: float = None,
     ) -> VerificationExpanded:
-        """Creates a new verification."""
+        """Create a new verification for phone number verification purposes.
+
+        Verifications are used to receive SMS or voice calls for account verification on various services.
+        This will cost API balance, so ensure you have sufficient funds before calling this method.
+        To estimate the cost, use `get_verification_pricing()` with the same parameters.
+
+        Args:
+            data (NewVerificationRequest, optional): The verification details to create. All kwargs will overwrite values in this object. Defaults to None.
+            area_code_select_option (List[str], optional): List of preferred area codes for the verification number. Defaults to None.
+            carrier_select_option (List[str], optional): List of preferred carriers for the verification number. Defaults to None.
+            service_name (str, optional): Name of the service requiring verification. Can be found by calling `textverified.services.get_services()`. Defaults to None.
+            capability (ReservationCapability, optional): The capabilities required (voice, sms, or both) for this verification. Defaults to None.
+            service_not_listed_name (str, optional): Custom service name if the service is not listed in available services. Defaults to None.
+            max_price (float, optional): Maximum price you're willing to pay for this verification. Defaults to None.
+
+        Raises:
+            ValueError: If required fields service_name and capability are not provided.
+
+        Returns:
+            VerificationExpanded: The details of the created verification.
+        """
 
         data = (
             NewVerificationRequest(
@@ -80,7 +100,25 @@ class VerificationsAPI:
         number_type: NumberType = None,
         capability: ReservationCapability = None,
     ) -> PricingSnapshot:
-        """Get pricing for a verification."""
+        """Get pricing information for a verification before creating it.
+
+        This method allows you to check the cost of a verification before purchasing it.
+        You can pass the same parameters used for creating a verification.
+
+        Args:
+            data (Union[NewVerificationRequest, VerificationPriceCheckRequest], optional): The verification details to price. All kwargs will overwrite values in this object. Defaults to None.
+            service_name (str, optional): Name of the service requiring verification. Defaults to None.
+            area_code (bool, optional): Whether to request a specific area code. Defaults to None.
+            carrier (bool, optional): Whether to request a specific carrier. Defaults to None.
+            number_type (NumberType, optional): The underlying type of the number (mobile, voip, etc.). Defaults to None.
+            capability (ReservationCapability, optional): The capabilities required (voice, sms, or both) for this verification. Defaults to None.
+
+        Raises:
+            ValueError: If any required fields are missing or invalid.
+
+        Returns:
+            PricingSnapshot: The pricing information for the requested verification configuration.
+        """
 
         # Convert NewVerificationRequest to VerificationPriceCheckRequest if needed
         if isinstance(data, NewVerificationRequest):
@@ -130,7 +168,17 @@ class VerificationsAPI:
     def get_verification_details(
         self, verification_id: Union[str, VerificationCompact, VerificationExpanded]
     ) -> VerificationExpanded:
-        """Get details for a specific verification."""
+        """Get detailed information about a verification by ID.
+
+        Args:
+            verification_id (Union[str, VerificationCompact, VerificationExpanded]): The ID or instance of the verification to retrieve.
+
+        Raises:
+            ValueError: If verification_id is not a valid ID or instance.
+
+        Returns:
+            VerificationExpanded: The detailed information about the verification.
+        """
 
         verification_id = (
             verification_id.id
@@ -147,7 +195,11 @@ class VerificationsAPI:
         return VerificationExpanded.from_api(response.data)
 
     def get_verifications(self) -> PaginatedList[VerificationCompact]:
-        """Get a list of verifications."""
+        """Get a paginated list of all verifications associated with this account.
+
+        Returns:
+            PaginatedList[VerificationCompact]: A paginated list of verification records.
+        """
 
         action = _Action(method="GET", href="/api/pub/v2/verifications")
         response = self.client._perform_action(action)
@@ -157,7 +209,19 @@ class VerificationsAPI:
         )
 
     def cancel_reservation(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
-        """Cancel a verification."""
+        """Cancel an active verification.
+
+        This will stop the verification process and may result in a refund depending on the verification status.
+
+        Args:
+            verification_id (Union[str, VerificationCompact, VerificationExpanded]): The ID or instance of the verification to cancel.
+
+        Raises:
+            ValueError: If verification_id is not a valid ID or instance.
+
+        Returns:
+            bool: True if the cancellation was successful, False otherwise.
+        """
 
         verification_id = (
             verification_id.id
@@ -174,7 +238,20 @@ class VerificationsAPI:
         return True
 
     def reactivate_verification(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
-        """Reactivate a verification."""
+        """Reactivate a previously cancelled or expired verification.
+
+        This allows you to resume using a verification that was previously cancelled or has expired,
+        making it available to receive SMS or voice calls again.
+
+        Args:
+            verification_id (Union[str, VerificationCompact, VerificationExpanded]): The ID or instance of the verification to reactivate.
+
+        Raises:
+            ValueError: If verification_id is not a valid ID or instance.
+
+        Returns:
+            bool: True if the reactivation was successful, False otherwise.
+        """
 
         # TODO: If the verification ID CAN change, return a new VerificationXXX instance (depending on what the API return action is)
         # Otherwise, leave as bool (can't change ID)
@@ -194,7 +271,20 @@ class VerificationsAPI:
         return True
 
     def reuse_verification(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
-        """Reuse a verification."""
+        """Reuse an existing verification for another service verification.
+
+        This allows you to use the same verification number for multiple service verifications,
+        potentially saving on costs when you need to verify accounts with multiple services.
+
+        Args:
+            verification_id (Union[str, VerificationCompact, VerificationExpanded]): The ID or instance of the verification to reuse.
+
+        Raises:
+            ValueError: If verification_id is not a valid ID or instance.
+
+        Returns:
+            bool: True if the reuse was successful, False otherwise.
+        """
 
         # TODO: If the verification ID CAN change, return a new VerificationXXX instance (depending on what the API return action is)
         # Otherwise, leave as bool (can't change ID)
@@ -214,7 +304,20 @@ class VerificationsAPI:
         return True
 
     def report_verification(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
-        """Report a verification."""
+        """Report an issue with a verification.
+
+        Use this method to report problems with a verification, such as not receiving SMS/calls,
+        number not working, or other issues. This may result in a refund or credit.
+
+        Args:
+            verification_id (Union[str, VerificationCompact, VerificationExpanded]): The ID or instance of the verification to report.
+
+        Raises:
+            ValueError: If verification_id is not a valid ID or instance.
+
+        Returns:
+            bool: True if the report was submitted successfully, False otherwise.
+        """
 
         verification_id = (
             verification_id.id

@@ -10,7 +10,10 @@ class AccountAPI:
         self.client = client
 
     def get_details(self) -> Account:
-        """Get account details."""
+        """
+        Returns:
+            Account: The current account details.
+        """
         action = _Action(method="GET", href="/api/pub/v2/account/me")
         response = self.client._perform_action(action)
         return Account.from_api(response.data)
@@ -23,7 +26,7 @@ class AccountAPI:
 
     @property
     def username(self) -> str:
-        """Get the account username."""
+        """Get the current account username."""
         # Realistically, this is the only request we could cache
         details = self.get_details()
         return details.username

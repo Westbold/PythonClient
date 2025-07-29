@@ -67,20 +67,12 @@ Wake API
 .. automodule:: textverified.wake_api
    :members:
 
-Utility Classes
----------------
-
 PaginatedList
-~~~~~~~~~~~~~
+---------------
 
 .. automodule:: textverified.paginated_list
    :members:
-
-Action
-~~~~~~
-
-.. automodule:: textverified.action
-   :members:
+   :undoc-members:
 
 Generated Enums
 ---------------
