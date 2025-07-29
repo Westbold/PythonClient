@@ -3,14 +3,23 @@ from .fixtures import tv, mock_http_from_disk, mock_http, dict_subset
 from textverified.textverified import TextVerified, BearerToken
 from textverified.action import _Action
 from textverified.generated.generated_enums import (
-    RenewableRentalCompact, RenewableRentalExpanded, 
-    NonrenewableRentalCompact, NonrenewableRentalExpanded,
-    BackOrderReservationCompact, BackOrderReservationExpanded,
-    LineHealth, RentalExtensionRequest, RentalDuration,
-    NewRentalRequest, RentalPriceCheckRequest, PricingSnapshot,
-    NumberType, ReservationCapability,
-    ReservationSaleExpanded, RenewableRentalUpdateRequest,
-    NonrenewableRentalUpdateRequest
+    RenewableRentalCompact,
+    RenewableRentalExpanded,
+    NonrenewableRentalCompact,
+    NonrenewableRentalExpanded,
+    BackOrderReservationCompact,
+    BackOrderReservationExpanded,
+    LineHealth,
+    RentalExtensionRequest,
+    RentalDuration,
+    NewRentalRequest,
+    RentalPriceCheckRequest,
+    PricingSnapshot,
+    NumberType,
+    ReservationCapability,
+    ReservationSaleExpanded,
+    RenewableRentalUpdateRequest,
+    NonrenewableRentalUpdateRequest,
 )
 import datetime
 
@@ -21,7 +30,9 @@ def create_move_action_hook(nmethod, href):
             response["href"] = href
             response["method"] = nmethod
         return response
+
     return move_action_to_endpoint
+
 
 def test_create_rental_reservation(tv, mock_http_from_disk):
     mock_http_from_disk.add_hook(create_move_action_hook("get", "https://textverified.com/api/pub/v2/sales/rs_string"))
@@ -35,11 +46,12 @@ def test_create_rental_reservation(tv, mock_http_from_disk):
         number_type=NumberType.MOBILE,
         billing_cycle_id_to_assign_to="billing_cycle_id",
         service_name="test_service",
-        capability=ReservationCapability.SMS
+        capability=ReservationCapability.SMS,
     )
-    
+
     assert isinstance(reservation_sale, ReservationSaleExpanded)
     assert dict_subset(reservation_sale.to_api(), mock_http_from_disk.last_response) is None
+
 
 def test_get_rental_pricing(tv, mock_http_from_disk):
     pricing = tv.reservations.get_rental_pricing(
@@ -51,177 +63,186 @@ def test_get_rental_pricing(tv, mock_http_from_disk):
         call_forwarding=False,
         billing_cycle_id_to_assign_to="billing_cycle_id",
         is_renewable=True,
-        duration=RentalDuration.THIRTY_DAY
+        duration=RentalDuration.THIRTY_DAY,
     )
-    
+
     assert isinstance(pricing, PricingSnapshot)
     assert dict_subset(pricing.to_api(), mock_http_from_disk.last_response) is None
+
 
 def test_get_backorder_reservation(tv, mock_http_from_disk):
     reservation_id = "string"
     backorder_reservation = tv.reservations.get_backorder_reservation(reservation_id)
-    
+
     assert isinstance(backorder_reservation, BackOrderReservationExpanded)
     assert dict_subset(backorder_reservation.to_api(), mock_http_from_disk.last_response) is None
     assert backorder_reservation.id == reservation_id
 
+
 def test_get_reservation_details(tv, mock_http_from_disk):
-    mock_http_from_disk.add_hook(create_move_action_hook("get", "https://textverified.com/api/pub/v2/reservations/rental/nonrenewable/string"))
+    mock_http_from_disk.add_hook(
+        create_move_action_hook("get", "https://textverified.com/api/pub/v2/reservations/rental/nonrenewable/string")
+    )
     reservation_id = "string"
     reservation_details = tv.reservations.get_reservation_details(reservation_id)
-    
+
     assert isinstance(reservation_details, (RenewableRentalExpanded, NonrenewableRentalExpanded))
     assert dict_subset(reservation_details.to_api(), mock_http_from_disk.last_response) is None
     assert reservation_details.id == reservation_id
 
+
 def test_get_renewable_reservations(tv, mock_http_from_disk):
     reservations = tv.reservations.get_renewable_reservations()
-    
+
     reservations_list = [x.to_api() for x in reservations]
     assert all(
         dict_subset(reservation_test, reservation_truth) is None
         for reservation_test, reservation_truth in zip(reservations_list, mock_http_from_disk.last_response["data"])
     )
 
+
 def test_get_nonrenewable_reservations(tv, mock_http_from_disk):
     reservations = tv.reservations.get_nonrenewable_reservations()
-    
+
     reservations_list = [x.to_api() for x in reservations]
     assert all(
         dict_subset(reservation_test, reservation_truth) is None
         for reservation_test, reservation_truth in zip(reservations_list, mock_http_from_disk.last_response["data"])
     )
+
 
 def test_get_renewable_reservation_details(tv, mock_http_from_disk):
     reservation_id = "string"
     reservation_details = tv.reservations.get_renewable_reservation_details(reservation_id)
-    
+
     assert isinstance(reservation_details, RenewableRentalExpanded)
     assert dict_subset(reservation_details.to_api(), mock_http_from_disk.last_response) is None
     assert reservation_details.id == reservation_id
 
+
 def test_get_nonrenewable_reservation_details(tv, mock_http_from_disk):
     reservation_id = "string"
     reservation_details = tv.reservations.get_nonrenewable_reservation_details(reservation_id)
-    
+
     assert isinstance(reservation_details, NonrenewableRentalExpanded)
     assert dict_subset(reservation_details.to_api(), mock_http_from_disk.last_response) is None
     assert reservation_details.id == reservation_id
 
+
 def test_check_reservation_health(tv, mock_http_from_disk):
     reservation_id = "string"
     health = tv.reservations.check_reservation_health(reservation_id)
-    
+
     assert isinstance(health, LineHealth)
     assert dict_subset(health.to_api(), mock_http_from_disk.last_response) is None
 
+
 def test_update_renewable_reservation_by_id(tv, mock_http_from_disk):
     reservation_id = "string"
-    
+
     result = tv.reservations.update_renewable_reservation(
-        reservation_id, 
-        user_notes="Updated notes",
-        include_for_renewal=True,
-        mark_all_sms_read=False
+        reservation_id, user_notes="Updated notes", include_for_renewal=True, mark_all_sms_read=False
     )
-    
+
     assert result is True
     assert mock_http_from_disk.last_body_params["userNotes"] == "Updated notes"
     assert mock_http_from_disk.last_body_params["includeForRenewal"] is True
     assert mock_http_from_disk.last_body_params["markAllSmsRead"] is False
 
+
 def test_update_renewable_reservation_by_instance(tv, mock_http_from_disk):
     test_get_renewable_reservation_details(tv, mock_http_from_disk)  # Load the reservation
     reservation = RenewableRentalExpanded.from_api(mock_http_from_disk.last_response)
-    
+
     result = tv.reservations.update_renewable_reservation(
-        reservation,
-        user_notes="Instance update",
-        include_for_renewal=False
+        reservation, user_notes="Instance update", include_for_renewal=False
     )
-    
+
     assert result is True
     assert mock_http_from_disk.last_body_params["userNotes"] == "Instance update"
     assert mock_http_from_disk.last_body_params["includeForRenewal"] is False
 
+
 def test_update_nonrenewable_reservation_by_id(tv, mock_http_from_disk):
     reservation_id = "string"
-    
+
     result = tv.reservations.update_nonrenewable_reservation(
-        reservation_id,
-        user_notes="Nonrenewable notes",
-        mark_all_sms_read=True
+        reservation_id, user_notes="Nonrenewable notes", mark_all_sms_read=True
     )
-    
+
     assert result is True
     assert mock_http_from_disk.last_body_params["userNotes"] == "Nonrenewable notes"
     assert mock_http_from_disk.last_body_params["markAllSmsRead"] is True
 
+
 def test_update_nonrenewable_reservation_by_instance(tv, mock_http_from_disk):
     test_get_nonrenewable_reservation_details(tv, mock_http_from_disk)  # Load the reservation
     reservation = NonrenewableRentalExpanded.from_api(mock_http_from_disk.last_response)
-    
-    result = tv.reservations.update_nonrenewable_reservation(
-        reservation,
-        user_notes="Instance nonrenewable update"
-    )
-    
+
+    result = tv.reservations.update_nonrenewable_reservation(reservation, user_notes="Instance nonrenewable update")
+
     assert result is True
     assert mock_http_from_disk.last_body_params["userNotes"] == "Instance nonrenewable update"
 
+
 def test_refund_renewable_reservation_by_id(tv, mock_http_from_disk):
     reservation_id = "string"
-    
+
     result = tv.reservations.refund_renewable_reservation(reservation_id)
-    
+
     assert result is True
+
 
 def test_refund_renewable_reservation_by_instance(tv, mock_http_from_disk):
     test_get_renewable_reservation_details(tv, mock_http_from_disk)  # Load the reservation
     reservation = RenewableRentalExpanded.from_api(mock_http_from_disk.last_response)
-    
+
     result = tv.reservations.refund_renewable_reservation(reservation)
-    
+
     assert result is True
+
 
 def test_refund_nonrenewable_reservation_by_id(tv, mock_http_from_disk):
     reservation_id = "string"
-    
+
     result = tv.reservations.refund_nonrenewable_reservation(reservation_id)
-    
+
     assert result is True
+
 
 def test_refund_nonrenewable_reservation_by_instance(tv, mock_http_from_disk):
     test_get_nonrenewable_reservation_details(tv, mock_http_from_disk)  # Load the reservation
     reservation = NonrenewableRentalExpanded.from_api(mock_http_from_disk.last_response)
-    
+
     result = tv.reservations.refund_nonrenewable_reservation(reservation)
-    
+
     assert result is True
+
 
 def test_renew_overdue_renewable_reservation_by_id(tv, mock_http_from_disk):
     reservation_id = "string"
-    
+
     result = tv.reservations.renew_overdue_renewable_reservation(reservation_id)
-    
+
     assert result is True
+
 
 def test_renew_overdue_renewable_reservation_by_instance(tv, mock_http_from_disk):
     test_get_renewable_reservation_details(tv, mock_http_from_disk)  # Load the reservation
     reservation = RenewableRentalExpanded.from_api(mock_http_from_disk.last_response)
-    
+
     result = tv.reservations.renew_overdue_renewable_reservation(reservation)
-    
+
     assert result is True
+
 
 def test_extend_nonrenewable_reservation(tv, mock_http_from_disk):
     rental_id = "string"
-    
+
     result = tv.reservations.extend_nonrenewable_reservation(
-        extension_duration=RentalDuration.THIRTY_DAY,
-        rental_id=rental_id
+        extension_duration=RentalDuration.THIRTY_DAY, rental_id=rental_id
     )
-    
+
     assert result is True
     assert mock_http_from_disk.last_body_params["extensionDuration"] == RentalDuration.THIRTY_DAY.value
     assert mock_http_from_disk.last_body_params["rentalId"] == rental_id

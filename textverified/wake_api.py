@@ -1,20 +1,42 @@
 from .action import _ActionPerformer, _Action
 from typing import List, Union
 from .generated.generated_enums import (
-    RenewableRentalCompact, RenewableRentalExpanded,
-    NonrenewableRentalCompact, NonrenewableRentalExpanded,
-    WakeRequest, WakeResponse, UsageWindowEstimateRequest
+    RenewableRentalCompact,
+    RenewableRentalExpanded,
+    NonrenewableRentalCompact,
+    NonrenewableRentalExpanded,
+    WakeRequest,
+    WakeResponse,
+    UsageWindowEstimateRequest,
 )
+
 
 class WakeAPI:
     """API endpoints related to waking lines."""
-    
+
     def __init__(self, client: _ActionPerformer):
         self.client = client
-    
-    def create_wake_request(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]) -> WakeResponse:
+
+    def create_wake_request(
+        self,
+        reservation_id: Union[
+            str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
+        ],
+    ) -> WakeResponse:
         """Create a wake request for a specific reservation."""
-        reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded)) else reservation_id
+        reservation_id = (
+            reservation_id.id
+            if isinstance(
+                reservation_id,
+                (
+                    RenewableRentalCompact,
+                    RenewableRentalExpanded,
+                    NonrenewableRentalCompact,
+                    NonrenewableRentalExpanded,
+                ),
+            )
+            else reservation_id
+        )
 
         if not reservation_id:
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
@@ -43,9 +65,26 @@ class WakeAPI:
 
         return WakeResponse.from_api(response.data)
 
-    def estimate_usage_window(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]) -> UsageWindowEstimateRequest:
+    def estimate_usage_window(
+        self,
+        reservation_id: Union[
+            str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
+        ],
+    ) -> UsageWindowEstimateRequest:
         """Estimate the usage window for a specific reservation."""
-        reservation_id = reservation_id.id if isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded)) else reservation_id
+        reservation_id = (
+            reservation_id.id
+            if isinstance(
+                reservation_id,
+                (
+                    RenewableRentalCompact,
+                    RenewableRentalExpanded,
+                    NonrenewableRentalCompact,
+                    NonrenewableRentalExpanded,
+                ),
+            )
+            else reservation_id
+        )
 
         if not reservation_id:
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
@@ -54,4 +93,3 @@ class WakeAPI:
         response = self.client._perform_action(action, json=WakeRequest(reservation_id=reservation_id).to_api())
 
         return UsageWindowEstimateRequest.from_api(response.data)
-

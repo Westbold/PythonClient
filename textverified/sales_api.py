@@ -3,21 +3,20 @@ from typing import List
 from .generated.generated_enums import ReservationSaleCompact, ReservationSaleExpanded
 from .paginated_list import PaginatedList
 
+
 class SalesAPI:
     """API endpoints related to sales."""
-    
+
     def __init__(self, client: _ActionPerformer):
         self.client = client
-    
+
     def get_all_sales(self) -> PaginatedList[ReservationSaleCompact]:
         """Get a list of your reservation sales."""
         action = _Action(method="GET", href="/api/pub/v2/sales")
         response = self.client._perform_action(action)
-        
+
         return PaginatedList(
-            request_json=response.data,
-            parse_item=ReservationSaleCompact.from_api,
-            api_context=self.client
+            request_json=response.data, parse_item=ReservationSaleCompact.from_api, api_context=self.client
         )
 
     def get_sale(self, sale_id: str) -> ReservationSaleExpanded:

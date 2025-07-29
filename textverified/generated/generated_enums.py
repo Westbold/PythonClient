@@ -7,135 +7,136 @@ from enum import Enum
 from typing import Optional, Dict, List, Any
 import datetime
 
+
 class BackOrderState(Enum):
-    CREATED = 'created'
-    FULFILLED = 'fulfilled'
-    CANCELED = 'canceled'
+    CREATED = "created"
+    FULFILLED = "fulfilled"
+    CANCELED = "canceled"
 
     def to_api(self) -> str:
         return self.value
 
     @classmethod
-    def from_api(cls, value: str) -> 'BackOrderState':
+    def from_api(cls, value: str) -> "BackOrderState":
         return cls(value)
 
 
 class KeysetPaginationDirectionality(Enum):
-    FORWARD = 'forward'
-    REVERSE = 'reverse'
+    FORWARD = "forward"
+    REVERSE = "reverse"
 
     def to_api(self) -> str:
         return self.value
 
     @classmethod
-    def from_api(cls, value: str) -> 'KeysetPaginationDirectionality':
+    def from_api(cls, value: str) -> "KeysetPaginationDirectionality":
         return cls(value)
 
 
 class LineReservationType(Enum):
-    VERIFICATION = 'verification'
-    RENTAL = 'rental'
+    VERIFICATION = "verification"
+    RENTAL = "rental"
 
     def to_api(self) -> str:
         return self.value
 
     @classmethod
-    def from_api(cls, value: str) -> 'LineReservationType':
+    def from_api(cls, value: str) -> "LineReservationType":
         return cls(value)
 
 
 class RentalDuration(Enum):
-    ONE_DAY = 'oneDay'
-    THREE_DAY = 'threeDay'
-    SEVEN_DAY = 'sevenDay'
-    FOURTEEN_DAY = 'fourteenDay'
-    THIRTY_DAY = 'thirtyDay'
-    NINETY_DAY = 'ninetyDay'
-    ONE_YEAR = 'oneYear'
+    ONE_DAY = "oneDay"
+    THREE_DAY = "threeDay"
+    SEVEN_DAY = "sevenDay"
+    FOURTEEN_DAY = "fourteenDay"
+    THIRTY_DAY = "thirtyDay"
+    NINETY_DAY = "ninetyDay"
+    ONE_YEAR = "oneYear"
 
     def to_api(self) -> str:
         return self.value
 
     @classmethod
-    def from_api(cls, value: str) -> 'RentalDuration':
+    def from_api(cls, value: str) -> "RentalDuration":
         return cls(value)
 
 
 class NumberType(Enum):
-    MOBILE = 'mobile'
-    VOIP = 'voip'
-    LANDLINE = 'landline'
+    MOBILE = "mobile"
+    VOIP = "voip"
+    LANDLINE = "landline"
 
     def to_api(self) -> str:
         return self.value
 
     @classmethod
-    def from_api(cls, value: str) -> 'NumberType':
+    def from_api(cls, value: str) -> "NumberType":
         return cls(value)
 
 
 class ReservationCapability(Enum):
-    SMS = 'sms'
-    VOICE = 'voice'
-    SMS_AND_VOICE_COMBO = 'smsAndVoiceCombo'
+    SMS = "sms"
+    VOICE = "voice"
+    SMS_AND_VOICE_COMBO = "smsAndVoiceCombo"
 
     def to_api(self) -> str:
         return self.value
 
     @classmethod
-    def from_api(cls, value: str) -> 'ReservationCapability':
+    def from_api(cls, value: str) -> "ReservationCapability":
         return cls(value)
 
 
 class ReservationState(Enum):
-    VERIFICATION_PENDING = 'verificationPending'
-    VERIFICATION_COMPLETED = 'verificationCompleted'
-    VERIFICATION_CANCELED = 'verificationCanceled'
-    VERIFICATION_TIMED_OUT = 'verificationTimedOut'
-    VERIFICATION_REPORTED = 'verificationReported'
-    VERIFICATION_REFUNDED = 'verificationRefunded'
-    VERIFICATION_REUSED = 'verificationReused'
-    VERIFICATION_REACTIVATED = 'verificationReactivated'
-    RENEWABLE_ACTIVE = 'renewableActive'
-    RENEWABLE_OVERDUE = 'renewableOverdue'
-    RENEWABLE_EXPIRED = 'renewableExpired'
-    RENEWABLE_REFUNDED = 'renewableRefunded'
-    NONRENEWABLE_ACTIVE = 'nonrenewableActive'
-    NONRENEWABLE_EXPIRED = 'nonrenewableExpired'
-    NONRENEWABLE_REFUNDED = 'nonrenewableRefunded'
+    VERIFICATION_PENDING = "verificationPending"
+    VERIFICATION_COMPLETED = "verificationCompleted"
+    VERIFICATION_CANCELED = "verificationCanceled"
+    VERIFICATION_TIMED_OUT = "verificationTimedOut"
+    VERIFICATION_REPORTED = "verificationReported"
+    VERIFICATION_REFUNDED = "verificationRefunded"
+    VERIFICATION_REUSED = "verificationReused"
+    VERIFICATION_REACTIVATED = "verificationReactivated"
+    RENEWABLE_ACTIVE = "renewableActive"
+    RENEWABLE_OVERDUE = "renewableOverdue"
+    RENEWABLE_EXPIRED = "renewableExpired"
+    RENEWABLE_REFUNDED = "renewableRefunded"
+    NONRENEWABLE_ACTIVE = "nonrenewableActive"
+    NONRENEWABLE_EXPIRED = "nonrenewableExpired"
+    NONRENEWABLE_REFUNDED = "nonrenewableRefunded"
 
     def to_api(self) -> str:
         return self.value
 
     @classmethod
-    def from_api(cls, value: str) -> 'ReservationState':
+    def from_api(cls, value: str) -> "ReservationState":
         return cls(value)
 
 
 class ReservationType(Enum):
-    RENEWABLE = 'renewable'
-    NONRENEWABLE = 'nonrenewable'
-    VERIFICATION = 'verification'
+    RENEWABLE = "renewable"
+    NONRENEWABLE = "nonrenewable"
+    VERIFICATION = "verification"
 
     def to_api(self) -> str:
         return self.value
 
     @classmethod
-    def from_api(cls, value: str) -> 'ReservationType':
+    def from_api(cls, value: str) -> "ReservationType":
         return cls(value)
 
 
 class ReservationSaleState(Enum):
-    CREATED = 'created'
-    PROCESSING = 'processing'
-    FAILED = 'failed'
-    SUCCEEDED = 'succeeded'
+    CREATED = "created"
+    PROCESSING = "processing"
+    FAILED = "failed"
+    SUCCEEDED = "succeeded"
 
     def to_api(self) -> str:
         return self.value
 
     @classmethod
-    def from_api(cls, value: str) -> 'ReservationSaleState':
+    def from_api(cls, value: str) -> "ReservationSaleState":
         return cls(value)
 
 
@@ -152,12 +153,12 @@ class Account:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['username'] = self.username
-        api_dict['currentBalance'] = self.current_balance
+        api_dict["username"] = self.username
+        api_dict["currentBalance"] = self.current_balance
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'Account':
+    def from_api(cls, data: Dict[str, Any]) -> "Account":
         return cls(
             username=str(data.get("username", None)),
             current_balance=float(data.get("currentBalance", None)),
@@ -181,14 +182,14 @@ class AddOnSnapshot:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['addOnId'] = self.add_on_id
-        api_dict['description'] = self.description
-        api_dict['renewalCost'] = self.renewal_cost
-        api_dict['alreadyRenewed'] = self.already_renewed
+        api_dict["addOnId"] = self.add_on_id
+        api_dict["description"] = self.description
+        api_dict["renewalCost"] = self.renewal_cost
+        api_dict["alreadyRenewed"] = self.already_renewed
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'AddOnSnapshot':
+    def from_api(cls, data: Dict[str, Any]) -> "AddOnSnapshot":
         return cls(
             add_on_id=str(data.get("addOnId", None)),
             description=str(data.get("description", None)),
@@ -210,12 +211,12 @@ class AreaCode:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['areaCode'] = self.area_code
-        api_dict['state'] = self.state
+        api_dict["areaCode"] = self.area_code
+        api_dict["state"] = self.state
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'AreaCode':
+    def from_api(cls, data: Dict[str, Any]) -> "AreaCode":
         return cls(
             area_code=str(data.get("areaCode", None)),
             state=str(data.get("state", None)),
@@ -237,13 +238,13 @@ class BackOrderReservationCompact:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['id'] = self.id
-        api_dict['serviceName'] = self.service_name
-        api_dict['status'] = self.status.to_api()
+        api_dict["id"] = self.id
+        api_dict["serviceName"] = self.service_name
+        api_dict["status"] = self.status.to_api()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BackOrderReservationCompact':
+    def from_api(cls, data: Dict[str, Any]) -> "BackOrderReservationCompact":
         return cls(
             id=str(data.get("id", None)),
             service_name=str(data.get("serviceName", None)),
@@ -270,15 +271,15 @@ class BackOrderReservationExpanded:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['id'] = self.id
-        api_dict['serviceName'] = self.service_name
-        api_dict['saleId'] = self.sale_id
-        api_dict['reservationId'] = self.reservation_id
-        api_dict['status'] = self.status.to_api()
+        api_dict["id"] = self.id
+        api_dict["serviceName"] = self.service_name
+        api_dict["saleId"] = self.sale_id
+        api_dict["reservationId"] = self.reservation_id
+        api_dict["status"] = self.status.to_api()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BackOrderReservationExpanded':
+    def from_api(cls, data: Dict[str, Any]) -> "BackOrderReservationExpanded":
         return cls(
             id=str(data.get("id", None)),
             service_name=str(data.get("serviceName", None)),
@@ -299,11 +300,11 @@ class BackOrderReservationWebhookEvent:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['backOrderId'] = self.back_order_id
+        api_dict["backOrderId"] = self.back_order_id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BackOrderReservationWebhookEvent':
+    def from_api(cls, data: Dict[str, Any]) -> "BackOrderReservationWebhookEvent":
         return cls(
             back_order_id=str(data.get("backOrderId", None)),
         )
@@ -324,13 +325,13 @@ class BearerToken:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['token'] = self.token
-        api_dict['expiresIn'] = self.expires_in
-        api_dict['expiresAt'] = self.expires_at.isoformat()
+        api_dict["token"] = self.token
+        api_dict["expiresIn"] = self.expires_in
+        api_dict["expiresAt"] = self.expires_at.isoformat()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BearerToken':
+    def from_api(cls, data: Dict[str, Any]) -> "BearerToken":
         return cls(
             token=str(data.get("token", None)),
             expires_in=float(data.get("expiresIn", None)),
@@ -355,14 +356,14 @@ class BillingCycleCompact:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['id'] = self.id
-        api_dict['billingCycleEndsAt'] = self.billing_cycle_ends_at.isoformat()
-        api_dict['emailNotificationsEnabled'] = self.email_notifications_enabled
-        api_dict['state'] = self.state
+        api_dict["id"] = self.id
+        api_dict["billingCycleEndsAt"] = self.billing_cycle_ends_at.isoformat()
+        api_dict["emailNotificationsEnabled"] = self.email_notifications_enabled
+        api_dict["state"] = self.state
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BillingCycleCompact':
+    def from_api(cls, data: Dict[str, Any]) -> "BillingCycleCompact":
         return cls(
             id=str(data.get("id", None)),
             billing_cycle_ends_at=datetime.datetime.fromisoformat(data.get("billingCycleEndsAt", None)),
@@ -392,16 +393,16 @@ class BillingCycleExpanded:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['id'] = self.id
-        api_dict['renewedThrough'] = self.renewed_through.isoformat()
-        api_dict['billingCycleEndsAt'] = self.billing_cycle_ends_at.isoformat()
-        api_dict['nextAutoRenewAttempt'] = self.next_auto_renew_attempt.isoformat()
-        api_dict['emailNotificationsEnabled'] = self.email_notifications_enabled
-        api_dict['state'] = self.state
+        api_dict["id"] = self.id
+        api_dict["renewedThrough"] = self.renewed_through.isoformat()
+        api_dict["billingCycleEndsAt"] = self.billing_cycle_ends_at.isoformat()
+        api_dict["nextAutoRenewAttempt"] = self.next_auto_renew_attempt.isoformat()
+        api_dict["emailNotificationsEnabled"] = self.email_notifications_enabled
+        api_dict["state"] = self.state
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BillingCycleExpanded':
+    def from_api(cls, data: Dict[str, Any]) -> "BillingCycleExpanded":
         return cls(
             id=str(data.get("id", None)),
             renewed_through=datetime.datetime.fromisoformat(data.get("renewedThrough", None)),
@@ -426,12 +427,12 @@ class BillingCycleUpdateRequest:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['remindersEnabled'] = self.reminders_enabled
-        api_dict['nickname'] = self.nickname
+        api_dict["remindersEnabled"] = self.reminders_enabled
+        api_dict["nickname"] = self.nickname
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BillingCycleUpdateRequest':
+    def from_api(cls, data: Dict[str, Any]) -> "BillingCycleUpdateRequest":
         return cls(
             reminders_enabled=bool(data.get("remindersEnabled", None)),
             nickname=str(data.get("nickname", None)),
@@ -449,11 +450,11 @@ class BillingCycleWebhookEvent:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['billingCycleId'] = self.billing_cycle_id
+        api_dict["billingCycleId"] = self.billing_cycle_id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BillingCycleWebhookEvent':
+    def from_api(cls, data: Dict[str, Any]) -> "BillingCycleWebhookEvent":
         return cls(
             billing_cycle_id=str(data.get("billingCycleId", None)),
         )
@@ -470,11 +471,11 @@ class CancelAction:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['canCancel'] = self.can_cancel
+        api_dict["canCancel"] = self.can_cancel
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'CancelAction':
+    def from_api(cls, data: Dict[str, Any]) -> "CancelAction":
         return cls(
             can_cancel=bool(data.get("canCancel", None)),
         )
@@ -493,12 +494,12 @@ class Error:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['errorCode'] = self.error_code
-        api_dict['errorDescription'] = self.error_description
+        api_dict["errorCode"] = self.error_code
+        api_dict["errorDescription"] = self.error_description
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'Error':
+    def from_api(cls, data: Dict[str, Any]) -> "Error":
         return cls(
             error_code=str(data.get("errorCode", None)),
             error_description=str(data.get("errorDescription", None)),
@@ -518,12 +519,12 @@ class LineHealth:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['lineNumber'] = self.line_number
-        api_dict['checkedAt'] = self.checked_at.isoformat()
+        api_dict["lineNumber"] = self.line_number
+        api_dict["checkedAt"] = self.checked_at.isoformat()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'LineHealth':
+    def from_api(cls, data: Dict[str, Any]) -> "LineHealth":
         return cls(
             line_number=str(data.get("lineNumber", None)),
             checked_at=datetime.datetime.fromisoformat(data.get("checkedAt", None)),
@@ -553,17 +554,17 @@ class NonrenewableRentalCompact:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['id'] = self.id
-        api_dict['saleId'] = self.sale_id
-        api_dict['serviceName'] = self.service_name
-        api_dict['state'] = self.state.to_api()
-        api_dict['number'] = self.number
-        api_dict['alwaysOn'] = self.always_on
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["id"] = self.id
+        api_dict["saleId"] = self.sale_id
+        api_dict["serviceName"] = self.service_name
+        api_dict["state"] = self.state.to_api()
+        api_dict["number"] = self.number
+        api_dict["alwaysOn"] = self.always_on
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'NonrenewableRentalCompact':
+    def from_api(cls, data: Dict[str, Any]) -> "NonrenewableRentalCompact":
         return cls(
             created_at=datetime.datetime.fromisoformat(data.get("createdAt", None)),
             id=str(data.get("id", None)),
@@ -589,12 +590,12 @@ class NonrenewableRentalUpdateRequest:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['userNotes'] = self.user_notes
-        api_dict['markAllSmsRead'] = self.mark_all_sms_read
+        api_dict["userNotes"] = self.user_notes
+        api_dict["markAllSmsRead"] = self.mark_all_sms_read
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'NonrenewableRentalUpdateRequest':
+    def from_api(cls, data: Dict[str, Any]) -> "NonrenewableRentalUpdateRequest":
         return cls(
             user_notes=str(data.get("userNotes", None)),
             mark_all_sms_read=bool(data.get("markAllSmsRead", None)),
@@ -614,12 +615,12 @@ class PricingSnapshot:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['serviceName'] = self.service_name
-        api_dict['price'] = self.price
+        api_dict["serviceName"] = self.service_name
+        api_dict["price"] = self.price
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'PricingSnapshot':
+    def from_api(cls, data: Dict[str, Any]) -> "PricingSnapshot":
         return cls(
             service_name=str(data.get("serviceName", None)),
             price=float(data.get("price", None)),
@@ -637,11 +638,11 @@ class ReactivationAction:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['canReactivate'] = self.can_reactivate
+        api_dict["canReactivate"] = self.can_reactivate
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'ReactivationAction':
+    def from_api(cls, data: Dict[str, Any]) -> "ReactivationAction":
         return cls(
             can_reactivate=bool(data.get("canReactivate", None)),
         )
@@ -660,12 +661,12 @@ class RefundAction:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['canRefund'] = self.can_refund
-        api_dict['refundableUntil'] = self.refundable_until.isoformat()
+        api_dict["canRefund"] = self.can_refund
+        api_dict["refundableUntil"] = self.refundable_until.isoformat()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'RefundAction':
+    def from_api(cls, data: Dict[str, Any]) -> "RefundAction":
         return cls(
             can_refund=bool(data.get("canRefund", None)),
             refundable_until=datetime.datetime.fromisoformat(data.get("refundableUntil", None)),
@@ -699,19 +700,19 @@ class RenewableRentalCompact:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['id'] = self.id
-        api_dict['saleId'] = self.sale_id
-        api_dict['serviceName'] = self.service_name
-        api_dict['state'] = self.state.to_api()
-        api_dict['billingCycleId'] = self.billing_cycle_id
-        api_dict['isIncludedForNextRenewal'] = self.is_included_for_next_renewal
-        api_dict['number'] = self.number
-        api_dict['alwaysOn'] = self.always_on
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["id"] = self.id
+        api_dict["saleId"] = self.sale_id
+        api_dict["serviceName"] = self.service_name
+        api_dict["state"] = self.state.to_api()
+        api_dict["billingCycleId"] = self.billing_cycle_id
+        api_dict["isIncludedForNextRenewal"] = self.is_included_for_next_renewal
+        api_dict["number"] = self.number
+        api_dict["alwaysOn"] = self.always_on
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'RenewableRentalCompact':
+    def from_api(cls, data: Dict[str, Any]) -> "RenewableRentalCompact":
         return cls(
             created_at=datetime.datetime.fromisoformat(data.get("createdAt", None)),
             id=str(data.get("id", None)),
@@ -741,13 +742,13 @@ class RenewableRentalUpdateRequest:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['userNotes'] = self.user_notes
-        api_dict['includeForRenewal'] = self.include_for_renewal
-        api_dict['markAllSmsRead'] = self.mark_all_sms_read
+        api_dict["userNotes"] = self.user_notes
+        api_dict["includeForRenewal"] = self.include_for_renewal
+        api_dict["markAllSmsRead"] = self.mark_all_sms_read
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'RenewableRentalUpdateRequest':
+    def from_api(cls, data: Dict[str, Any]) -> "RenewableRentalUpdateRequest":
         return cls(
             user_notes=str(data.get("userNotes", None)),
             include_for_renewal=bool(data.get("includeForRenewal", None)),
@@ -768,12 +769,12 @@ class RentalExtensionRequest:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['extensionDuration'] = self.extension_duration.to_api()
-        api_dict['rentalId'] = self.rental_id
+        api_dict["extensionDuration"] = self.extension_duration.to_api()
+        api_dict["rentalId"] = self.rental_id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'RentalExtensionRequest':
+    def from_api(cls, data: Dict[str, Any]) -> "RentalExtensionRequest":
         return cls(
             extension_duration=RentalDuration.from_api(data.get("extensionDuration", None)),
             rental_id=str(data.get("rentalId", None)),
@@ -807,19 +808,19 @@ class RentalPriceCheckRequest:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['serviceName'] = self.service_name
-        api_dict['areaCode'] = self.area_code
-        api_dict['numberType'] = self.number_type.to_api()
-        api_dict['capability'] = self.capability.to_api()
-        api_dict['alwaysOn'] = self.always_on
-        api_dict['callForwarding'] = self.call_forwarding
-        api_dict['billingCycleIdToAssignTo'] = self.billing_cycle_id_to_assign_to
-        api_dict['isRenewable'] = self.is_renewable
-        api_dict['duration'] = self.duration.to_api()
+        api_dict["serviceName"] = self.service_name
+        api_dict["areaCode"] = self.area_code
+        api_dict["numberType"] = self.number_type.to_api()
+        api_dict["capability"] = self.capability.to_api()
+        api_dict["alwaysOn"] = self.always_on
+        api_dict["callForwarding"] = self.call_forwarding
+        api_dict["billingCycleIdToAssignTo"] = self.billing_cycle_id_to_assign_to
+        api_dict["isRenewable"] = self.is_renewable
+        api_dict["duration"] = self.duration.to_api()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'RentalPriceCheckRequest':
+    def from_api(cls, data: Dict[str, Any]) -> "RentalPriceCheckRequest":
         return cls(
             service_name=str(data.get("serviceName", None)),
             area_code=bool(data.get("areaCode", None)),
@@ -844,11 +845,11 @@ class ReportAction:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['canReport'] = self.can_report
+        api_dict["canReport"] = self.can_report
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'ReportAction':
+    def from_api(cls, data: Dict[str, Any]) -> "ReportAction":
         return cls(
             can_report=bool(data.get("canReport", None)),
         )
@@ -869,13 +870,13 @@ class Reservation:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['id'] = self.id
-        api_dict['reservationType'] = self.reservation_type.to_api()
-        api_dict['serviceName'] = self.service_name
+        api_dict["id"] = self.id
+        api_dict["reservationType"] = self.reservation_type.to_api()
+        api_dict["serviceName"] = self.service_name
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'Reservation':
+    def from_api(cls, data: Dict[str, Any]) -> "Reservation":
         return cls(
             id=str(data.get("id", None)),
             reservation_type=ReservationType.from_api(data.get("reservationType", None)),
@@ -896,12 +897,12 @@ class ReservationCreatedWebhookEvent:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['id'] = self.id
-        api_dict['type'] = self.type.to_api()
+        api_dict["id"] = self.id
+        api_dict["type"] = self.type.to_api()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'ReservationCreatedWebhookEvent':
+    def from_api(cls, data: Dict[str, Any]) -> "ReservationCreatedWebhookEvent":
         return cls(
             id=str(data.get("id", None)),
             type=LineReservationType.from_api(data.get("type", None)),
@@ -927,15 +928,15 @@ class ReservationSaleCompact:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['id'] = self.id
-        api_dict['state'] = self.state.to_api()
-        api_dict['totalCost'] = self.total_cost
-        api_dict['updatedAt'] = self.updated_at.isoformat()
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["id"] = self.id
+        api_dict["state"] = self.state.to_api()
+        api_dict["totalCost"] = self.total_cost
+        api_dict["updatedAt"] = self.updated_at.isoformat()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'ReservationSaleCompact':
+    def from_api(cls, data: Dict[str, Any]) -> "ReservationSaleCompact":
         return cls(
             created_at=datetime.datetime.fromisoformat(data.get("createdAt", None)),
             id=str(data.get("id", None)),
@@ -956,11 +957,11 @@ class ReuseAction:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['reusableUntil'] = self.reusable_until.isoformat()
+        api_dict["reusableUntil"] = self.reusable_until.isoformat()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'ReuseAction':
+    def from_api(cls, data: Dict[str, Any]) -> "ReuseAction":
         return cls(
             reusable_until=datetime.datetime.fromisoformat(data.get("reusableUntil", None)),
         )
@@ -979,12 +980,12 @@ class Service:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['serviceName'] = self.service_name
-        api_dict['capability'] = self.capability.to_api()
+        api_dict["serviceName"] = self.service_name
+        api_dict["capability"] = self.capability.to_api()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'Service':
+    def from_api(cls, data: Dict[str, Any]) -> "Service":
         return cls(
             service_name=str(data.get("serviceName", None)),
             capability=ReservationCapability.from_api(data.get("capability", None)),
@@ -1015,17 +1016,17 @@ class Sms:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['id'] = self.id
-        api_dict['from'] = self.from_value
-        api_dict['to'] = self.to_value
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['smsContent'] = self.sms_content
-        api_dict['parsedCode'] = self.parsed_code
-        api_dict['encrypted'] = self.encrypted
+        api_dict["id"] = self.id
+        api_dict["from"] = self.from_value
+        api_dict["to"] = self.to_value
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["smsContent"] = self.sms_content
+        api_dict["parsedCode"] = self.parsed_code
+        api_dict["encrypted"] = self.encrypted
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'Sms':
+    def from_api(cls, data: Dict[str, Any]) -> "Sms":
         return cls(
             id=str(data.get("id", None)),
             from_value=str(data.get("from", None)),
@@ -1060,17 +1061,17 @@ class SmsWebhookEvent:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['from'] = self.from_value
-        api_dict['to'] = self.to_value
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['smsContent'] = self.sms_content
-        api_dict['parsedCode'] = self.parsed_code
-        api_dict['encrypted'] = self.encrypted
-        api_dict['reservationId'] = self.reservation_id
+        api_dict["from"] = self.from_value
+        api_dict["to"] = self.to_value
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["smsContent"] = self.sms_content
+        api_dict["parsedCode"] = self.parsed_code
+        api_dict["encrypted"] = self.encrypted
+        api_dict["reservationId"] = self.reservation_id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'SmsWebhookEvent':
+    def from_api(cls, data: Dict[str, Any]) -> "SmsWebhookEvent":
         return cls(
             from_value=str(data.get("from", None)),
             to_value=str(data.get("to", None)),
@@ -1093,11 +1094,11 @@ class UsageWindowEstimateRequest:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['reservationId'] = self.reservation_id
+        api_dict["reservationId"] = self.reservation_id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'UsageWindowEstimateRequest':
+    def from_api(cls, data: Dict[str, Any]) -> "UsageWindowEstimateRequest":
         return cls(
             reservation_id=str(data.get("reservationId", None)),
         )
@@ -1118,13 +1119,13 @@ class UsageWindowEstimateResponse:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['estimatedWindowStart'] = self.estimated_window_start.isoformat()
-        api_dict['estimatedWindowEnd'] = self.estimated_window_end.isoformat()
-        api_dict['reservationId'] = self.reservation_id
+        api_dict["estimatedWindowStart"] = self.estimated_window_start.isoformat()
+        api_dict["estimatedWindowEnd"] = self.estimated_window_end.isoformat()
+        api_dict["reservationId"] = self.reservation_id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'UsageWindowEstimateResponse':
+    def from_api(cls, data: Dict[str, Any]) -> "UsageWindowEstimateResponse":
         return cls(
             estimated_window_start=datetime.datetime.fromisoformat(data.get("estimatedWindowStart", None)),
             estimated_window_end=datetime.datetime.fromisoformat(data.get("estimatedWindowEnd", None)),
@@ -1153,16 +1154,16 @@ class VerificationCompact:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['id'] = self.id
-        api_dict['serviceName'] = self.service_name
-        api_dict['state'] = self.state.to_api()
-        api_dict['totalCost'] = self.total_cost
-        api_dict['number'] = self.number
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["id"] = self.id
+        api_dict["serviceName"] = self.service_name
+        api_dict["state"] = self.state.to_api()
+        api_dict["totalCost"] = self.total_cost
+        api_dict["number"] = self.number
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'VerificationCompact':
+    def from_api(cls, data: Dict[str, Any]) -> "VerificationCompact":
         return cls(
             created_at=datetime.datetime.fromisoformat(data.get("createdAt", None)),
             id=str(data.get("id", None)),
@@ -1192,15 +1193,15 @@ class VerificationPriceCheckRequest:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['serviceName'] = self.service_name
-        api_dict['areaCode'] = self.area_code
-        api_dict['carrier'] = self.carrier
-        api_dict['numberType'] = self.number_type.to_api()
-        api_dict['capability'] = self.capability.to_api()
+        api_dict["serviceName"] = self.service_name
+        api_dict["areaCode"] = self.area_code
+        api_dict["carrier"] = self.carrier
+        api_dict["numberType"] = self.number_type.to_api()
+        api_dict["capability"] = self.capability.to_api()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'VerificationPriceCheckRequest':
+    def from_api(cls, data: Dict[str, Any]) -> "VerificationPriceCheckRequest":
         return cls(
             service_name=str(data.get("serviceName", None)),
             area_code=bool(data.get("areaCode", None)),
@@ -1221,11 +1222,11 @@ class WakeRequest:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['reservationId'] = self.reservation_id
+        api_dict["reservationId"] = self.reservation_id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'WakeRequest':
+    def from_api(cls, data: Dict[str, Any]) -> "WakeRequest":
         return cls(
             reservation_id=str(data.get("reservationId", None)),
         )
@@ -1250,15 +1251,15 @@ class WakeResponse:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['id'] = self.id
-        api_dict['usageWindowStart'] = self.usage_window_start.isoformat()
-        api_dict['usageWindowEnd'] = self.usage_window_end.isoformat()
-        api_dict['isScheduled'] = self.is_scheduled
-        api_dict['reservationId'] = self.reservation_id
+        api_dict["id"] = self.id
+        api_dict["usageWindowStart"] = self.usage_window_start.isoformat()
+        api_dict["usageWindowEnd"] = self.usage_window_end.isoformat()
+        api_dict["isScheduled"] = self.is_scheduled
+        api_dict["reservationId"] = self.reservation_id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'WakeResponse':
+    def from_api(cls, data: Dict[str, Any]) -> "WakeResponse":
         return cls(
             id=str(data.get("id", None)),
             usage_window_start=datetime.datetime.fromisoformat(data.get("usageWindowStart", None)),
@@ -1287,15 +1288,15 @@ class WebhookEventBackOrderReservationWebhookEvent:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['attempt'] = self.attempt
-        api_dict['occurredAt'] = self.occurred_at.isoformat()
-        api_dict['data'] = self.data.to_api()
-        api_dict['event'] = self.event
-        api_dict['id'] = self.id
+        api_dict["attempt"] = self.attempt
+        api_dict["occurredAt"] = self.occurred_at.isoformat()
+        api_dict["data"] = self.data.to_api()
+        api_dict["event"] = self.event
+        api_dict["id"] = self.id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'WebhookEventBackOrderReservationWebhookEvent':
+    def from_api(cls, data: Dict[str, Any]) -> "WebhookEventBackOrderReservationWebhookEvent":
         return cls(
             attempt=int(data.get("attempt", None)),
             occurred_at=datetime.datetime.fromisoformat(data.get("occurredAt", None)),
@@ -1324,15 +1325,15 @@ class WebhookEventBillingCycleWebhookEvent:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['attempt'] = self.attempt
-        api_dict['occurredAt'] = self.occurred_at.isoformat()
-        api_dict['data'] = self.data.to_api()
-        api_dict['event'] = self.event
-        api_dict['id'] = self.id
+        api_dict["attempt"] = self.attempt
+        api_dict["occurredAt"] = self.occurred_at.isoformat()
+        api_dict["data"] = self.data.to_api()
+        api_dict["event"] = self.event
+        api_dict["id"] = self.id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'WebhookEventBillingCycleWebhookEvent':
+    def from_api(cls, data: Dict[str, Any]) -> "WebhookEventBillingCycleWebhookEvent":
         return cls(
             attempt=int(data.get("attempt", None)),
             occurred_at=datetime.datetime.fromisoformat(data.get("occurredAt", None)),
@@ -1369,19 +1370,19 @@ class NewRentalRequest:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['allowBackOrderReservations'] = self.allow_back_order_reservations
-        api_dict['alwaysOn'] = self.always_on
-        api_dict['areaCodeSelectOption'] = [item for item in self.area_code_select_option]
-        api_dict['duration'] = self.duration.to_api()
-        api_dict['isRenewable'] = self.is_renewable
-        api_dict['numberType'] = self.number_type.to_api()
-        api_dict['billingCycleIdToAssignTo'] = self.billing_cycle_id_to_assign_to
-        api_dict['serviceName'] = self.service_name
-        api_dict['capability'] = self.capability.to_api()
+        api_dict["allowBackOrderReservations"] = self.allow_back_order_reservations
+        api_dict["alwaysOn"] = self.always_on
+        api_dict["areaCodeSelectOption"] = [item for item in self.area_code_select_option]
+        api_dict["duration"] = self.duration.to_api()
+        api_dict["isRenewable"] = self.is_renewable
+        api_dict["numberType"] = self.number_type.to_api()
+        api_dict["billingCycleIdToAssignTo"] = self.billing_cycle_id_to_assign_to
+        api_dict["serviceName"] = self.service_name
+        api_dict["capability"] = self.capability.to_api()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'NewRentalRequest':
+    def from_api(cls, data: Dict[str, Any]) -> "NewRentalRequest":
         return cls(
             allow_back_order_reservations=bool(data.get("allowBackOrderReservations", None)),
             always_on=bool(data.get("alwaysOn", None)),
@@ -1416,16 +1417,16 @@ class NewVerificationRequest:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['areaCodeSelectOption'] = [item for item in self.area_code_select_option]
-        api_dict['carrierSelectOption'] = [item for item in self.carrier_select_option]
-        api_dict['serviceName'] = self.service_name
-        api_dict['capability'] = self.capability.to_api()
-        api_dict['serviceNotListedName'] = self.service_not_listed_name
-        api_dict['maxPrice'] = self.max_price
+        api_dict["areaCodeSelectOption"] = [item for item in self.area_code_select_option]
+        api_dict["carrierSelectOption"] = [item for item in self.carrier_select_option]
+        api_dict["serviceName"] = self.service_name
+        api_dict["capability"] = self.capability.to_api()
+        api_dict["serviceNotListedName"] = self.service_not_listed_name
+        api_dict["maxPrice"] = self.max_price
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'NewVerificationRequest':
+    def from_api(cls, data: Dict[str, Any]) -> "NewVerificationRequest":
         return cls(
             area_code_select_option=[str(item) for item in data.get("areaCodeSelectOption", None)],
             carrier_select_option=[str(item) for item in data.get("carrierSelectOption", None)],
@@ -1463,19 +1464,19 @@ class NonrenewableRentalExpanded:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['endsAt'] = self.ends_at.isoformat()
-        api_dict['id'] = self.id
-        api_dict['refund'] = self.refund.to_api()
-        api_dict['saleId'] = self.sale_id
-        api_dict['serviceName'] = self.service_name
-        api_dict['state'] = self.state.to_api()
-        api_dict['number'] = self.number
-        api_dict['alwaysOn'] = self.always_on
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["endsAt"] = self.ends_at.isoformat()
+        api_dict["id"] = self.id
+        api_dict["refund"] = self.refund.to_api()
+        api_dict["saleId"] = self.sale_id
+        api_dict["serviceName"] = self.service_name
+        api_dict["state"] = self.state.to_api()
+        api_dict["number"] = self.number
+        api_dict["alwaysOn"] = self.always_on
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'NonrenewableRentalExpanded':
+    def from_api(cls, data: Dict[str, Any]) -> "NonrenewableRentalExpanded":
         return cls(
             created_at=datetime.datetime.fromisoformat(data.get("createdAt", None)),
             ends_at=datetime.datetime.fromisoformat(data.get("endsAt", None)),
@@ -1518,20 +1519,20 @@ class RenewableRentalExpanded:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['id'] = self.id
-        api_dict['refund'] = self.refund.to_api()
-        api_dict['saleId'] = self.sale_id
-        api_dict['serviceName'] = self.service_name
-        api_dict['state'] = self.state.to_api()
-        api_dict['billingCycleId'] = self.billing_cycle_id
-        api_dict['isIncludedForNextRenewal'] = self.is_included_for_next_renewal
-        api_dict['number'] = self.number
-        api_dict['alwaysOn'] = self.always_on
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["id"] = self.id
+        api_dict["refund"] = self.refund.to_api()
+        api_dict["saleId"] = self.sale_id
+        api_dict["serviceName"] = self.service_name
+        api_dict["state"] = self.state.to_api()
+        api_dict["billingCycleId"] = self.billing_cycle_id
+        api_dict["isIncludedForNextRenewal"] = self.is_included_for_next_renewal
+        api_dict["number"] = self.number
+        api_dict["alwaysOn"] = self.always_on
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'RenewableRentalExpanded':
+    def from_api(cls, data: Dict[str, Any]) -> "RenewableRentalExpanded":
         return cls(
             created_at=datetime.datetime.fromisoformat(data.get("createdAt", None)),
             id=str(data.get("id", None)),
@@ -1565,15 +1566,15 @@ class WebhookEventReservationCreatedWebhookEvent:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['attempt'] = self.attempt
-        api_dict['occurredAt'] = self.occurred_at.isoformat()
-        api_dict['data'] = self.data.to_api()
-        api_dict['event'] = self.event
-        api_dict['id'] = self.id
+        api_dict["attempt"] = self.attempt
+        api_dict["occurredAt"] = self.occurred_at.isoformat()
+        api_dict["data"] = self.data.to_api()
+        api_dict["event"] = self.event
+        api_dict["id"] = self.id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'WebhookEventReservationCreatedWebhookEvent':
+    def from_api(cls, data: Dict[str, Any]) -> "WebhookEventReservationCreatedWebhookEvent":
         return cls(
             attempt=int(data.get("attempt", None)),
             occurred_at=datetime.datetime.fromisoformat(data.get("occurredAt", None)),
@@ -1614,21 +1615,21 @@ class VerificationExpanded:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['number'] = self.number
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['endsAt'] = self.ends_at.isoformat()
-        api_dict['id'] = self.id
-        api_dict['cancel'] = self.cancel.to_api()
-        api_dict['reactivate'] = self.reactivate.to_api()
-        api_dict['report'] = self.report.to_api()
-        api_dict['reuse'] = self.reuse.to_api()
-        api_dict['serviceName'] = self.service_name
-        api_dict['state'] = self.state.to_api()
-        api_dict['totalCost'] = self.total_cost
+        api_dict["number"] = self.number
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["endsAt"] = self.ends_at.isoformat()
+        api_dict["id"] = self.id
+        api_dict["cancel"] = self.cancel.to_api()
+        api_dict["reactivate"] = self.reactivate.to_api()
+        api_dict["report"] = self.report.to_api()
+        api_dict["reuse"] = self.reuse.to_api()
+        api_dict["serviceName"] = self.service_name
+        api_dict["state"] = self.state.to_api()
+        api_dict["totalCost"] = self.total_cost
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'VerificationExpanded':
+    def from_api(cls, data: Dict[str, Any]) -> "VerificationExpanded":
         return cls(
             number=str(data.get("number", None)),
             created_at=datetime.datetime.fromisoformat(data.get("createdAt", None)),
@@ -1663,15 +1664,15 @@ class WebhookEventSmsWebhookEvent:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['attempt'] = self.attempt
-        api_dict['occurredAt'] = self.occurred_at.isoformat()
-        api_dict['data'] = self.data.to_api()
-        api_dict['event'] = self.event
-        api_dict['id'] = self.id
+        api_dict["attempt"] = self.attempt
+        api_dict["occurredAt"] = self.occurred_at.isoformat()
+        api_dict["data"] = self.data.to_api()
+        api_dict["event"] = self.event
+        api_dict["id"] = self.id
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'WebhookEventSmsWebhookEvent':
+    def from_api(cls, data: Dict[str, Any]) -> "WebhookEventSmsWebhookEvent":
         return cls(
             attempt=int(data.get("attempt", None)),
             occurred_at=datetime.datetime.fromisoformat(data.get("occurredAt", None)),
@@ -1702,16 +1703,16 @@ class RentalSnapshot:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['number'] = self.number
-        api_dict['renewalCost'] = self.renewal_cost
-        api_dict['serviceName'] = self.service_name
-        api_dict['alreadyRenewed'] = self.already_renewed
-        api_dict['includedAddOns'] = [item.to_api() for item in self.included_add_ons]
-        api_dict['excludedAddOns'] = [item.to_api() for item in self.excluded_add_ons]
+        api_dict["number"] = self.number
+        api_dict["renewalCost"] = self.renewal_cost
+        api_dict["serviceName"] = self.service_name
+        api_dict["alreadyRenewed"] = self.already_renewed
+        api_dict["includedAddOns"] = [item.to_api() for item in self.included_add_ons]
+        api_dict["excludedAddOns"] = [item.to_api() for item in self.excluded_add_ons]
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'RentalSnapshot':
+    def from_api(cls, data: Dict[str, Any]) -> "RentalSnapshot":
         return cls(
             number=str(data.get("number", None)),
             renewal_cost=float(data.get("renewalCost", None)),
@@ -1745,21 +1746,23 @@ class ReservationSaleExpanded:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['id'] = self.id
-        api_dict['backOrderReservations'] = [item.to_api() for item in self.back_order_reservations]
-        api_dict['reservations'] = [item.to_api() for item in self.reservations]
-        api_dict['state'] = self.state.to_api()
-        api_dict['total'] = self.total
-        api_dict['updatedAt'] = self.updated_at.isoformat()
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["id"] = self.id
+        api_dict["backOrderReservations"] = [item.to_api() for item in self.back_order_reservations]
+        api_dict["reservations"] = [item.to_api() for item in self.reservations]
+        api_dict["state"] = self.state.to_api()
+        api_dict["total"] = self.total
+        api_dict["updatedAt"] = self.updated_at.isoformat()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'ReservationSaleExpanded':
+    def from_api(cls, data: Dict[str, Any]) -> "ReservationSaleExpanded":
         return cls(
             created_at=datetime.datetime.fromisoformat(data.get("createdAt", None)),
             id=str(data.get("id", None)),
-            back_order_reservations=[BackOrderReservationCompact.from_api(item) for item in data.get("backOrderReservations", None)],
+            back_order_reservations=[
+                BackOrderReservationCompact.from_api(item) for item in data.get("backOrderReservations", None)
+            ],
             reservations=[Reservation.from_api(item) for item in data.get("reservations", None)],
             state=ReservationSaleState.from_api(data.get("state", None)),
             total=float(data.get("total", None)),
@@ -1788,16 +1791,16 @@ class BillingCycleRenewalInvoice:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['createdAt'] = self.created_at.isoformat()
-        api_dict['id'] = self.id
-        api_dict['excludedRentals'] = [item.to_api() for item in self.excluded_rentals]
-        api_dict['includedRentals'] = [item.to_api() for item in self.included_rentals]
-        api_dict['isPaidFor'] = self.is_paid_for
-        api_dict['totalCost'] = self.total_cost
+        api_dict["createdAt"] = self.created_at.isoformat()
+        api_dict["id"] = self.id
+        api_dict["excludedRentals"] = [item.to_api() for item in self.excluded_rentals]
+        api_dict["includedRentals"] = [item.to_api() for item in self.included_rentals]
+        api_dict["isPaidFor"] = self.is_paid_for
+        api_dict["totalCost"] = self.total_cost
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BillingCycleRenewalInvoice':
+    def from_api(cls, data: Dict[str, Any]) -> "BillingCycleRenewalInvoice":
         return cls(
             created_at=datetime.datetime.fromisoformat(data.get("createdAt", None)),
             id=str(data.get("id", None)),
@@ -1821,15 +1824,13 @@ class BillingCycleRenewalInvoicePreview:
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['billingCycleId'] = self.billing_cycle_id
-        api_dict['renewalEstimate'] = self.renewal_estimate.to_api()
+        api_dict["billingCycleId"] = self.billing_cycle_id
+        api_dict["renewalEstimate"] = self.renewal_estimate.to_api()
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BillingCycleRenewalInvoicePreview':
+    def from_api(cls, data: Dict[str, Any]) -> "BillingCycleRenewalInvoicePreview":
         return cls(
             billing_cycle_id=str(data.get("billingCycleId", None)),
             renewal_estimate=BillingCycleRenewalInvoice.from_api(data.get("renewalEstimate", None)),
         )
-
-

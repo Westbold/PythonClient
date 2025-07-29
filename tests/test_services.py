@@ -5,9 +5,10 @@ from textverified.action import _Action
 from textverified.generated.generated_enums import AreaCode, Service
 import datetime
 
+
 def test_get_area_codes(tv, mock_http_from_disk):
     area_codes = tv.services.get_area_codes()
-    
+
     area_codes_list = [x.to_api() for x in area_codes]
     assert all(
         dict_subset(area_code_test, area_code_truth) is None
@@ -15,9 +16,10 @@ def test_get_area_codes(tv, mock_http_from_disk):
     )
     assert all(isinstance(area_code, AreaCode) for area_code in area_codes)
 
+
 def test_get_services(tv, mock_http_from_disk):
     services = tv.services.get_services()
-    
+
     services_list = [x.to_api() for x in services]
     assert all(
         dict_subset(service_test, service_truth) is None
