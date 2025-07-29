@@ -233,22 +233,25 @@ class ObjectNode(CompilerNode):
         obj_class += f"class {self.type_name}:\n"
 
         # Docstring
-        obj_class += f'    """'
         if self.description:
+            obj_class += f'    """'
             obj_class += f"{self.description}\n\n"
-        else:
-            obj_class += "\n"
-
-        if self.properties:
-            obj_class += f"    Attributes:\n"
-            for name, prop in self.properties.items():
-                obj_class += f"        {to_var_name(name)}: {prop.description or prop.annotation_name}\n"
-
-        obj_class += f'    """\n\n'
+            obj_class += f'    """\n\n'
 
         # Add properties
         for name, prop in self.properties.items():
             obj_class += f"    {to_var_name(name)}: {prop.annotation_name}\n"
+            description = (
+                [] + [prop.description]
+                if prop.description
+                else [] + [f"Example: {prop.example}"]
+                if prop.example
+                else []
+            )
+            if description:
+                obj_class += f'    """'
+                obj_class += "\n".join(description)
+                obj_class += f'"""\n'
         obj_class += "\n"
 
         # Add to_api method
@@ -397,7 +400,7 @@ def create_dependency_graph(swagger_schema: dict, patterns_to_ignore=[r"^Link$",
             graph.add_node(name, node=node)
             graph.add_edge(pname, name)
             return name, node
-    
+
         # Basic nodes
         if schema["type"] == "integer":
             node = DtypeNode(

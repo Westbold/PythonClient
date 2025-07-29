@@ -13,6 +13,7 @@ Example usage:
 """
 
 import os
+import sys
 from typing import Optional
 
 # Import the main TextVerified class and API modules
@@ -58,15 +59,192 @@ def configure(api_key: str, api_username: str, base_url: str = "https://www.text
     _static_instance = TextVerified(api_key=api_key, api_username=api_username, base_url=base_url)
 
 
-# Lazy access to static instance
-accounts = lambda: _get_static_instance().accounts
-billing_cycles = lambda: _get_static_instance().billing_cycles
-reservations = lambda: _get_static_instance().reservations
-sales = lambda: _get_static_instance().sales
-services = lambda: _get_static_instance().services
-verifications = lambda: _get_static_instance().verifications
-wake_requests = lambda: _get_static_instance().wake_requests
-sms = lambda: _get_static_instance().sms
+# Lazy property implementation using __getattr__ at module level
+class _LazyAPI:
+    """
+    Lazy wrapper for API endpoints that creates the static TextVerified instance
+    only when an API endpoint is actually accessed.
+    """
+
+    def __init__(self, attr_name: str, doc: str = None):
+        self.attr_name = attr_name
+        if doc:
+            self.__doc__ = doc
+
+    def __getattr__(self, name):
+        """Forward attribute access to the actual API endpoint."""
+        api_endpoint = getattr(_get_static_instance(), self.attr_name)
+        return getattr(api_endpoint, name)
+
+    def __call__(self, *args, **kwargs):
+        """Forward method calls to the actual API endpoint."""
+        api_endpoint = getattr(_get_static_instance(), self.attr_name)
+        return api_endpoint(*args, **kwargs)
+
+
+# Create lazy API wrappers with documentation
+accounts = _LazyAPI(
+    "accounts",
+    """
+Static access to account management functionality.
+
+Provides methods for retrieving account information, balance, and account settings.
+This is a static wrapper around the AccountAPI class that uses the globally
+configured TextVerified instance.
+
+Example:
+    from textverified import accounts
+    
+    # Get account information
+    account_info = accounts.me()
+    
+    # Get account balance
+    balance = accounts.balance()
+""",
+)
+
+billing_cycles = _LazyAPI(
+    "billing_cycles",
+    """
+Static access to billing cycle management functionality.
+
+Provides methods for managing billing cycles, invoices, and payment history.
+This is a static wrapper around the BillingCycleAPI class that uses the globally
+configured TextVerified instance.
+
+Example:
+    from textverified import billing_cycles
+    
+    # List all billing cycles
+    cycles = billing_cycles.list()
+    
+    # Get specific billing cycle
+    cycle = billing_cycles.get(cycle_id)
+""",
+)
+
+reservations = _LazyAPI(
+    "reservations",
+    """
+Static access to phone number reservation functionality.
+
+Provides methods for creating, managing, and releasing phone number reservations.
+This is a static wrapper around the ReservationsAPI class that uses the globally
+configured TextVerified instance.
+
+Example:
+    from textverified import reservations
+    
+    # Create a new reservation
+    reservation = reservations.create(service_id=1, area_code="555")
+    
+    # List all reservations
+    all_reservations = reservations.list()
+""",
+)
+
+sales = _LazyAPI(
+    "sales",
+    """
+Static access to sales and transaction functionality.
+
+Provides methods for retrieving sales history, transaction details, and revenue analytics.
+This is a static wrapper around the SalesAPI class that uses the globally
+configured TextVerified instance.
+
+Example:
+    from textverified import sales
+    
+    # Get sales history
+    sales_history = sales.list()
+    
+    # Get specific sale details
+    sale = sales.get(sale_id)
+""",
+)
+
+services = _LazyAPI(
+    "services",
+    """
+Static access to service management functionality.
+
+Provides methods for listing available services, getting service pricing,
+and retrieving service-specific information.
+This is a static wrapper around the ServicesAPI class that uses the globally
+configured TextVerified instance.
+
+Example:
+    from textverified import services
+    
+    # Get all available services
+    available_services = services.list()
+    
+    # Get pricing for rentals
+    pricing = services.pricing_rentals()
+""",
+)
+
+verifications = _LazyAPI(
+    "verifications",
+    """
+Static access to phone verification functionality.
+
+Provides methods for creating verification requests, checking verification status,
+and managing the verification process.
+This is a static wrapper around the VerificationsAPI class that uses the globally
+configured TextVerified instance.
+
+Example:
+    from textverified import verifications
+    
+    # Create a new verification
+    verification = verifications.create(service_id=1)
+    
+    # Check verification status
+    status = verifications.get(verification_id)
+""",
+)
+
+wake_requests = _LazyAPI(
+    "wake_requests",
+    """
+Static access to wake request functionality.
+
+Provides methods for creating and managing wake requests for phone numbers.
+This is a static wrapper around the WakeAPI class that uses the globally
+configured TextVerified instance.
+
+Example:
+    from textverified import wake_requests
+    
+    # Create a wake request
+    wake = wake_requests.create(phone_number="+1234567890")
+    
+    # List wake requests
+    wakes = wake_requests.list()
+""",
+)
+
+sms = _LazyAPI(
+    "sms",
+    """
+Static access to SMS management functionality.
+
+Provides methods for sending, receiving, and managing SMS messages.
+This is a static wrapper around the SMSApi class that uses the globally
+configured TextVerified instance.
+
+Example:
+    from textverified import sms
+    
+    # Get SMS messages
+    messages = sms.list()
+    
+    # Get specific SMS
+    message = sms.get(message_id)
+""",
+)
+
 
 # Available for import:
 __all__ = [

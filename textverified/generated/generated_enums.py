@@ -141,12 +141,6 @@ class ReservationSaleState(Enum):
 
 @dataclass(frozen=True)
 class Account:
-    """
-    Attributes:
-        username: str
-        current_balance: float
-    """
-
     username: str
     current_balance: float
 
@@ -159,21 +153,12 @@ class Account:
     @classmethod
     def from_api(cls, data: Dict[str, Any]) -> 'Account':
         return cls(
-            username=str(data.get("username", None)),
-            current_balance=float(data.get("currentBalance", None)),
+            username=str(data.get("username", None)),current_balance=float(data.get("currentBalance", None)),
         )
 
 
 @dataclass(frozen=True)
 class AddOnSnapshot:
-    """
-    Attributes:
-        add_on_id: str
-        description: str
-        renewal_cost: float
-        already_renewed: bool
-    """
-
     add_on_id: str
     description: str
     renewal_cost: float
@@ -199,14 +184,10 @@ class AddOnSnapshot:
 
 @dataclass(frozen=True)
 class AreaCode:
-    """
-    Attributes:
-        area_code: Area code. Optionally supply this value when an ```areaCodeSelectOption``` is in the request body or parameter.
-        state: The US state associated with the area code.
-    """
-
     area_code: str
+    """Area code. Optionally supply this value when an ```areaCodeSelectOption``` is in the request body or parameter."""
     state: str
+    """The US state associated with the area code."""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -224,13 +205,6 @@ class AreaCode:
 
 @dataclass(frozen=True)
 class BackOrderReservationCompact:
-    """
-    Attributes:
-        id: str
-        service_name: str
-        status: BackOrderState
-    """
-
     id: str
     service_name: str
     status: BackOrderState
@@ -253,12 +227,8 @@ class BackOrderReservationCompact:
 
 @dataclass(frozen=True)
 class BackOrderReservationWebhookEvent:
-    """
-    Attributes:
-        back_order_id: Id of the back order reservation.
-    """
-
     back_order_id: str
+    """Id of the back order reservation."""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -274,16 +244,12 @@ class BackOrderReservationWebhookEvent:
 
 @dataclass(frozen=True)
 class BearerToken:
-    """
-    Attributes:
-        token: Bearer token
-        expires_in: Seconds remaining until bearer token expires
-        expires_at: Timestamp of when the token will expire
-    """
-
     token: str
+    """Bearer token"""
     expires_in: float
+    """Seconds remaining until bearer token expires"""
     expires_at: datetime.datetime
+    """Timestamp of when the token will expire"""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -303,15 +269,8 @@ class BearerToken:
 
 @dataclass(frozen=True)
 class BillingCycleCompact:
-    """
-    Attributes:
-        id: Id of the billing cycle
-        billing_cycle_ends_at: datetime.datetime
-        email_notifications_enabled: bool
-        state: str
-    """
-
     id: str
+    """Id of the billing cycle"""
     billing_cycle_ends_at: datetime.datetime
     email_notifications_enabled: bool
     state: str
@@ -336,11 +295,6 @@ class BillingCycleCompact:
 
 @dataclass(frozen=True)
 class CancelAction:
-    """
-    Attributes:
-        can_cancel: bool
-    """
-
     can_cancel: bool
 
     def to_api(self) -> Dict[str, Any]:
@@ -357,14 +311,10 @@ class CancelAction:
 
 @dataclass(frozen=True)
 class PricingSnapshot:
-    """
-    Attributes:
-        service_name: Name of the service.
-        price: Total cost.
-    """
-
     service_name: str
+    """Name of the service."""
     price: float
+    """Total cost."""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -382,11 +332,6 @@ class PricingSnapshot:
 
 @dataclass(frozen=True)
 class ReactivationAction:
-    """
-    Attributes:
-        can_reactivate: bool
-    """
-
     can_reactivate: bool
 
     def to_api(self) -> Dict[str, Any]:
@@ -403,12 +348,6 @@ class ReactivationAction:
 
 @dataclass(frozen=True)
 class RentalExtensionRequest:
-    """
-    Attributes:
-        extension_duration: RentalDuration
-        rental_id: str
-    """
-
     extension_duration: RentalDuration
     rental_id: str
 
@@ -428,11 +367,6 @@ class RentalExtensionRequest:
 
 @dataclass(frozen=True)
 class ReportAction:
-    """
-    Attributes:
-        can_report: bool
-    """
-
     can_report: bool
 
     def to_api(self) -> Dict[str, Any]:
@@ -449,16 +383,11 @@ class ReportAction:
 
 @dataclass(frozen=True)
 class Reservation:
-    """
-    Attributes:
-        id: Id of the reservation
-        reservation_type: ReservationType
-        service_name: Name of service
-    """
-
     id: str
+    """Id of the reservation"""
     reservation_type: ReservationType
     service_name: str
+    """Name of service"""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -478,13 +407,8 @@ class Reservation:
 
 @dataclass(frozen=True)
 class ReservationCreatedWebhookEvent:
-    """
-    Attributes:
-        id: Id of the created reservation.
-        type: LineReservationType
-    """
-
     id: str
+    """Id of the created reservation."""
     type: LineReservationType
 
     def to_api(self) -> Dict[str, Any]:
@@ -503,15 +427,6 @@ class ReservationCreatedWebhookEvent:
 
 @dataclass(frozen=True)
 class ReservationSaleCompact:
-    """
-    Attributes:
-        created_at: datetime.datetime
-        id: str
-        state: ReservationSaleState
-        total_cost: float
-        updated_at: datetime.datetime
-    """
-
     created_at: datetime.datetime
     id: str
     state: ReservationSaleState
@@ -540,13 +455,8 @@ class ReservationSaleCompact:
 
 @dataclass(frozen=True)
 class Service:
-    """
-    Attributes:
-        service_name: Name of the service. Supply this value when a ```ServiceName``` is required.
-        capability: ReservationCapability
-    """
-
     service_name: str
+    """Name of the service. Supply this value when a ```ServiceName``` is required."""
     capability: ReservationCapability
 
     def to_api(self) -> Dict[str, Any]:
@@ -565,12 +475,8 @@ class Service:
 
 @dataclass(frozen=True)
 class UsageWindowEstimateRequest:
-    """
-    Attributes:
-        reservation_id: The reservation Id to get the estimated usage window for. If a valid reservation does not exist, a 400 response will be returned.
-    """
-
     reservation_id: str
+    """The reservation Id to get the estimated usage window for. If a valid reservation does not exist, a 400 response will be returned."""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -586,16 +492,6 @@ class UsageWindowEstimateRequest:
 
 @dataclass(frozen=True)
 class VerificationCompact:
-    """
-    Attributes:
-        created_at: datetime.datetime
-        id: str
-        service_name: str
-        state: ReservationState
-        total_cost: float
-        number: str
-    """
-
     created_at: datetime.datetime
     id: str
     service_name: str
@@ -627,18 +523,12 @@ class VerificationCompact:
 
 @dataclass(frozen=True)
 class VerificationPriceCheckRequest:
-    """
-    Attributes:
-        service_name: str
-        area_code: bool
-        carrier: bool
-        number_type: NumberType
-        capability: ReservationCapability
-    """
-
     service_name: str
+    """Example: yahoo"""
     area_code: bool
+    """Example: True"""
     carrier: bool
+    """Example: True"""
     number_type: NumberType
     capability: ReservationCapability
 
@@ -664,12 +554,8 @@ class VerificationPriceCheckRequest:
 
 @dataclass(frozen=True)
 class WakeRequest:
-    """
-    Attributes:
-        reservation_id: The reservation Id to create a wake request for. If a valid reservation does not exist, a 400 response will be returned.
-    """
-
     reservation_id: str
+    """The reservation Id to create a wake request for. If a valid reservation does not exist, a 400 response will be returned."""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -685,15 +571,6 @@ class WakeRequest:
 
 @dataclass(frozen=True)
 class BackOrderReservationExpanded:
-    """
-    Attributes:
-        id: str
-        service_name: str
-        sale_id: str
-        reservation_id: Optional[str]
-        status: BackOrderState
-    """
-
     id: str
     service_name: str
     sale_id: str
@@ -722,20 +599,15 @@ class BackOrderReservationExpanded:
 
 @dataclass(frozen=True)
 class WebhookEventBackOrderReservationWebhookEvent:
-    """
-    Attributes:
-        attempt: Send attempt count
-        occurred_at: When the event occurred
-        data: BackOrderReservationWebhookEvent
-        event: Name of the event
-        id: Id of event
-    """
-
     attempt: int
+    """Send attempt count"""
     occurred_at: datetime.datetime
+    """When the event occurred"""
     data: BackOrderReservationWebhookEvent
     event: str
+    """Name of the event"""
     id: str
+    """Id of event"""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -759,17 +631,8 @@ class WebhookEventBackOrderReservationWebhookEvent:
 
 @dataclass(frozen=True)
 class BillingCycleExpanded:
-    """
-    Attributes:
-        id: Id of the billing cycle
-        renewed_through: datetime.datetime
-        billing_cycle_ends_at: datetime.datetime
-        next_auto_renew_attempt: Optional[datetime.datetime]
-        email_notifications_enabled: bool
-        state: str
-    """
-
     id: str
+    """Id of the billing cycle"""
     renewed_through: datetime.datetime
     billing_cycle_ends_at: datetime.datetime
     next_auto_renew_attempt: Optional[datetime.datetime]
@@ -802,9 +665,6 @@ class BillingCycleExpanded:
 class BillingCycleUpdateRequest:
     """Supplying a value of 'null' or not supplying a value for any nullable properties will cause the property to be ignored.
 
-    Attributes:
-        reminders_enabled: Optional[bool]
-        nickname: Optional[str]
     """
 
     reminders_enabled: Optional[bool]
@@ -826,11 +686,6 @@ class BillingCycleUpdateRequest:
 
 @dataclass(frozen=True)
 class BillingCycleWebhookEvent:
-    """
-    Attributes:
-        billing_cycle_id: Optional[str]
-    """
-
     billing_cycle_id: Optional[str]
 
     def to_api(self) -> Dict[str, Any]:
@@ -847,12 +702,6 @@ class BillingCycleWebhookEvent:
 
 @dataclass(frozen=True)
 class Error:
-    """
-    Attributes:
-        error_code: Optional[str]
-        error_description: Optional[str]
-    """
-
     error_code: Optional[str]
     error_description: Optional[str]
 
@@ -872,13 +721,8 @@ class Error:
 
 @dataclass(frozen=True)
 class LineHealth:
-    """
-    Attributes:
-        line_number: Line number associated with the reservation.
-        checked_at: Optional[datetime.datetime]
-    """
-
     line_number: str
+    """Line number associated with the reservation."""
     checked_at: Optional[datetime.datetime]
 
     def to_api(self) -> Dict[str, Any]:
@@ -897,17 +741,6 @@ class LineHealth:
 
 @dataclass(frozen=True)
 class NonrenewableRentalCompact:
-    """
-    Attributes:
-        created_at: datetime.datetime
-        id: str
-        sale_id: Optional[str]
-        service_name: str
-        state: ReservationState
-        number: str
-        always_on: bool
-    """
-
     created_at: datetime.datetime
     id: str
     sale_id: Optional[str]
@@ -944,9 +777,6 @@ class NonrenewableRentalCompact:
 class NonrenewableRentalUpdateRequest:
     """Supplying a value of 'null' or not supplying a value for any nullable properties will cause the property to be ignored.
 
-    Attributes:
-        user_notes: Optional[str]
-        mark_all_sms_read: Optional[bool]
     """
 
     user_notes: Optional[str]
@@ -968,12 +798,6 @@ class NonrenewableRentalUpdateRequest:
 
 @dataclass(frozen=True)
 class RefundAction:
-    """
-    Attributes:
-        can_refund: bool
-        refundable_until: Optional[datetime.datetime]
-    """
-
     can_refund: bool
     refundable_until: Optional[datetime.datetime]
 
@@ -993,19 +817,6 @@ class RefundAction:
 
 @dataclass(frozen=True)
 class RenewableRentalCompact:
-    """
-    Attributes:
-        created_at: datetime.datetime
-        id: str
-        sale_id: Optional[str]
-        service_name: str
-        state: ReservationState
-        billing_cycle_id: str
-        is_included_for_next_renewal: bool
-        number: str
-        always_on: bool
-    """
-
     created_at: datetime.datetime
     id: str
     sale_id: Optional[str]
@@ -1048,10 +859,6 @@ class RenewableRentalCompact:
 class RenewableRentalUpdateRequest:
     """Supplying a value of 'null' or not supplying a value for any nullable properties will cause the property to be ignored.
 
-    Attributes:
-        user_notes: Optional[str]
-        include_for_renewal: Optional[bool]
-        mark_all_sms_read: Optional[bool]
     """
 
     user_notes: Optional[str]
@@ -1076,27 +883,18 @@ class RenewableRentalUpdateRequest:
 
 @dataclass(frozen=True)
 class RentalPriceCheckRequest:
-    """
-    Attributes:
-        service_name: Name of the service
-        area_code: bool
-        number_type: NumberType
-        capability: ReservationCapability
-        always_on: bool
-        call_forwarding: Optional[bool]
-        billing_cycle_id_to_assign_to: Optional[str]
-        is_renewable: bool
-        duration: RentalDuration
-    """
-
     service_name: str
+    """Name of the service"""
     area_code: bool
+    """Example: True"""
     number_type: NumberType
     capability: ReservationCapability
     always_on: bool
+    """Example: True"""
     call_forwarding: Optional[bool]
     billing_cycle_id_to_assign_to: Optional[str]
     is_renewable: bool
+    """Example: True"""
     duration: RentalDuration
 
     def to_api(self) -> Dict[str, Any]:
@@ -1129,20 +927,15 @@ class RentalPriceCheckRequest:
 
 @dataclass(frozen=True)
 class WebhookEventReservationCreatedWebhookEvent:
-    """
-    Attributes:
-        attempt: Send attempt count
-        occurred_at: When the event occurred
-        data: ReservationCreatedWebhookEvent
-        event: Name of the event
-        id: Id of event
-    """
-
     attempt: int
+    """Send attempt count"""
     occurred_at: datetime.datetime
+    """When the event occurred"""
     data: ReservationCreatedWebhookEvent
     event: str
+    """Name of the event"""
     id: str
+    """Id of event"""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -1166,11 +959,6 @@ class WebhookEventReservationCreatedWebhookEvent:
 
 @dataclass(frozen=True)
 class ReuseAction:
-    """
-    Attributes:
-        reusable_until: Optional[datetime.datetime]
-    """
-
     reusable_until: Optional[datetime.datetime]
 
     def to_api(self) -> Dict[str, Any]:
@@ -1189,14 +977,6 @@ class ReuseAction:
 class Sms:
     """Sms
 
-    Attributes:
-        id: str
-        from_value: Optional[str]
-        to_value: str
-        created_at: datetime.datetime
-        sms_content: Optional[str]
-        parsed_code: Optional[str]
-        encrypted: bool
     """
 
     id: str
@@ -1233,23 +1013,13 @@ class Sms:
 
 @dataclass(frozen=True)
 class SmsWebhookEvent:
-    """
-    Attributes:
-        from_value: Optional[str]
-        to_value: str
-        created_at: datetime.datetime
-        sms_content: Optional[str]
-        parsed_code: Optional[str]
-        encrypted: True if the contents of the sms is encrypted at rest.
-        reservation_id: Optional[str]
-    """
-
     from_value: Optional[str]
     to_value: str
     created_at: datetime.datetime
     sms_content: Optional[str]
     parsed_code: Optional[str]
     encrypted: bool
+    """True if the contents of the sms is encrypted at rest."""
     reservation_id: Optional[str]
 
     def to_api(self) -> Dict[str, Any]:
@@ -1278,16 +1048,10 @@ class SmsWebhookEvent:
 
 @dataclass(frozen=True)
 class UsageWindowEstimateResponse:
-    """
-    Attributes:
-        estimated_window_start: Optional[datetime.datetime]
-        estimated_window_end: Optional[datetime.datetime]
-        reservation_id: Id of the reservation that this usage window estimate is associated with.
-    """
-
     estimated_window_start: Optional[datetime.datetime]
     estimated_window_end: Optional[datetime.datetime]
     reservation_id: str
+    """Id of the reservation that this usage window estimate is associated with."""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -1307,19 +1071,12 @@ class UsageWindowEstimateResponse:
 
 @dataclass(frozen=True)
 class WakeResponse:
-    """
-    Attributes:
-        id: The Id of this wake request.
-        usage_window_start: Optional[datetime.datetime]
-        usage_window_end: Optional[datetime.datetime]
-        is_scheduled: Indicates whether or not the wake request was successfully scheduled. If a wake request fails to be scheduled, then you will have to submit a new wake request. Too many wake requests may result in wake request throttling.
-        reservation_id: Optional[str]
-    """
-
     id: str
+    """The Id of this wake request."""
     usage_window_start: Optional[datetime.datetime]
     usage_window_end: Optional[datetime.datetime]
     is_scheduled: bool
+    """Indicates whether or not the wake request was successfully scheduled. If a wake request fails to be scheduled, then you will have to submit a new wake request. Too many wake requests may result in wake request throttling."""
     reservation_id: Optional[str]
 
     def to_api(self) -> Dict[str, Any]:
@@ -1344,16 +1101,6 @@ class WakeResponse:
 
 @dataclass(frozen=True)
 class RentalSnapshot:
-    """
-    Attributes:
-        number: str
-        renewal_cost: float
-        service_name: str
-        already_renewed: bool
-        included_add_ons: List[AddOnSnapshot]
-        excluded_add_ons: List[AddOnSnapshot]
-    """
-
     number: str
     renewal_cost: float
     service_name: str
@@ -1385,20 +1132,15 @@ class RentalSnapshot:
 
 @dataclass(frozen=True)
 class WebhookEventBillingCycleWebhookEvent:
-    """
-    Attributes:
-        attempt: Send attempt count
-        occurred_at: When the event occurred
-        data: BillingCycleWebhookEvent
-        event: Name of the event
-        id: Id of event
-    """
-
     attempt: int
+    """Send attempt count"""
     occurred_at: datetime.datetime
+    """When the event occurred"""
     data: BillingCycleWebhookEvent
     event: str
+    """Name of the event"""
     id: str
+    """Id of event"""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -1422,27 +1164,17 @@ class WebhookEventBillingCycleWebhookEvent:
 
 @dataclass(frozen=True)
 class NewRentalRequest:
-    """
-    Attributes:
-        allow_back_order_reservations: If set to true, a rental back order will be created if the requested rental is out of stock
-        always_on: If set to true, a line that does not require wake up will be assigned if in stock
-        area_code_select_option: Optional[List[str]]
-        duration: RentalDuration
-        is_renewable: bool
-        number_type: NumberType
-        billing_cycle_id_to_assign_to: Optional[str]
-        service_name: Name of the service
-        capability: ReservationCapability
-    """
-
     allow_back_order_reservations: bool
+    """If set to true, a rental back order will be created if the requested rental is out of stock"""
     always_on: bool
+    """If set to true, a line that does not require wake up will be assigned if in stock"""
     area_code_select_option: Optional[List[str]]
     duration: RentalDuration
     is_renewable: bool
     number_type: NumberType
     billing_cycle_id_to_assign_to: Optional[str]
     service_name: str
+    """Name of the service"""
     capability: ReservationCapability
 
     def to_api(self) -> Dict[str, Any]:
@@ -1475,19 +1207,10 @@ class NewRentalRequest:
 
 @dataclass(frozen=True)
 class NewVerificationRequest:
-    """
-    Attributes:
-        area_code_select_option: Optional[List[str]]
-        carrier_select_option: Optional[List[str]]
-        service_name: str
-        capability: ReservationCapability
-        service_not_listed_name: Optional[str]
-        max_price: Optional[float]
-    """
-
     area_code_select_option: Optional[List[str]]
     carrier_select_option: Optional[List[str]]
     service_name: str
+    """Example: abra"""
     capability: ReservationCapability
     service_not_listed_name: Optional[str]
     max_price: Optional[float]
@@ -1516,19 +1239,6 @@ class NewVerificationRequest:
 
 @dataclass(frozen=True)
 class NonrenewableRentalExpanded:
-    """
-    Attributes:
-        created_at: datetime.datetime
-        ends_at: datetime.datetime
-        id: str
-        refund: RefundAction
-        sale_id: Optional[str]
-        service_name: str
-        state: ReservationState
-        number: str
-        always_on: bool
-    """
-
     created_at: datetime.datetime
     ends_at: datetime.datetime
     id: str
@@ -1569,20 +1279,6 @@ class NonrenewableRentalExpanded:
 
 @dataclass(frozen=True)
 class RenewableRentalExpanded:
-    """
-    Attributes:
-        created_at: datetime.datetime
-        id: str
-        refund: RefundAction
-        sale_id: Optional[str]
-        service_name: str
-        state: ReservationState
-        billing_cycle_id: str
-        is_included_for_next_renewal: bool
-        number: str
-        always_on: bool
-    """
-
     created_at: datetime.datetime
     id: str
     refund: RefundAction
@@ -1626,17 +1322,6 @@ class RenewableRentalExpanded:
 
 @dataclass(frozen=True)
 class ReservationSaleExpanded:
-    """
-    Attributes:
-        created_at: datetime.datetime
-        id: str
-        back_order_reservations: List[BackOrderReservationCompact]
-        reservations: List[Reservation]
-        state: ReservationSaleState
-        total: float
-        updated_at: datetime.datetime
-    """
-
     created_at: datetime.datetime
     id: str
     back_order_reservations: List[BackOrderReservationCompact]
@@ -1671,21 +1356,6 @@ class ReservationSaleExpanded:
 
 @dataclass(frozen=True)
 class VerificationExpanded:
-    """
-    Attributes:
-        number: str
-        created_at: datetime.datetime
-        ends_at: datetime.datetime
-        id: str
-        cancel: CancelAction
-        reactivate: ReactivationAction
-        report: ReportAction
-        reuse: ReuseAction
-        service_name: str
-        state: ReservationState
-        total_cost: float
-    """
-
     number: str
     created_at: datetime.datetime
     ends_at: datetime.datetime
@@ -1732,20 +1402,15 @@ class VerificationExpanded:
 
 @dataclass(frozen=True)
 class WebhookEventSmsWebhookEvent:
-    """
-    Attributes:
-        attempt: Send attempt count
-        occurred_at: When the event occurred
-        data: SmsWebhookEvent
-        event: Name of the event
-        id: Id of event
-    """
-
     attempt: int
+    """Send attempt count"""
     occurred_at: datetime.datetime
+    """When the event occurred"""
     data: SmsWebhookEvent
     event: str
+    """Name of the event"""
     id: str
+    """Id of event"""
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -1769,16 +1434,6 @@ class WebhookEventSmsWebhookEvent:
 
 @dataclass(frozen=True)
 class BillingCycleRenewalInvoice:
-    """
-    Attributes:
-        created_at: datetime.datetime
-        id: str
-        excluded_rentals: List[RentalSnapshot]
-        included_rentals: List[RentalSnapshot]
-        is_paid_for: bool
-        total_cost: float
-    """
-
     created_at: datetime.datetime
     id: str
     excluded_rentals: List[RentalSnapshot]
@@ -1810,12 +1465,6 @@ class BillingCycleRenewalInvoice:
 
 @dataclass(frozen=True)
 class BillingCycleRenewalInvoicePreview:
-    """
-    Attributes:
-        billing_cycle_id: str
-        renewal_estimate: BillingCycleRenewalInvoice
-    """
-
     billing_cycle_id: str
     renewal_estimate: BillingCycleRenewalInvoice
 
