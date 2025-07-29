@@ -389,6 +389,15 @@ def create_dependency_graph(swagger_schema: dict, patterns_to_ignore=[r"^Link$",
                 graph.add_node(ref_name, node=node, properties={})
             return ref_name, node
 
+        # optional node
+        if schema.get("nullable", False):
+            del schema["nullable"]
+            pname, predecessor = parse_schema(f"{name}_optional", schema)
+            node = OptionalNode(item_type=predecessor)
+            graph.add_node(name, node=node)
+            graph.add_edge(pname, name)
+            return name, node
+    
         # Basic nodes
         if schema["type"] == "integer":
             node = DtypeNode(
@@ -520,6 +529,12 @@ def parse_schema_with_graph(graph: nx.DiGraph, schema: dict) -> CompilerNode:
             return graph.nodes[ref_name]["node"]
         else:
             raise ValueError(f"Reference {ref_name} not found in graph. Schema: {schema}")
+
+    # optional node
+    if schema.get("nullable", False):
+        del schema["nullable"]
+        predecessor = parse_schema_with_graph(graph, schema)
+        return OptionalNode(item_type=predecessor)
 
     # Basic nodes
     if schema["type"] == "integer":

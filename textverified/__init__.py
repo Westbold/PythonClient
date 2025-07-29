@@ -59,49 +59,14 @@ def configure(api_key: str, api_username: str, base_url: str = "https://www.text
 
 
 # Lazy access to static instance
-class _StaticAPIAccess:
-    @property
-    def accounts(self) -> AccountAPI:
-        return _get_static_instance().accounts
-
-    @property
-    def billing_cycles(self) -> BillingCycleAPI:
-        return _get_static_instance().billing_cycles
-
-    @property
-    def reservations(self) -> ReservationsAPI:
-        return _get_static_instance().reservations
-
-    @property
-    def sales(self) -> SalesAPI:
-        return _get_static_instance().sales
-
-    @property
-    def services(self) -> ServicesAPI:
-        return _get_static_instance().services
-
-    @property
-    def verifications(self) -> VerificationsAPI:
-        return _get_static_instance().verifications
-
-    @property
-    def wake_requests(self) -> WakeAPI:
-        return _get_static_instance().wake_requests
-
-    @property
-    def sms(self) -> SMSApi:
-        return _get_static_instance().sms
-
-
-_static_access = _StaticAPIAccess()
-accounts = _static_access.accounts
-billing_cycles = _static_access.billing_cycles
-reservations = _static_access.reservations
-sales = _static_access.sales
-services = _static_access.services
-verifications = _static_access.verifications
-wake_requests = _static_access.wake_requests
-sms = _static_access.sms
+accounts = lambda: _get_static_instance().accounts
+billing_cycles = lambda: _get_static_instance().billing_cycles
+reservations = lambda: _get_static_instance().reservations
+sales = lambda: _get_static_instance().sales
+services = lambda: _get_static_instance().services
+verifications = lambda: _get_static_instance().verifications
+wake_requests = lambda: _get_static_instance().wake_requests
+sms = lambda: _get_static_instance().sms
 
 # Available for import:
 __all__ = [
