@@ -9,7 +9,7 @@ class AccountAPI:
     def __init__(self, client: _ActionPerformer):
         self.client = client
 
-    def get_details(self) -> Account:
+    def me(self) -> Account:
         """
         Returns:
             Account: The current account details.
@@ -21,12 +21,12 @@ class AccountAPI:
     @property
     def balance(self) -> float:
         """Get the current account balance."""
-        details = self.get_details()
+        details = self.me()
         return details.current_balance
 
     @property
     def username(self) -> str:
         """Get the current account username."""
         # Realistically, this is the only request we could cache
-        details = self.get_details()
+        details = self.me()
         return details.username

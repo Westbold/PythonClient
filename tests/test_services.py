@@ -7,7 +7,7 @@ import datetime
 
 
 def test_get_area_codes(tv, mock_http_from_disk):
-    area_codes = tv.services.get_area_codes()
+    area_codes = tv.services.area_codes()
 
     area_codes_list = [x.to_api() for x in area_codes]
     assert all(
@@ -18,7 +18,7 @@ def test_get_area_codes(tv, mock_http_from_disk):
 
 
 def test_get_services(tv, mock_http_from_disk):
-    services = tv.services.get_services(NumberType.MOBILE, ReservationType.VERIFICATION)
+    services = tv.services.list(NumberType.MOBILE, ReservationType.VERIFICATION)
 
     services_list = [x.to_api() for x in services]
     assert all(

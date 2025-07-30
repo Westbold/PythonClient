@@ -32,7 +32,7 @@ class ReservationsAPI:
     def __init__(self, client: _ActionPerformer):
         self.client = client
 
-    def create_rental_reservation(
+    def create(
         self,
         data: NewRentalRequest = None,
         *,
@@ -121,7 +121,7 @@ class ReservationsAPI:
 
         return ReservationSaleExpanded.from_api(response.data)
 
-    def get_rental_pricing(
+    def pricing(
         self,
         data: Union[NewRentalRequest, RentalPriceCheckRequest] = None,
         *,
@@ -218,7 +218,7 @@ class ReservationsAPI:
 
         return PricingSnapshot.from_api(response.data)
 
-    def get_backorder_reservation(
+    def backorder(
         self, reservation_id: Union[str, BackOrderReservationCompact, BackOrderReservationExpanded]
     ) -> BackOrderReservationExpanded:
         """Get details of a backorder reservation by ID.
@@ -245,7 +245,7 @@ class ReservationsAPI:
         response = self.client._perform_action(action)
         return BackOrderReservationExpanded.from_api(response.data)
 
-    def get_reservation_details(
+    def details(
         self,
         reservation_id: Union[
             str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
@@ -295,7 +295,7 @@ class ReservationsAPI:
         elif "reservations/rental/renewable/" in action.href:
             return RenewableRentalExpanded.from_api(response.data)
 
-    def get_renewable_reservations(self) -> PaginatedList[RenewableRentalCompact]:
+    def list_renewable(self) -> PaginatedList[RenewableRentalCompact]:
         """Get a paginated list of all renewable reservations associated with this account.
 
         Returns:
@@ -308,7 +308,7 @@ class ReservationsAPI:
             request_json=response.data, parse_item=RenewableRentalCompact.from_api, api_context=self.client
         )
 
-    def get_nonrenewable_reservations(self) -> PaginatedList[NonrenewableRentalCompact]:
+    def list_nonrenewable(self) -> PaginatedList[NonrenewableRentalCompact]:
         """Get a paginated list of all non-renewable reservations associated with this account.
 
         Returns:
@@ -321,7 +321,7 @@ class ReservationsAPI:
             request_json=response.data, parse_item=NonrenewableRentalCompact.from_api, api_context=self.client
         )
 
-    def get_renewable_reservation_details(
+    def renewable_details(
         self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]
     ) -> RenewableRentalExpanded:
         """Get detailed information about a renewable reservation by ID.
@@ -349,7 +349,7 @@ class ReservationsAPI:
 
         return RenewableRentalExpanded.from_api(response.data)
 
-    def get_nonrenewable_reservation_details(
+    def nonrenewable_details(
         self, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded]
     ) -> NonrenewableRentalExpanded:
         """Get detailed information about a non-renewable reservation by ID.
@@ -377,7 +377,7 @@ class ReservationsAPI:
 
         return NonrenewableRentalExpanded.from_api(response.data)
 
-    def check_reservation_health(
+    def check_health(
         self,
         reservation_id: Union[
             str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
@@ -418,7 +418,7 @@ class ReservationsAPI:
 
         return LineHealth.from_api(response.data)
 
-    def update_renewable_reservation(
+    def update_renewable(
         self,
         reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded],
         data: RenewableRentalUpdateRequest = None,
@@ -481,7 +481,7 @@ class ReservationsAPI:
 
     # Possibility for unified update method?
 
-    def update_nonrenewable_reservation(
+    def update_nonrenewable(
         self,
         reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded],
         data: NonrenewableRentalUpdateRequest = None,
@@ -529,7 +529,7 @@ class ReservationsAPI:
 
         return True
 
-    def refund_renewable_reservation(
+    def refund_renewable(
         self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]
     ) -> bool:
         """Request a refund for a renewable reservation.
@@ -557,7 +557,7 @@ class ReservationsAPI:
 
         return True
 
-    def refund_nonrenewable_reservation(
+    def refund_nonrenewable(
         self, reservation_id: Union[str, NonrenewableRentalCompact, NonrenewableRentalExpanded]
     ) -> bool:
         """Request a refund for a non-renewable reservation.
@@ -585,7 +585,7 @@ class ReservationsAPI:
 
         return True
 
-    def renew_overdue_renewable_reservation(
+    def renew_overdue(
         self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]
     ) -> bool:
         """Renew an overdue renewable reservation.
@@ -618,7 +618,7 @@ class ReservationsAPI:
 
         return True
 
-    def extend_nonrenewable_reservation(
+    def extend_nonrenewable(
         self,
         data: RentalExtensionRequest = None,
         *,

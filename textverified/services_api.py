@@ -13,7 +13,7 @@ class ServicesAPI:
     def __init__(self, client: _ActionPerformer):
         self.client = client
 
-    def get_area_codes(self) -> List[AreaCode]:
+    def area_codes(self) -> List[AreaCode]:
         """Fetch all area codes available for rental or verification services, and their associated US state.
 
         Returns:
@@ -23,7 +23,7 @@ class ServicesAPI:
         response = self.client._perform_action(action)
         return [AreaCode.from_api(i) for i in response.data]
 
-    def get_services(self, number_type: NumberType, reservation_type: ReservationType) -> List[Service]:
+    def list(self, number_type: NumberType, reservation_type: ReservationType) -> List[Service]:
         """Fetch all services available for rental or verification.
 
         Use 'allservices' if your desired service is not listed here.

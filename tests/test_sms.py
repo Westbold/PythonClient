@@ -29,7 +29,7 @@ from unittest.mock import patch
 
 
 def test_list_sms_by_to_number(tv, mock_http_from_disk):
-    sms_list = tv.sms.list_sms(to_number="+1234567890")
+    sms_list = tv.sms.list(to_number="+1234567890")
 
     sms_messages = [x.to_api() for x in sms_list]
     assert all(
@@ -39,7 +39,7 @@ def test_list_sms_by_to_number(tv, mock_http_from_disk):
 
 
 def test_list_sms_by_reservation_type(tv, mock_http_from_disk):
-    sms_list = tv.sms.list_sms(to_number="+1234567890", reservation_type=ReservationType.RENEWABLE)
+    sms_list = tv.sms.list(to_number="+1234567890", reservation_type=ReservationType.RENEWABLE)
 
     sms_messages = [x.to_api() for x in sms_list]
     assert all(
@@ -49,7 +49,7 @@ def test_list_sms_by_reservation_type(tv, mock_http_from_disk):
 
 
 def test_list_sms_by_renewable_rental_compact(tv, mock_http_from_disk, renewable_rental_compact):
-    sms_list = tv.sms.list_sms(data=renewable_rental_compact)
+    sms_list = tv.sms.list(data=renewable_rental_compact)
 
     sms_messages = [x.to_api() for x in sms_list]
     assert all(
@@ -59,7 +59,7 @@ def test_list_sms_by_renewable_rental_compact(tv, mock_http_from_disk, renewable
 
 
 def test_list_sms_by_renewable_rental_expanded(tv, mock_http_from_disk, renewable_rental_expanded):
-    sms_list = tv.sms.list_sms(data=renewable_rental_expanded)
+    sms_list = tv.sms.list(data=renewable_rental_expanded)
 
     sms_messages = [x.to_api() for x in sms_list]
     assert all(
@@ -69,7 +69,7 @@ def test_list_sms_by_renewable_rental_expanded(tv, mock_http_from_disk, renewabl
 
 
 def test_list_sms_by_nonrenewable_rental_compact(tv, mock_http_from_disk, nonrenewable_rental_compact):
-    sms_list = tv.sms.list_sms(data=nonrenewable_rental_compact)
+    sms_list = tv.sms.list(data=nonrenewable_rental_compact)
 
     sms_messages = [x.to_api() for x in sms_list]
     assert all(
@@ -79,7 +79,7 @@ def test_list_sms_by_nonrenewable_rental_compact(tv, mock_http_from_disk, nonren
 
 
 def test_list_sms_by_nonrenewable_rental_expanded(tv, mock_http_from_disk, nonrenewable_rental_expanded):
-    sms_list = tv.sms.list_sms(data=nonrenewable_rental_expanded)
+    sms_list = tv.sms.list(data=nonrenewable_rental_expanded)
 
     sms_messages = [x.to_api() for x in sms_list]
     assert all(
@@ -89,7 +89,7 @@ def test_list_sms_by_nonrenewable_rental_expanded(tv, mock_http_from_disk, nonre
 
 
 def test_list_sms_by_verification_compact(tv, mock_http_from_disk, verification_compact):
-    sms_list = tv.sms.list_sms(data=verification_compact)
+    sms_list = tv.sms.list(data=verification_compact)
 
     sms_messages = [x.to_api() for x in sms_list]
     assert all(
@@ -99,7 +99,7 @@ def test_list_sms_by_verification_compact(tv, mock_http_from_disk, verification_
 
 
 def test_list_sms_by_verification_expanded(tv, mock_http_from_disk, verification_expanded):
-    sms_list = tv.sms.list_sms(data=verification_expanded)
+    sms_list = tv.sms.list(data=verification_expanded)
 
     sms_messages = [x.to_api() for x in sms_list]
     assert all(
@@ -114,7 +114,7 @@ def test_incoming_sms_timeout(mock_monotonic, mock_sleep, tv, mock_http_from_dis
     # Mock time.monotonic to simulate timeout
     mock_monotonic.side_effect = [0, 5, 11]  # Start, during, timeout
 
-    sms_iterator = tv.sms.incoming_sms(timeout=10.0, polling_interval=1.0)
+    sms_iterator = tv.sms.incoming(timeout=10.0, polling_interval=1.0)
     sms_messages = list(sms_iterator)
 
     # Should return empty list due to timeout
@@ -138,7 +138,7 @@ def test_incoming_sms_with_messages(mock_sleep, tv, mock_http_from_disk):
     )
 
     # Mock the list_sms method to return our test message
-    original_list_sms = tv.sms.list_sms
+    original_list_sms = tv.sms.list
     call_count = 0
 
     def mock_list_sms(*args, **kwargs):
@@ -150,10 +150,10 @@ def test_incoming_sms_with_messages(mock_sleep, tv, mock_http_from_disk):
         return []
 
     sms = tv.sms
-    sms.list_sms = mock_list_sms
+    sms.list = mock_list_sms
 
     try:
-        sms_iterator = sms.incoming_sms(timeout=0.05, polling_interval=1.0)
+        sms_iterator = sms.incoming(timeout=0.05, polling_interval=1.0)
         sms_messages = list(sms_iterator)
         assert len(sms_messages) == 1
         assert sms_messages[0].id == "sms_123"

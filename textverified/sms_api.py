@@ -25,7 +25,7 @@ class SMSApi:
     def __init__(self, client: _ActionPerformer):
         self.client = client
 
-    def list_sms(
+    def list(
         self,
         data: Union[
             NonrenewableRentalCompact,
@@ -94,7 +94,7 @@ class SMSApi:
 
         return PaginatedList(request_json=response.data, parse_item=Sms.from_api, api_context=self.client)
 
-    def incoming_sms(
+    def incoming(
         self,
         data: Union[
             NonrenewableRentalCompact,
@@ -163,7 +163,7 @@ class SMSApi:
         # wait up to [timeout] seconds for a NEW message
         while time.monotonic() - start_time < timeout:
             time.sleep(polling_interval)  # Polling interval
-            all_messages = self.list_sms(data=data, to_number=to_number, reservation_type=reservation_type)
+            all_messages = self.list(data=data, to_number=to_number, reservation_type=reservation_type)
             unseen_messages = list(
                 filter(lambda msg: msg.id not in already_seen and msg.created_at > earliest_msg, all_messages)
             )

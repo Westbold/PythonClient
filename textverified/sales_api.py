@@ -12,7 +12,7 @@ class SalesAPI:
     def __init__(self, client: _ActionPerformer):
         self.client = client
 
-    def get_all_sales(self) -> PaginatedList[ReservationSaleCompact]:
+    def list(self) -> PaginatedList[ReservationSaleCompact]:
         """Fetch all sales associated with this account.
 
         Returns:
@@ -25,7 +25,7 @@ class SalesAPI:
             request_json=response.data, parse_item=ReservationSaleCompact.from_api, api_context=self.client
         )
 
-    def get_sale(self, sale_id: Union[str, ReservationSaleCompact, ReservationSaleExpanded]) -> ReservationSaleExpanded:
+    def get(self, sale_id: Union[str, ReservationSaleCompact, ReservationSaleExpanded]) -> ReservationSaleExpanded:
         """Retrieve details of a specific sale
 
         Args:

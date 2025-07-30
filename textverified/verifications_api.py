@@ -18,7 +18,7 @@ class VerificationsAPI:
     def __init__(self, client: _ActionPerformer):
         self.client = client
 
-    def create_verification(
+    def create(
         self,
         data: NewVerificationRequest = None,
         *,
@@ -95,7 +95,7 @@ class VerificationsAPI:
 
         return VerificationExpanded.from_api(response.data)
 
-    def get_verification_pricing(
+    def pricing(
         self,
         data: Union[NewVerificationRequest, VerificationPriceCheckRequest] = None,
         *,
@@ -170,7 +170,7 @@ class VerificationsAPI:
 
         return PricingSnapshot.from_api(response.data)
 
-    def get_verification_details(
+    def details(
         self, verification_id: Union[str, VerificationCompact, VerificationExpanded]
     ) -> VerificationExpanded:
         """Get detailed information about a verification by ID.
@@ -199,7 +199,7 @@ class VerificationsAPI:
 
         return VerificationExpanded.from_api(response.data)
 
-    def get_verifications(self) -> PaginatedList[VerificationCompact]:
+    def list(self) -> PaginatedList[VerificationCompact]:
         """Get a paginated list of all verifications associated with this account.
 
         Returns:
@@ -213,7 +213,7 @@ class VerificationsAPI:
             request_json=response.data, parse_item=VerificationCompact.from_api, api_context=self.client
         )
 
-    def cancel_reservation(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
+    def cancel(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
         """Cancel an active verification.
 
         This will stop the verification process and may result in a refund depending on the verification status.
@@ -242,7 +242,7 @@ class VerificationsAPI:
 
         return True
 
-    def reactivate_verification(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
+    def reactivate(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
         """Reactivate a previously cancelled or expired verification.
 
         This allows you to resume using a verification that was previously cancelled or has expired,
@@ -275,7 +275,7 @@ class VerificationsAPI:
 
         return True
 
-    def reuse_verification(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
+    def reuse(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
         """Reuse an existing verification for another service verification.
 
         This allows you to use the same verification number for multiple service verifications,
@@ -308,7 +308,7 @@ class VerificationsAPI:
 
         return True
 
-    def report_verification(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
+    def report(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> bool:
         """Report an issue with a verification.
 
         Use this method to report problems with a verification, such as not receiving SMS/calls,

@@ -7,7 +7,7 @@ import datetime
 
 
 def test_accounts_get(tv, mock_http_from_disk):
-    account_obj = tv.accounts.get_details()
+    account_obj = tv.accounts.me()
     assert isinstance(account_obj, Account)
 
     # Make sure we match the expected account details

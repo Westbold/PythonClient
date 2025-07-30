@@ -19,7 +19,7 @@ class BillingCycleAPI:
     def __init__(self, client: _ActionPerformer):
         self.client = client
 
-    def get_billing_cycles(self) -> PaginatedList[BillingCycleCompact]:
+    def list(self) -> PaginatedList[BillingCycleCompact]:
         """Fetch all billing cycles associated with this account."""
         action = _Action(method="GET", href="/api/pub/v2/billing-cycles")
         response = self.client._perform_action(action)
@@ -28,7 +28,7 @@ class BillingCycleAPI:
             request_json=response.data, parse_item=BillingCycleCompact.from_api, api_context=self.client
         )
 
-    def get_billing_cycle(self, billing_cycle_id: str) -> BillingCycleExpanded:
+    def get(self, billing_cycle_id: str) -> BillingCycleExpanded:
         """Get the details of a billing cycle by ID.
 
         Args:
@@ -42,7 +42,7 @@ class BillingCycleAPI:
 
         return BillingCycleExpanded.from_api(response.data)
 
-    def update_billing_cycle(
+    def update(
         self,
         billing_cycle: Union[str, BillingCycleCompact, BillingCycleExpanded],
         data: BillingCycleUpdateRequest = None,
@@ -90,7 +90,7 @@ class BillingCycleAPI:
 
         return True
 
-    def get_billing_invoices(
+    def invoices(
         self, billing_cycle_id: Union[str, BillingCycleCompact, BillingCycleExpanded]
     ) -> PaginatedList[BillingCycleRenewalInvoice]:
         """Get invoices for a specific billing cycle.
@@ -121,7 +121,7 @@ class BillingCycleAPI:
             request_json=response.data, parse_item=BillingCycleRenewalInvoice.from_api, api_context=self.client
         )
 
-    def preview_next_billing_cycle(
+    def preview(
         self, billing_cycle_id: Union[str, BillingCycleCompact, BillingCycleExpanded]
     ) -> BillingCycleRenewalInvoice:
         """Preview the next billing cycle invoice.
@@ -149,7 +149,7 @@ class BillingCycleAPI:
         response = self.client._perform_action(action)
         return BillingCycleRenewalInvoicePreview.from_api(response.data)
 
-    def renew_billing_cycle(self, billing_cycle_id: Union[str, BillingCycleCompact, BillingCycleExpanded]) -> bool:
+    def renew(self, billing_cycle_id: Union[str, BillingCycleCompact, BillingCycleExpanded]) -> bool:
         """Renew the active rentals on your billing cycle.
         Will not renew overdue rentals. To renew overdue rentals, you must explicitly call `textverified.reservations.renew_overdue_renewable_reservation` on each overdue rental.
 

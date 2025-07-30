@@ -19,7 +19,7 @@ class WakeAPI:
     def __init__(self, client: _ActionPerformer):
         self.client = client
 
-    def create_wake_request(
+    def create(
         self,
         reservation_id: Union[
             str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
@@ -69,7 +69,7 @@ class WakeAPI:
 
         return WakeResponse.from_api(response.data)
 
-    def get_wake_request(self, wake_request_id: Union[str, WakeResponse]) -> WakeResponse:
+    def get(self, wake_request_id: Union[str, WakeResponse]) -> WakeResponse:
         """Get detailed information about a wake request by ID.
 
         Args:
@@ -153,7 +153,7 @@ class WakeAPI:
         Returns:
             WakeResponse: The wake response containing the usage window start time, end time, and other details.
         """
-        wake_response = self.create_wake_request(reservation_id)
+        wake_response = self.create(reservation_id)
         if not wake_response:
             raise ValueError("Failed to create wake request.")
 
@@ -177,7 +177,7 @@ class WakeAPI:
         """
         # Get full object if given an ID
         if isinstance(wake_request_id, str):
-            wake_request_id = self.get_wake_request(wake_request_id)
+            wake_request_id = self.get(wake_request_id)
 
         if not isinstance(wake_request_id, WakeResponse):
             raise ValueError("wake_request_id must be a valid ID or instance of WakeResponse.")

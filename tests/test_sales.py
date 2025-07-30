@@ -7,7 +7,7 @@ import datetime
 
 
 def test_get_all_sales(tv, mock_http_from_disk):
-    sales = tv.sales.get_all_sales()
+    sales = tv.sales.list()
 
     sales_list = [x.to_api() for x in sales]
     assert all(
@@ -18,7 +18,7 @@ def test_get_all_sales(tv, mock_http_from_disk):
 
 def test_get_sale(tv, mock_http_from_disk):
     sale_id = "string"
-    sale = tv.sales.get_sale(sale_id)
+    sale = tv.sales.get(sale_id)
 
     assert isinstance(sale, ReservationSaleExpanded)
     assert dict_subset(sale.to_api(), mock_http_from_disk.last_response) is None

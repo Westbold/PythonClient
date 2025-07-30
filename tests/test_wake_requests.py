@@ -38,7 +38,7 @@ def test_create_wake_request_by_id(tv, mock_http_from_disk):
     )
 
     reservation_id = "string"
-    wake_response = tv.wake_requests.create_wake_request(reservation_id)
+    wake_response = tv.wake_requests.create(reservation_id)
 
     assert isinstance(wake_response, WakeResponse)
     assert dict_subset(wake_response.to_api(), mock_http_from_disk.last_response) is None
@@ -49,7 +49,7 @@ def test_create_wake_request_by_renewable_instance(tv, mock_http_from_disk, rene
         create_move_action_hook("get", "https://textverified.com/api/pub/v2/wake-requests/wake_string")
     )
 
-    wake_response = tv.wake_requests.create_wake_request(renewable_rental_compact)
+    wake_response = tv.wake_requests.create(renewable_rental_compact)
 
     assert isinstance(wake_response, WakeResponse)
     assert dict_subset(wake_response.to_api(), mock_http_from_disk.last_response) is None
@@ -60,7 +60,7 @@ def test_create_wake_request_by_nonrenewable_instance(tv, mock_http_from_disk, n
         create_move_action_hook("get", "https://textverified.com/api/pub/v2/wake-requests/wake_string")
     )
 
-    wake_response = tv.wake_requests.create_wake_request(nonrenewable_rental_compact)
+    wake_response = tv.wake_requests.create(nonrenewable_rental_compact)
 
     assert isinstance(wake_response, WakeResponse)
     assert dict_subset(wake_response.to_api(), mock_http_from_disk.last_response) is None
@@ -68,7 +68,7 @@ def test_create_wake_request_by_nonrenewable_instance(tv, mock_http_from_disk, n
 
 def test_get_wake_request_by_id(tv, mock_http_from_disk):
     wake_request_id = "string"
-    wake_response = tv.wake_requests.get_wake_request(wake_request_id)
+    wake_response = tv.wake_requests.get(wake_request_id)
 
     assert isinstance(wake_response, WakeResponse)
     assert dict_subset(wake_response.to_api(), mock_http_from_disk.last_response) is None
@@ -79,7 +79,7 @@ def test_get_wake_request_by_instance(tv, mock_http_from_disk):
     test_get_wake_request_by_id(tv, mock_http_from_disk)  # Load the wake request
     wake_request = WakeResponse.from_api(mock_http_from_disk.last_response)
 
-    wake_response = tv.wake_requests.get_wake_request(wake_request)
+    wake_response = tv.wake_requests.get(wake_request)
 
     assert isinstance(wake_response, WakeResponse)
     assert dict_subset(wake_response.to_api(), mock_http_from_disk.last_response) is None
@@ -127,7 +127,7 @@ def test_wait_for_wake_request_by_id(mock_sleep, tv, mock_http_from_disk):
             reservation_id="string",
         )
 
-    wake_requests.get_wake_request = mock_get_wake_request
+    wake_requests.get = mock_get_wake_request
 
     wake_request_id = "string"
     result = wake_requests.wait_for_wake_request(wake_request_id)
@@ -227,7 +227,7 @@ def test_wait_for_number_wake_by_id(mock_sleep, tv, mock_http_from_disk):
             reservation_id=reservation_id if isinstance(reservation_id, str) else reservation_id.id,
         )
 
-    wake_requests.create_wake_request = mock_create_wake_request
+    wake_requests.create = mock_create_wake_request
 
     reservation_id = "string"
     result = wake_requests.wait_for_number_wake(reservation_id)
@@ -262,7 +262,7 @@ def test_wait_for_number_wake_by_renewable_instance(mock_sleep, tv, mock_http_fr
             reservation_id=reservation_id if isinstance(reservation_id, str) else reservation_id.id,
         )
 
-    wake_requests.create_wake_request = mock_create_wake_request
+    wake_requests.create = mock_create_wake_request
 
     result = wake_requests.wait_for_number_wake(renewable_rental_compact)
 
@@ -298,7 +298,7 @@ def test_wait_for_number_wake_by_nonrenewable_instance(
             reservation_id=reservation_id if isinstance(reservation_id, str) else reservation_id.id,
         )
 
-    wake_requests.create_wake_request = mock_create_wake_request
+    wake_requests.create = mock_create_wake_request
 
     result = wake_requests.wait_for_number_wake(nonrenewable_rental_compact)
 
@@ -310,7 +310,7 @@ def test_wait_for_number_wake_by_nonrenewable_instance(
 def test_wait_for_number_wake_create_failure(tv, mock_http_from_disk):
     """Test error handling when wake request creation fails."""
     wake_requests = tv.wake_requests
-    wake_requests.create_wake_request = lambda x: None
+    wake_requests.create = lambda x: None
 
-    with pytest.raises(ValueError, match="Failed to create wake request"):
+    with pytest.raises(ValueError, match="Failed to create wake request."):
         wake_requests.wait_for_number_wake("string")
