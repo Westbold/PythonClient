@@ -1,6 +1,6 @@
 from .action import _ActionPerformer, _Action
 from typing import List, Union
-from .generated.generated_enums import ReservationSaleCompact, ReservationSaleExpanded
+from .data import ReservationSaleCompact, ReservationSaleExpanded
 from .paginated_list import PaginatedList
 
 

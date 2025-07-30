@@ -2,7 +2,7 @@ import pytest
 from .fixtures import tv, mock_http_from_disk, mock_http, dict_subset
 from textverified.textverified import TextVerified, BearerToken
 from textverified.action import _Action
-from textverified.generated.generated_enums import AreaCode, Service
+from textverified.data import AreaCode, Service, NumberType, ReservationType
 import datetime
 
 
@@ -18,7 +18,7 @@ def test_get_area_codes(tv, mock_http_from_disk):
 
 
 def test_get_services(tv, mock_http_from_disk):
-    services = tv.services.get_services()
+    services = tv.services.get_services(NumberType.MOBILE, ReservationType.VERIFICATION)
 
     services_list = [x.to_api() for x in services]
     assert all(

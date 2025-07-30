@@ -2,8 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import setuptools
-import tomllib
 from pathlib import Path
+import sys
+
+if sys.version_info < (3, 11):
+    import tomli as tomllib
+else:
+    import tomllib
 
 # Load project metadata from pyproject.toml
 pyproject_path = Path(__file__).parent / "pyproject.toml"

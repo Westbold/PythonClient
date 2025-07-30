@@ -1,7 +1,7 @@
 from .action import _ActionPerformer, _Action
 from typing import List, Union
 from .paginated_list import PaginatedList
-from .generated.generated_enums import (
+from .data import (
     VerificationPriceCheckRequest,
     NewVerificationRequest,
     PricingSnapshot,
@@ -80,8 +80,13 @@ class VerificationsAPI:
         if not data or not data.service_name or not data.capability:
             raise ValueError("All required fields must be provided: service_name and capability.")
 
+        if data.service_name == "allservices":
+            raise ValueError(
+                "Allservices is not supported for verifications. Please use a specific service name, or 'servicenotlisted'/'servicenotlistedvoice'."
+            )
+
         action = _Action(method="POST", href="/api/pub/v2/verifications")
-        response = self.client._perform_action(action, json=data)
+        response = self.client._perform_action(action, json=data.to_api())
 
         # Note - response.data is another action to follow to get Verification details
 

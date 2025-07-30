@@ -1,6 +1,6 @@
 from .action import _Action, _ActionPerformer
 from dataclasses import dataclass
-from .generated.generated_enums import Account
+from .data import Account
 
 
 class AccountAPI:

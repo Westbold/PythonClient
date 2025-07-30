@@ -29,7 +29,7 @@ from .wake_api import WakeAPI
 from .paginated_list import PaginatedList
 
 # Import generated enums
-from .generated.generated_enums import *
+from .data import *
 
 # Configurable, lazy-initialized static instance
 _static_instance: Optional[TextVerified] = None
@@ -41,6 +41,8 @@ def _get_static_instance() -> TextVerified:
     if _static_instance is None:
         api_key = os.environ.get("TEXTVERIFIED_API_KEY")
         api_username = os.environ.get("TEXTVERIFIED_API_USERNAME")
+        base_url = os.environ.get("TEXTVERIFIED_BASE_URL", "https://www.textverified.com")
+        user_agent = os.environ.get("TEXTVERIFIED_USER_AGENT", "TextVerified-Python-Client/0.1.0")
 
         if not api_key or not api_username:
             raise ValueError(
@@ -48,15 +50,24 @@ def _get_static_instance() -> TextVerified:
                 "Either call configure() or set TEXTVERIFIED_API_KEY and TEXTVERIFIED_API_USERNAME environment variables."
             )
 
-        _static_instance = TextVerified(api_key=api_key, api_username=api_username)
+        _static_instance = TextVerified(
+            api_key=api_key, api_username=api_username, base_url=base_url, user_agent=user_agent
+        )
 
     return _static_instance
 
 
-def configure(api_key: str, api_username: str, base_url: str = "https://www.textverified.com") -> None:
+def configure(
+    api_key: str,
+    api_username: str,
+    base_url: str = "https://www.textverified.com",
+    user_agent: str = "TextVerified-Python-Client/0.1.0",
+) -> None:
     """Configure the static TextVerified instance."""
     global _static_instance
-    _static_instance = TextVerified(api_key=api_key, api_username=api_username, base_url=base_url)
+    _static_instance = TextVerified(
+        api_key=api_key, api_username=api_username, base_url=base_url, user_agent=user_agent
+    )
 
 
 # Lazy property implementation using __getattr__ at module level

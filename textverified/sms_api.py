@@ -1,6 +1,6 @@
 from .action import _ActionPerformer, _Action
 from typing import List, Union, Iterator
-from .generated.generated_enums import (
+from .data import (
     Sms,
     NonrenewableRentalCompact,
     NonrenewableRentalExpanded,
@@ -123,7 +123,7 @@ class SMSApi:
             data (Union[NonrenewableRentalCompact, NonrenewableRentalExpanded, RenewableRentalCompact, RenewableRentalExpanded, VerificationCompact, VerificationExpanded], optional): A rental or verification object to monitor for incoming SMS. Defaults to None.
             to_number (str, optional): Filter incoming SMS by destination phone number. Cannot be used together with data parameter. Defaults to None.
             reservation_type (ReservationType, optional): Filter incoming SMS by reservation type. Cannot be used when providing a data object. Defaults to None.
-            timeout (float, optional): Maximum time in seconds to wait for incoming messages. Defaults to 10.0.
+            timeout (float, optional): Maximum time in seconds to wait for incoming messages. If negative, no timeout will be applied. Defaults to 10.0.
             polling_interval (float, optional): Time in seconds between polling attempts. Defaults to 1.0.
             wake_number (bool, optional): Whether to automatically wake the rental before polling. Only works with rental objects, not verifications. Defaults to False.
 
@@ -149,6 +149,9 @@ class SMSApi:
                 raise ValueError("Cannot wake a verification.")
             else:
                 raise ValueError("Must provide reservation data to auto-wake wake the number.")
+
+        if timeout < 0:
+            timeout = float("inf")
 
         earliest_msg = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
             seconds=polling_interval

@@ -12,7 +12,7 @@ import re
 from urllib.parse import urlparse, parse_qs
 from typing import List, Dict, Optional
 from itertools import chain
-from textverified.generated.generated_enums import (
+from textverified.data import (
     ReservationState,
     RefundAction,
     VerificationExpanded,

@@ -1,6 +1,6 @@
 from .action import _ActionPerformer, _Action
 from typing import List
-from .generated.generated_enums import AreaCode, Service
+from .data import AreaCode, Service, NumberType, ReservationType
 
 
 class ServicesAPI:
@@ -23,16 +23,25 @@ class ServicesAPI:
         response = self.client._perform_action(action)
         return [AreaCode.from_api(i) for i in response.data]
 
-    def get_services(self) -> List[Service]:
+    def get_services(self, number_type: NumberType, reservation_type: ReservationType) -> List[Service]:
         """Fetch all services available for rental or verification.
 
         Use 'allservices' if your desired service is not listed here.
 
+        Args:
+            number_type (NumberType): The type of number. Most likely NumberType.MOBILE.
+            reservation_type (ReservationType): The type of reservation (e.g., renewable, nonrenewable, verification).
         Returns:
             List[Service]: A list of services available for rental or verification.
         """
         action = _Action(method="GET", href="/api/pub/v2/services")
-        response = self.client._perform_action(action)
+        response = self.client._perform_action(
+            action,
+            params={
+                "numberType": number_type.value if number_type else None,
+                "reservationType": reservation_type.value,
+            },
+        )
         return [Service.from_api(i) for i in response.data]
 
     # Pricing endpoints in verifications and rentals

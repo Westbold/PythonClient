@@ -10,7 +10,7 @@ from .fixtures import (
 )
 from textverified.textverified import TextVerified, BearerToken
 from textverified.action import _Action
-from textverified.generated.generated_enums import (
+from textverified.data import (
     RenewableRentalCompact,
     RenewableRentalExpanded,
     NonrenewableRentalCompact,

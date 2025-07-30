@@ -2,7 +2,7 @@ import pytest
 from .fixtures import tv, mock_http_from_disk, mock_http
 from textverified.textverified import TextVerified, BearerToken
 from textverified.action import _Action
-from textverified.generated.generated_enums import Account
+from textverified.data import Account
 import datetime
 
 

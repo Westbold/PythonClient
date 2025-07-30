@@ -2,8 +2,12 @@
 
 import os
 import sys
-import tomllib
 from pathlib import Path
+
+if sys.version_info < (3, 11):
+    import tomli as tomllib
+else:
+    import tomllib
 
 # -- Path setup --------------------------------------------------------------
 sys.path.insert(0, os.path.abspath(".."))

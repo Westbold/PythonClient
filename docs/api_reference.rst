@@ -79,7 +79,7 @@ Generated Enums
 
 This module contains auto-generated enums and dataclasses from the API schema.
 
-.. automodule:: textverified.generated.generated_enums
+.. automodule:: textverified.data
    :members:
    :undoc-members:
    :exclude-members: __weakref__, __dataclass_fields__, __dataclass_params__, __match_args__

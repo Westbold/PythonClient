@@ -150,7 +150,7 @@ class DateTimeNode(CompilerNode):
         return f"{instance_reference}.isoformat()"
 
     def get_from_api_method(self, args) -> str:
-        return f"datetime.datetime.fromisoformat({args})"
+        return f"dateutil.parser.parse({args})"
 
     @property
     def api_example(self):
@@ -194,7 +194,10 @@ class EnumNode(CompilerNode):
         enum_class += "\n"
         enum_class += f"    @classmethod\n"
         enum_class += f"    def from_api(cls, value: str) -> '{self.annotation_name}':\n"
-        enum_class += f"        return cls(value)\n"
+        enum_class += f"        for member in cls:\n"
+        enum_class += f"            if member.value.lower() == value.lower():\n"
+        enum_class += f"                return member\n"
+        enum_class += f"        raise ValueError(f'Unknown {self.name} value: {value}')\n"
 
         return enum_class
 
@@ -626,8 +629,8 @@ if __name__ == "__main__":
             compile_list.append(node)
 
     # Compile all nodes into Python classes
-    os.makedirs("./textverified/generated/", exist_ok=True)
-    with open("./textverified/generated/generated_enums.py", "w") as f:
+    os.makedirs("./textverified/data/", exist_ok=True)
+    with open("./textverified/data/dtypes.py", "w") as f:
         f.write(
             """
 \"\"\"
@@ -638,6 +641,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Dict, List, Any
 import datetime
+import dateutil.parser
         """.strip()
         )
         f.write("\n\n")

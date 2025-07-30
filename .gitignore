@@ -13,7 +13,7 @@ docs/_templates/
 *.swp
 *.swo
 
-# OS
+# OSX
 .DS_Store
 Thumbs.db
 
@@ -44,3 +44,7 @@ MANIFEST
 venv/
 env/
 ENV/
+
+# Secrets
+*.env
+env.bat
