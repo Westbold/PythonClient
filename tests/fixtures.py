@@ -274,7 +274,6 @@ def _find_mock_file(request_path: str, file_list: List[Path]) -> Optional[Dict]:
         file_path_pattern = (
             "^" + re.sub(r"\{([^}/?&]+)\}", r"[^\/}?&.]+", str(file_name)) + "$"
         )  # file path with 1 group for each path parameter
-        print(request_filename, "matches", file_path_pattern, not not re.fullmatch(file_path_pattern, request_filename))
 
         if re.fullmatch(file_path_pattern, request_filename):
             return {
