@@ -123,6 +123,7 @@ class SMSApi:
         timeout: float = 10.0,
         polling_interval: float = 1.0,
         wake_number: bool = False,
+        since: datetime.datetime = None,
     ) -> Iterator[Sms]:
         """Wait for and yield incoming SMS messages in real-time.
 
@@ -139,7 +140,7 @@ class SMSApi:
             timeout (float, optional): Maximum time in seconds to wait for incoming messages. If negative, no timeout will be applied. Defaults to 10.0.
             polling_interval (float, optional): Time in seconds between polling attempts. Defaults to 1.0.
             wake_number (bool, optional): Whether to automatically wake the rental before polling. Only works with rental objects, not verifications. Defaults to False.
-
+            since (datetime.datetime, optional): Only yield messages created after this timestamp. Defaults to datetime.datetime.now().
         Raises:
             ValueError: If wake_number is True but no rental data is provided, or if attempting to wake a verification.
 
@@ -166,9 +167,12 @@ class SMSApi:
         if timeout < 0:
             timeout = float("inf")
 
-        earliest_msg = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
-            seconds=polling_interval
-        )  # allow some leniency
+        if since is None:
+            since = datetime.datetime.now(datetime.timezone.utc)
+        if not isinstance(since, datetime.datetime):
+            raise ValueError("since must be a datetime object.")
+
+        earliest_msg = since - datetime.timedelta(seconds=polling_interval)  # allow some leniency
         start_time = time.monotonic()
 
         already_seen = set()
