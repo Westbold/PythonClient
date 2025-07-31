@@ -21,7 +21,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.7.1'
+        python-version: '3.8.0'
     
     - name: Install dependencies
       run: |
@@ -80,7 +80,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.7.1'
+        python-version: '3.8.0'
 
     - name: Install dependencies
       run: |
@@ -156,7 +156,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.7.1'
+        python-version: '3.8.0'
     
     - name: Install dependencies
       run: |
@@ -217,7 +217,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.7.1'
+        python-version: '3.8.0'
 
     - name: Install dependencies
       run: |
