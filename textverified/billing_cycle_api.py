@@ -79,7 +79,7 @@ class BillingCycleAPI:
             else BillingCycleUpdateRequest(reminders_enabled=reminders_enabled, nickname=nickname)
         )
 
-        if not billing_cycle_id:
+        if not billing_cycle_id or not isinstance(billing_cycle_id, str):
             raise ValueError("billing_cycle must be a valid ID or instance of BillingCycleCompact/Expanded.")
 
         if not update_request or (not update_request.reminders_enabled and not update_request.nickname):
@@ -111,7 +111,7 @@ class BillingCycleAPI:
             else billing_cycle_id
         )
 
-        if not billing_cycle_id:
+        if not billing_cycle_id or not isinstance(billing_cycle_id, str):
             raise ValueError("billing_cycle_id must be a valid ID or instance of BillingCycleCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/billing-cycles/{billing_cycle_id}/invoices")
@@ -142,7 +142,7 @@ class BillingCycleAPI:
             else billing_cycle_id
         )
 
-        if not billing_cycle_id:
+        if not billing_cycle_id or not isinstance(billing_cycle_id, str):
             raise ValueError("billing_cycle_id must be a valid ID or instance of BillingCycleCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/billing-cycles/{billing_cycle_id}/next-invoice")
@@ -169,7 +169,7 @@ class BillingCycleAPI:
             else billing_cycle_id
         )
 
-        if not billing_cycle_id:
+        if not billing_cycle_id or not isinstance(billing_cycle_id, str):
             raise ValueError("billing_cycle_id must be a valid ID or instance of BillingCycleCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/billing-cycles/{billing_cycle_id}/renew")

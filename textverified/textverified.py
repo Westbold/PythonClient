@@ -44,7 +44,7 @@ class TextVerified(_ActionPerformer):
     user_agent: str = "TextVerified-Python-Client/0.1.0"
 
     @property
-    def accounts(self) -> AccountAPI:
+    def account(self) -> AccountAPI:
         return AccountAPI(self)
 
     @property
@@ -136,7 +136,7 @@ class TextVerified(_ActionPerformer):
         response = self.session.request(method=method, url=href, headers=headers, verify=verify, **kwargs)
 
         TextVerified.__raise_for_status(method, href, response)
-        return _ActionResponse(data=response.json(), headers=response.headers)
+        return _ActionResponse(data=response.json() if response.text else {}, headers=response.headers)
 
     def __perform_action_external(self, method: str, href: str, **kwargs) -> _ActionResponse:
         """External action performance without authorization"""
@@ -148,7 +148,7 @@ class TextVerified(_ActionPerformer):
         )
 
         TextVerified.__raise_for_status(method, href, response)
-        return _ActionResponse(data=response.json(), headers=response.headers)
+        return _ActionResponse(data=response.json() if response.text else {}, headers=response.headers)
 
     @classmethod
     def __raise_for_status(cls, method: str, href: str, response: requests.Response):

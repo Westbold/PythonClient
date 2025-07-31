@@ -27,6 +27,7 @@ from .sms_api import SMSApi
 from .verifications_api import VerificationsAPI
 from .wake_api import WakeAPI
 from .paginated_list import PaginatedList
+from .exceptions import TextVerifiedError
 
 # Import generated enums
 from .data import *
@@ -94,8 +95,8 @@ class _LazyAPI:
 
 
 # Create lazy API wrappers with documentation
-accounts = _LazyAPI(
-    "accounts",
+account = _LazyAPI(
+    "account",
     """
 Static access to account management functionality.
 
@@ -104,13 +105,13 @@ This is a static wrapper around the AccountAPI class that uses the globally
 configured TextVerified instance.
 
 Example:
-    from textverified import accounts
+    from textverified import account
     
     # Get account information
-    account_info = accounts.me()
+    account_info = account.me()
     
     # Get account balance
-    balance = accounts.balance()
+    balance = account.balance()
 """,
 )
 
@@ -263,10 +264,11 @@ __all__ = [
     "TextVerified",
     "BearerToken",
     "PaginatedList",
+    "TextVerifiedError",
     # Configuration
     "configure",
     # Static API access
-    "accounts",
+    "account",
     "billing_cycles",
     "reservations",
     "sales",
@@ -283,4 +285,4 @@ __all__ = [
     "SMSApi",
     "VerificationsAPI",
     "WakeAPI",
-]
+] + data.__all__

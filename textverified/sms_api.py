@@ -2,6 +2,7 @@ from .action import _ActionPerformer, _Action
 from typing import List, Union, Iterator
 from .data import (
     Sms,
+    Reservation,
     NonrenewableRentalCompact,
     NonrenewableRentalExpanded,
     RenewableRentalCompact,
@@ -28,6 +29,7 @@ class SMSApi:
     def list(
         self,
         data: Union[
+            Reservation,
             NonrenewableRentalCompact,
             NonrenewableRentalExpanded,
             RenewableRentalCompact,
@@ -45,7 +47,7 @@ class SMSApi:
         When providing a rental or verification object, SMS messages for that specific number will be returned.
 
         Args:
-            data (Union[NonrenewableRentalCompact, NonrenewableRentalExpanded, RenewableRentalCompact, RenewableRentalExpanded, VerificationCompact, VerificationExpanded], optional): A rental or verification object to get SMS messages for. The phone number will be extracted from this object. Defaults to None.
+            data (Union[Reservation, NonrenewableRentalCompact, NonrenewableRentalExpanded, RenewableRentalCompact, RenewableRentalExpanded, VerificationCompact, VerificationExpanded], optional): A rental or verification object to get SMS messages for. The phone number will be extracted from this object. Defaults to None.
             to_number (str, optional): Filter SMS messages by the destination phone number. Cannot be used together with data parameter. Defaults to None.
             reservation_type (ReservationType, optional): Filter SMS messages by reservation type (renewable, non-renewable, verification). Cannot be used when providing a data object. Defaults to None.
 
@@ -58,24 +60,35 @@ class SMSApi:
 
         # Extract needed data from provided objects
         reservation_id = None
-        if data:
-            if data.number and to_number:
+        if data and isinstance(
+            data,
+            (
+                NonrenewableRentalCompact,
+                NonrenewableRentalExpanded,
+                RenewableRentalCompact,
+                RenewableRentalExpanded,
+                VerificationCompact,
+                VerificationExpanded,
+            ),
+        ):
+            if hasattr(data, "number") and to_number:
                 raise ValueError("Cannot specify both rental/verification data and to_number.")
             to_number = data.number
 
-            if isinstance(
-                data,
-                (
-                    NonrenewableRentalCompact,
-                    NonrenewableRentalExpanded,
-                    RenewableRentalCompact,
-                    RenewableRentalExpanded,
-                ),
-            ):
-                reservation_id = data.id
-
             if reservation_type is not None:
                 raise ValueError("Cannot specify reservation_type when using a rental or verification object.")
+
+        if isinstance(
+            data,
+            (
+                Reservation,
+                NonrenewableRentalCompact,
+                NonrenewableRentalExpanded,
+                RenewableRentalCompact,
+                RenewableRentalExpanded,
+            ),
+        ):
+            reservation_id = data.id
 
         # Construct url params
         params = dict()
@@ -166,7 +179,7 @@ class SMSApi:
             all_messages = self.list(data=data, to_number=to_number, reservation_type=reservation_type)
             unseen_messages = list(
                 filter(lambda msg: msg.id not in already_seen and msg.created_at > earliest_msg, all_messages)
-            )
+            )  # TODO: collapsing this iterator costs a few extra api requests, optimize if possible
             if unseen_messages:
                 for msg in unseen_messages:
                     already_seen.add(msg.id)

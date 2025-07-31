@@ -1,6 +1,7 @@
 from .action import _ActionPerformer, _Action
 from typing import List, Union
 from .data import (
+    Reservation,
     RenewableRentalCompact,
     RenewableRentalExpanded,
     NonrenewableRentalCompact,
@@ -22,7 +23,12 @@ class WakeAPI:
     def create(
         self,
         reservation_id: Union[
-            str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
+            str,
+            Reservation,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
         ],
     ) -> WakeResponse:
         """Create a wake request for a rental reservation.
@@ -32,7 +38,7 @@ class WakeAPI:
         the number will be active.
 
         Args:
-            reservation_id (Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]): The ID or instance of the reservation to wake.
+            reservation_id (Union[str, Reservation, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]): The ID or instance of the reservation to wake.
 
         Raises:
             ValueError: If reservation_id is not a valid ID or instance.
@@ -45,6 +51,7 @@ class WakeAPI:
             if isinstance(
                 reservation_id,
                 (
+                    Reservation,
                     RenewableRentalCompact,
                     RenewableRentalExpanded,
                     NonrenewableRentalCompact,
@@ -54,7 +61,7 @@ class WakeAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         # Actually takes in a WakeRequest, may need to change this later if API spec changes
@@ -83,7 +90,7 @@ class WakeAPI:
         """
         wake_request_id = wake_request_id.id if isinstance(wake_request_id, WakeResponse) else wake_request_id
 
-        if not wake_request_id:
+        if not wake_request_id or not isinstance(wake_request_id, str):
             raise ValueError("wake_request_id must be a valid ID or instance of WakeResponse.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/wake-requests/{wake_request_id}")
@@ -94,7 +101,12 @@ class WakeAPI:
     def estimate_usage_window(
         self,
         reservation_id: Union[
-            str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
+            str,
+            Reservation,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
         ],
     ) -> UsageWindowEstimateRequest:
         """Estimate the usage window timing for a reservation wake request.
@@ -103,7 +115,7 @@ class WakeAPI:
         creating the wake request. Useful for planning when to wake a number for time-sensitive operations.
 
         Args:
-            reservation_id (Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]): The ID or instance of the reservation to estimate wake timing for.
+            reservation_id (Union[str, Reservation, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]): The ID or instance of the reservation to estimate wake timing for.
 
         Raises:
             ValueError: If reservation_id is not a valid ID or instance.
@@ -116,6 +128,7 @@ class WakeAPI:
             if isinstance(
                 reservation_id,
                 (
+                    Reservation,
                     RenewableRentalCompact,
                     RenewableRentalExpanded,
                     NonrenewableRentalCompact,
@@ -125,7 +138,7 @@ class WakeAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         action = _Action(method="POST", href="/api/pub/v2/wake-requests/estimate")
@@ -138,6 +151,7 @@ class WakeAPI:
         reservation_id: Union[
             str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
         ],
+        poll_frequency: float = 5.0,
     ) -> WakeResponse:
         """Create a wake request and wait for the number to become active.
 
@@ -146,6 +160,7 @@ class WakeAPI:
 
         Args:
             reservation_id (Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded]): The ID or instance of the reservation to wake and wait for.
+            poll_frequency (float): The frequency (in seconds) to poll for the wake request status. Estimated usage window may change after wake request creation. Default is 5 seconds.
 
         Raises:
             ValueError: If reservation_id is not valid or if the wake request creation fails.
@@ -157,9 +172,11 @@ class WakeAPI:
         if not wake_response:
             raise ValueError("Failed to create wake request.")
 
-        return self.wait_for_wake_request(wake_response)
+        return self.wait_for_wake_request(wake_response, poll_frequency=poll_frequency)
 
-    def wait_for_wake_request(self, wake_request_id: Union[str, WakeResponse]) -> WakeResponse:
+    def wait_for_wake_request(
+        self, wake_request_id: Union[str, WakeResponse], poll_frequency: float = 5.0
+    ) -> WakeResponse:
         """Wait for an existing wake request to complete and become active.
 
         This method blocks execution until the wake request's usage window starts, meaning the number
@@ -168,6 +185,7 @@ class WakeAPI:
 
         Args:
             wake_request_id (Union[str, WakeResponse]): The ID or instance of the wake request to wait for.
+            poll_frequency (float): The frequency (in seconds) to poll for the wake request status. Estimated usage window may change after wake request creation.
 
         Raises:
             ValueError: If wake_request_id is not valid or if the wake request is not properly scheduled.
@@ -190,9 +208,11 @@ class WakeAPI:
             raise ValueError("Wake request must be scheduled with a valid usage window.")
 
         # Wait until the usage window starts
-        seconds_till_start = (
-            wake_request_id.usage_window_start - datetime.datetime.now(datetime.timezone.utc)
-        ).total_seconds()
-        time.sleep(max(seconds_till_start, 0))
+        while datetime.datetime.now(datetime.timezone.utc) < wake_request_id.usage_window_start:
+            seconds_till_start = (
+                wake_request_id.usage_window_start - datetime.datetime.now(datetime.timezone.utc)
+            ).total_seconds()
+            time.sleep(min(seconds_till_start, poll_frequency))
+            wake_request_id = self.get(wake_request_id)
 
         return wake_request_id

@@ -6,6 +6,10 @@ name: Build & Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      release_notes:
+        description: 'Release notes for the new version'
+        required: true
 
 jobs:
   build-release:
@@ -28,16 +32,38 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel
-        pip install -e ".[docs]"
-    
-    - name: Build Documentation
-      run: |
-        cd docs
-        sphinx-build -b html . _build/html
+        pip install -e "."
     
     - name: Build Release
       run: |
         python setup.py sdist bdist_wheel
+
+
+  load-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    
+    - name: Install toml
+      run: pip install toml
+    
+    - name: Get Version from pyproject.toml
+      id: get-version
+      run: |
+        python -c "
+        import toml
+        pyproject = toml.load('pyproject.toml')
+        version = pyproject['project']['version']
+        print(f'version={version}')
+        " >> $GITHUB_OUTPUT
 
 
   release-pypi:
@@ -60,7 +86,7 @@ jobs:
           twine upload dist/*
 
   release-github:
-    needs: build-release
+    needs: [build-release, load-version]
     runs-on: ubuntu-latest
 
     steps:
@@ -70,11 +96,14 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.event.release.tag_name }}
-          release_name: ${{ github.event.release.name }}
-          body: ${{ github.event.release.body }}
+          tag_name: v${{ needs.load-version.outputs.version }}
+          name: Release v${{ needs.load-version.outputs.version }}
+          body: ${{ github.event.inputs.release_notes }}
           draft: false
           prerelease: false
+          files: |
+            dist/*.tar.gz
+            dist/*.whl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

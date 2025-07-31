@@ -232,6 +232,11 @@ class ObjectNode(CompilerNode):
         return len(self.properties) > 0
 
     def compile(self) -> str:
+        # Move Optional properties to the bottom of the class
+        optional_properties = {k: v for k, v in self.properties.items() if isinstance(v, OptionalNode)}
+        self.properties = {k: v for k, v in self.properties.items() if not isinstance(v, OptionalNode)}
+        self.properties.update(optional_properties)
+
         obj_class = f"@dataclass(frozen=True)\n"
         obj_class += f"class {self.type_name}:\n"
 
@@ -243,7 +248,12 @@ class ObjectNode(CompilerNode):
 
         # Add properties
         for name, prop in self.properties.items():
-            obj_class += f"    {to_var_name(name)}: {prop.annotation_name}\n"
+            # Definition
+            obj_class += f"    {to_var_name(name)}: {prop.annotation_name}"
+            if isinstance(prop, OptionalNode):
+                obj_class += " = None"
+            obj_class += "\n"
+
             description = (
                 [] + [prop.description]
                 if prop.description
@@ -254,7 +264,7 @@ class ObjectNode(CompilerNode):
             if description:
                 obj_class += f'    """'
                 obj_class += "\n".join(description)
-                obj_class += f'"""\n'
+                obj_class += f'"""\n\n'
         obj_class += "\n"
 
         # Add to_api method

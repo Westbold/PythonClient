@@ -154,9 +154,7 @@ def test_update_renewable_reservation_by_instance(tv, mock_http_from_disk):
     test_get_renewable_reservation_details(tv, mock_http_from_disk)  # Load the reservation
     reservation = RenewableRentalExpanded.from_api(mock_http_from_disk.last_response)
 
-    result = tv.reservations.update_renewable(
-        reservation, user_notes="Instance update", include_for_renewal=False
-    )
+    result = tv.reservations.update_renewable(reservation, user_notes="Instance update", include_for_renewal=False)
 
     assert result is True
     assert mock_http_from_disk.last_body_params["userNotes"] == "Instance update"
@@ -239,9 +237,7 @@ def test_renew_overdue_renewable_reservation_by_instance(tv, mock_http_from_disk
 def test_extend_nonrenewable_reservation(tv, mock_http_from_disk):
     rental_id = "string"
 
-    result = tv.reservations.extend_nonrenewable(
-        extension_duration=RentalDuration.THIRTY_DAY, rental_id=rental_id
-    )
+    result = tv.reservations.extend_nonrenewable(extension_duration=RentalDuration.THIRTY_DAY, rental_id=rental_id)
 
     assert result is True
     assert mock_http_from_disk.last_body_params["extensionDuration"] == RentalDuration.THIRTY_DAY.value

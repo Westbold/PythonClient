@@ -15,6 +15,7 @@ from .data import (
     RentalPriceCheckRequest,
     PricingSnapshot,
     NumberType,
+    Reservation,
     ReservationCapability,
     ReservationSaleExpanded,
     RenewableRentalUpdateRequest,
@@ -46,7 +47,9 @@ class ReservationsAPI:
         service_name: str = None,
         capability: ReservationCapability = None,
     ) -> ReservationSaleExpanded:
-        """Purchase a new rental.
+        """Purchase a new rental. Returns a ReservationSaleExpanded, which contains a list of reservations and backorder reservations.
+        You will need to call `.details(obj)` on each reservation to get its full details.
+
         `service_name` can be found by calling `textverified.ServiceAPI.get_services()`.
 
         This will cost api balance, so ensure you have sufficient funds before calling this method.
@@ -99,7 +102,7 @@ class ReservationsAPI:
         )
 
         if (
-            not data
+            data is None
             or data.allow_back_order_reservations is None
             or data.always_on is None
             or data.duration is None
@@ -113,7 +116,7 @@ class ReservationsAPI:
             )
 
         action = _Action(method="POST", href="/api/pub/v2/reservations/rental")
-        response = self.client._perform_action(action, json=data)
+        response = self.client._perform_action(action, json=data.to_api())
 
         # Note - response.data is another action to follow to get Sale details
         action = _Action.from_api(response.data)
@@ -138,7 +141,8 @@ class ReservationsAPI:
         """Get rental pricing information for a potential rental reservation.
 
         This method allows you to check the cost of a rental before purchasing it.
-        You can pass the same parameters used for creating a rental reservation.
+        You can pass the a NewRentalRequest to verify the pricing for that specific configuration before creating it,
+        or provide individual parameters to check pricing for a specific service, area code, capability, or number type.
 
         Args:
             data (Union[NewRentalRequest, RentalPriceCheckRequest], optional): The rental details to price. All kwargs will overwrite values in this object. Defaults to None.
@@ -238,7 +242,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError("reservation_id must be a valid ID or instance of BackOrderReservationCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/backorders/{reservation_id}")
@@ -248,7 +252,12 @@ class ReservationsAPI:
     def details(
         self,
         reservation_id: Union[
-            str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
+            str,
+            Reservation,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
         ],
     ) -> Union[RenewableRentalExpanded, NonrenewableRentalExpanded]:
         """Get detailed information about a reservation (renewable or non-renewable).
@@ -267,6 +276,7 @@ class ReservationsAPI:
             if isinstance(
                 reservation_id,
                 (
+                    Reservation,
                     RenewableRentalCompact,
                     RenewableRentalExpanded,
                     NonrenewableRentalCompact,
@@ -276,10 +286,8 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id:
-            raise ValueError(
-                "reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded or NonrenewableRentalCompact/Expanded."
-            )
+        if not reservation_id or not isinstance(reservation_id, str):
+            raise ValueError("reservation_id must be a valid ID or instance of Reservation.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/reservations/{reservation_id}")
         response = self.client._perform_action(action)
@@ -341,7 +349,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/reservations/rental/renewable/{reservation_id}")
@@ -369,7 +377,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError("reservation_id must be a valid ID or instance of NonrenewableRentalCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/reservations/rental/nonrenewable/{reservation_id}")
@@ -380,7 +388,12 @@ class ReservationsAPI:
     def check_health(
         self,
         reservation_id: Union[
-            str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded
+            str,
+            Reservation,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
         ],
     ) -> LineHealth:
         """Check the health status of a reservation.
@@ -399,6 +412,7 @@ class ReservationsAPI:
             if isinstance(
                 reservation_id,
                 (
+                    Reservation,
                     RenewableRentalCompact,
                     RenewableRentalExpanded,
                     NonrenewableRentalCompact,
@@ -408,7 +422,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError(
                 "reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded or NonrenewableRentalCompact/Expanded."
             )
@@ -448,7 +462,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         update_request = (
@@ -509,7 +523,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError("reservation_id must be a valid ID or instance of NonrenewableRentalCompact/Expanded.")
 
         update_request = (
@@ -529,9 +543,7 @@ class ReservationsAPI:
 
         return True
 
-    def refund_renewable(
-        self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]
-    ) -> bool:
+    def refund_renewable(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]) -> bool:
         """Request a refund for a renewable reservation.
 
         Args:
@@ -549,7 +561,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/renewable/{reservation_id}/refund")
@@ -577,7 +589,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError("reservation_id must be a valid ID or instance of NonrenewableRentalCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/nonrenewable/{reservation_id}/refund")
@@ -585,9 +597,7 @@ class ReservationsAPI:
 
         return True
 
-    def renew_overdue(
-        self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]
-    ) -> bool:
+    def renew_overdue(self, reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded]) -> bool:
         """Renew an overdue renewable reservation.
 
         This will cost api balance, so ensure you have sufficient funds before calling this method.
@@ -610,7 +620,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id:
+        if not reservation_id or not isinstance(reservation_id, str):
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/renewable/{reservation_id}/renew")

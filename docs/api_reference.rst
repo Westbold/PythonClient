@@ -74,7 +74,7 @@ PaginatedList
    :members:
    :undoc-members:
 
-Generated Enums
+Data Objects
 ---------------
 
 This module contains auto-generated enums and dataclasses from the API schema.

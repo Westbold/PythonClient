@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar, Callable, Iterator, Optional, List
+from typing import Generic, TypeVar, Callable, Iterator, Optional, List, Union
 from .action import _Action, _ActionPerformer
 
 T = TypeVar("T")
@@ -41,16 +41,42 @@ class PaginatedList(Generic[T], Iterator[T]):
         self.__current_index += 1
         return item
 
-    def __getitem__(self, index: int) -> T:
+    def __getitem__(self, index: Union[int, slice]) -> T:
         """Get item by index, fetching pages as needed."""
-        # If requesting an index beyond current items and there's a next page
-        while index >= len(self.__items) and self.__next_page is not None:
-            self._fetch_next_page()
+        # Fetch needed pages
+        if isinstance(index, slice):
+            if index.start is None and index.stop is None:
+                # If slice is empty, return all items
+                return self.get_all_items()
 
-        if index >= len(self.__items):
-            raise IndexError("list index out of range")
+            # If start or end is negative, we need to consume all items
+            if index.start is not None and index.start < 0:
+                self.get_all_items()
+            elif index.stop is not None and index.stop < 0:
+                self.get_all_items()
+            else:
+                # Fetch pages until we have enough items
+                while self.__next_page is not None and (index.stop is None or index.stop > len(self.__items)):
+                    self._fetch_next_page()
 
-        return self.__items[index]
+            # Return the sliced items
+            return self.__items[index]
+
+        elif isinstance(index, int):
+            if index < 0:
+                # Negative indexing - must consume all items
+                self.get_all_items()
+            else:
+                # Fetch needed pages
+                while self.__next_page is not None and index >= len(self.__items):
+                    self._fetch_next_page()
+
+            if index >= len(self.__items):
+                raise IndexError("list index out of range")
+
+            return self.__items[index]
+
+        raise TypeError("Index must be an integer or slice")
 
     def _fetch_next_page(self) -> None:
         """Fetch the next page of results and append to current items."""

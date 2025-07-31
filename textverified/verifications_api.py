@@ -108,7 +108,8 @@ class VerificationsAPI:
         """Get pricing information for a verification before creating it.
 
         This method allows you to check the cost of a verification before purchasing it.
-        You can pass the same parameters used for creating a verification.
+        You can pass the a NewVerificationRequest to verify the pricing for that specific configuration before creating it,
+        or provide individual parameters to check pricing for a specific service, area code, carrier, number type, and capability.
 
         Args:
             data (Union[NewVerificationRequest, VerificationPriceCheckRequest], optional): The verification details to price. All kwargs will overwrite values in this object. Defaults to None.
@@ -129,11 +130,12 @@ class VerificationsAPI:
         if isinstance(data, NewVerificationRequest):
             data = VerificationPriceCheckRequest(
                 service_name=data.service_name,
-                area_code=True if data.area_code_select_option else None,
-                carrier=True if data.carrier_select_option else None,
-                number_type=NumberType.VOIP if data.capability == ReservationCapability.VOICE else NumberType.MOBILE,
                 capability=data.capability,
+                area_code=True if data.area_code_select_option else False,
+                carrier=True if data.carrier_select_option else False,
+                number_type=NumberType.VOIP if data.capability == ReservationCapability.VOICE else NumberType.MOBILE,
             )
+            print(data)
 
         data = (
             VerificationPriceCheckRequest(
@@ -154,25 +156,23 @@ class VerificationsAPI:
         )
 
         if (
-            not data
-            or not data.service_name
-            or not data.area_code
-            or not data.carrier
-            or not data.number_type
-            or not data.capability
+            data is None
+            or data.service_name is None
+            or data.area_code is None
+            or data.carrier is None
+            or data.number_type is None
+            or data.capability is None
         ):
             raise ValueError(
                 "All required fields must be provided: service_name, area_code, carrier, number_type, and capability."
             )
 
         action = _Action(method="POST", href="/api/pub/v2/pricing/verifications")
-        response = self.client._perform_action(action, json=data)
+        response = self.client._perform_action(action, json=data.to_api())
 
         return PricingSnapshot.from_api(response.data)
 
-    def details(
-        self, verification_id: Union[str, VerificationCompact, VerificationExpanded]
-    ) -> VerificationExpanded:
+    def details(self, verification_id: Union[str, VerificationCompact, VerificationExpanded]) -> VerificationExpanded:
         """Get detailed information about a verification by ID.
 
         Args:
@@ -191,7 +191,7 @@ class VerificationsAPI:
             else verification_id
         )
 
-        if not verification_id:
+        if not verification_id or not isinstance(verification_id, str):
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/verifications/{verification_id}")
@@ -234,7 +234,7 @@ class VerificationsAPI:
             else verification_id
         )
 
-        if not verification_id:
+        if not verification_id or not isinstance(verification_id, str):
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/cancel")
@@ -267,7 +267,7 @@ class VerificationsAPI:
             else verification_id
         )
 
-        if not verification_id:
+        if not verification_id or not isinstance(verification_id, str):
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/reactivate")
@@ -300,7 +300,7 @@ class VerificationsAPI:
             else verification_id
         )
 
-        if not verification_id:
+        if not verification_id or not isinstance(verification_id, str):
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/reuse")
@@ -330,7 +330,7 @@ class VerificationsAPI:
             else verification_id
         )
 
-        if not verification_id:
+        if not verification_id or not isinstance(verification_id, str):
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/report")

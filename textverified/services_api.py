@@ -26,10 +26,11 @@ class ServicesAPI:
     def list(self, number_type: NumberType, reservation_type: ReservationType) -> List[Service]:
         """Fetch all services available for rental or verification.
 
-        Use 'allservices' if your desired service is not listed here.
+        Special cases: Use 'allservices' (rentals) or 'servicenotlisted' (verifications), note that 'servicenotlisted'
+        only receives sms from services that are not listed by us.
 
         Args:
-            number_type (NumberType): The type of number. Most likely NumberType.MOBILE.
+            number_type (NumberType): The type of number. Most frequently NumberType.MOBILE.
             reservation_type (ReservationType): The type of reservation (e.g., renewable, nonrenewable, verification).
         Returns:
             List[Service]: A list of services available for rental or verification.

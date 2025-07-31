@@ -88,7 +88,7 @@ def test_error_on_status_code_400(tv, mock_http):
     mock_http.return_value.status_code = 400
     mock_http.return_value.json.return_value = {
         "errorCode": "TooManyUnfinishedVerifications",
-        "errorDescription": "Too many pending verifications."
+        "errorDescription": "Too many pending verifications.",
     }
 
     action = _Action(method="POST", href="/api/pub/v2/verifications")
@@ -99,9 +99,9 @@ def test_error_on_status_code_400(tv, mock_http):
     # Assert the exception details
     assert exc_info.value.error_code == "TooManyUnfinishedVerifications"
     assert exc_info.value.error_description == "Too many pending verifications."
-    assert '400' in exc_info.value.context
-    assert '/api/pub/v2/verifications' in exc_info.value.context
-    assert 'POST' in exc_info.value.context
+    assert "400" in exc_info.value.context
+    assert "/api/pub/v2/verifications" in exc_info.value.context
+    assert "POST" in exc_info.value.context
 
     mock_http.assert_called_once_with(
         method="POST",

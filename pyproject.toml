@@ -5,7 +5,7 @@ description = "Python wrapper for the TextVerified API"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
-    { name = "Westbold LLC" },
+    { name = "Textverified" },
 ]
 
 keywords = ["Textverified", "Verification", "Web Scraping", "API", "webhook", "python"]
@@ -14,9 +14,9 @@ dependencies = ["requests>=2.31.0", "urllib3>=1.26.20", "python-dateutil>=2.9.0"
 
 [project.optional-dependencies]
 dev = [
-    "black==23.3.0",
-    "pytest==7.4.4",
-    "pytest-cov==4.1.0",
+    "black>=23.3.0",
+    "pytest>=7.4.4",
+    "pytest-cov>=4.1.0",
     "networkx>=3.1",
     "build>=1.1.1"
 ]

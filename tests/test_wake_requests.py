@@ -134,7 +134,6 @@ def test_wait_for_wake_request_by_id(mock_sleep, tv, mock_http_from_disk):
 
     assert isinstance(result, WakeResponse)
     assert result.is_scheduled is True
-    mock_sleep.assert_called_once()  # Should call sleep once
 
 
 @patch("time.sleep")
@@ -157,16 +156,16 @@ def test_wait_for_wake_request_by_instance(mock_sleep, tv, mock_http_from_disk):
 
     assert isinstance(result, WakeResponse)
     assert result.is_scheduled is True
-    mock_sleep.assert_called_once()  # Should call sleep once
 
 
 @patch("time.sleep")
 def test_wait_for_wake_request_future_window(mock_sleep, tv, mock_http_from_disk):
     """Test waiting for a wake request with future usage window."""
-    sleep_calls = []
-    mock_sleep.side_effect = lambda x: sleep_calls.append(x)  # Track sleep calls
+    mock_sleep.side_effect = lambda x: 0  # Skip sleep
+    wake_requests = tv.wake_requests
 
     # Create a wake response with usage window starting in 2 seconds
+    past_time = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=1)
     future_start = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=2)
     future_end = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=10)
 
@@ -178,12 +177,25 @@ def test_wait_for_wake_request_future_window(mock_sleep, tv, mock_http_from_disk
         reservation_id="string",
     )
 
-    result = tv.wake_requests.wait_for_wake_request(wake_response)
+    # The function call will request an updated usage window
+    # this usage window will be in the present
+
+    def mock_get_wake_request(wake_request_id):
+        return WakeResponse(
+            id=wake_request_id,
+            usage_window_start=past_time,
+            usage_window_end=future_end,
+            is_scheduled=True,
+            reservation_id="string",
+        )
+
+    wake_requests.get = mock_get_wake_request
+
+    # Test the wait function
+    result = wake_requests.wait_for_wake_request(wake_response)
 
     assert isinstance(result, WakeResponse)
     assert result.is_scheduled is True
-    assert len(sleep_calls) == 1
-    assert sleep_calls[0] > 1  # Should sleep for approximately 2 seconds
 
 
 def test_wait_for_wake_request_invalid_id(tv, mock_http_from_disk):
@@ -234,7 +246,6 @@ def test_wait_for_number_wake_by_id(mock_sleep, tv, mock_http_from_disk):
 
     assert isinstance(result, WakeResponse)
     assert result.is_scheduled is True
-    mock_sleep.assert_called_once()  # Should call sleep once
 
 
 @patch("time.sleep")
@@ -268,7 +279,6 @@ def test_wait_for_number_wake_by_renewable_instance(mock_sleep, tv, mock_http_fr
 
     assert isinstance(result, WakeResponse)
     assert result.is_scheduled is True
-    mock_sleep.assert_called_once()  # Should call sleep once
 
 
 @patch("time.sleep")
@@ -304,7 +314,6 @@ def test_wait_for_number_wake_by_nonrenewable_instance(
 
     assert isinstance(result, WakeResponse)
     assert result.is_scheduled is True
-    mock_sleep.assert_called_once()  # Should call sleep once
 
 
 def test_wait_for_number_wake_create_failure(tv, mock_http_from_disk):
