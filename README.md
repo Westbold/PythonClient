@@ -100,7 +100,7 @@ print("Balance:", account_info.current_balance)
 
 ```python
 from textverified import TextVerified, NumberType, ReservationType, ReservationCapability
-import time
+import time, datetime
 
 # Initialize client
 client = TextVerified(api_key="your_api_key", api_username="your_username")
@@ -124,45 +124,58 @@ verification = client.verifications.create(
 print(f"Verification created: {verification.id}")
 print(f"Phone number: {verification.number}")
 
-# 3. Wait for and retrieve SMS messages
-print("Waiting for SMS messages...")
-time.sleep(30)  # Wait for messages to arrive
+# 3. Do something that sends a message to your number
+time.sleep(10)
 
-messages = client.sms.list(verification_id=verification.id)
+# 4. Wait for an incoming verification
+messages = client.sms.incoming(
+    verification,
+    timeout=300,
+    since=datetime.fromtimestamp(0)
+)
 for message in messages:
     print(f"Received: {message.sms_content}")
 ```
 
-### Account Management
+### Waking Lines
 
 ```python
-from textverified import account
+from textverified import reservations, wake_requests, sms, NumberType, ReservationCapability, RentalDuration
+import datetime
 
-# Get account information
-account_info = account.me()
-print(f"Username: {account_info.username}")
-print(f"Balance: ${account_info.current_balance}")
-print(f"Total spent: ${account_info.total_spent}")
-```
-
-### Service Discovery
-
-```python
-from textverified import services, NumberType, ReservationType
-
-# Get all mobile verification services
-mobile_services = services.list(
+# 1. Create a wakeable (non-always-on) rental
+reservation = reservations.create(
+    service_name="allservices",
     number_type=NumberType.MOBILE,
-    reservation_type=ReservationType.VERIFICATION
+    capability=ReservationCapability.SMS,
+    is_renewable=False,
+    always_on=False,
+    duration=RentalDuration.THIRTY_DAY,
+    allow_back_order_reservations=False,
+).reservations[0]
+rental = reservations.details(reservation)
+print(f"Reserved number {rental.number} with id {rental.id}")
+
+# 2. Start a wake request for the rental
+print("Sending wake request and waiting for active window...")
+wake_request = wake_requests.create(rental)
+duration = wake_request.usage_window_end - wake_request.usage_window_start
+print(
+    f"Number {rental.number} is active from {wake_request.usage_window_start}"
+    f" to {wake_request.usage_window_end} (duration: {duration})"
 )
 
-# Filter services by name
-yahoo_services = [s for s in mobile_services if 'yahoo' in s.service_name.lower()]
+# 3. Wait for the wake request to complete
+time_until_start = wake_request.usage_window_start - datetime.datetime.now(datetime.timezone.utc)
+print(f"Waiting for the number to become active... ({time_until_start})")
+wake_response = wake_requests.wait_for_wake_request(wake_request)
 
-for service in yahoo_services:
-    print(f"Service: {service.service_name}")
-    print(f"Capability: {service.capability}")
-    print(f"Countries: {len(service.countries)} available")
+
+# 3. Poll for SMS messages on the awakened number
+print(f"Polling SMS messages for number {rental.number}...")
+messages = sms.incoming(rental, timeout=duration.total_seconds())
+for msg in messages:
+    print(f"Received SMS from {msg.from_value}: {msg.sms_content}")
 ```
 
 ### Error Handling
@@ -182,33 +195,6 @@ except Exception as e:
     print(f"Unexpected error: {e}")
     # Handle other exceptions
 ```
-
-### Bulk Operations
-
-```python
-from textverified import verifications, sms
-
-# Create multiple verifications
-verification_requests = [
-    {"service_name": "yahoo", "capability": "SMS"},
-    {"service_name": "google", "capability": "SMS"},
-    {"service_name": "facebook", "capability": "SMS"}
-]
-
-created_verifications = []
-for request in verification_requests:
-    try:
-        verification = verifications.create(**request)
-        created_verifications.append(verification)
-        print(f"Created verification for {request['service_name']}: {verification.number}")
-    except TextVerifiedError as e:
-        print(f"Failed to create verification for {request['service_name']}: {e}")
-
-# Check for messages across all verifications
-all_messages = sms.list()
-print(f"Total messages received: {len(all_messages)}")
-```
-
 
 ## Documentation
 
@@ -237,4 +223,4 @@ Special thanks to:
 * **Python Community** for the excellent tools and libraries that make this project possible
 * **Our Users** for feedback and contributions that help improve the library
 
-For support, please contact [Westbold LLC](mailto:support@westbold.com) or visit [TextVerified.com](https://textverified.com).
+For support, please open a ticket at [TextVerified Support](https://www.textverified.com/app/support)

@@ -92,7 +92,7 @@ jobs:
       id: pytest
       run: |
         echo "## Pytest Results 🧪" >> $GITHUB_STEP_SUMMARY
-        pytest --verbose --tb=short --junitxml=pytest-results.xml 2>&1 | tee pytest-output.txt
+        pytest --verbose --cov=textverified --cov-report=xml 2>&1 | tee pytest-output.txt
         exit_code=${PIPESTATUS[0]}
         
         if [ $exit_code -eq 0 ]; then
@@ -107,19 +107,8 @@ jobs:
         fi
         
         exit $exit_code
-      continue-on-error: true
-    
-    - name: Upload test results
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: pytest-results
-        path: |
-          pytest-results.xml
-          pytest-output.txt
     
     - name: Comment PR with test results
-      if: always()
       uses: actions/github-script@v6
       with:
         script: |
@@ -193,13 +182,10 @@ jobs:
           try {
             const output = fs.readFileSync('coverage-output.txt', 'utf8');
             const lines = output.split('\n');
-            const coverageLines = lines.filter(line => 
-              line.includes('%') && (
-                line.includes('.py') || 
-                line.includes('TOTAL') ||
-                line.includes('textverified')
-              )
-            );
+
+            const coverageStart = lines.findIndex(line => line.includes('coverage: platform'));
+            const coverageLines = lines.slice(coverageStart + 1, lines.length - 1)
+              .filter(line => line.trim() !== '' && !line.startsWith('TOTAL'));
             
             if (coverageLines.length > 0) {
               comment += '```\n' + coverageLines.join('\n') + '\n```\n';
