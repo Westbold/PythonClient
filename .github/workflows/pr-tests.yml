@@ -109,6 +109,7 @@ jobs:
         exit $exit_code
     
     - name: Comment PR with test results
+      if: always()
       uses: actions/github-script@v6
       with:
         script: |
@@ -167,12 +168,15 @@ jobs:
     - name: Run tests with coverage
       run: |
         pytest --cov=textverified --cov-report=xml --cov-report=term > coverage-output.txt 2>&1
+        exit_code=$?
         echo "## Coverage Report 📊" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         cat coverage-output.txt | grep -A 20 "coverage report" || echo "Coverage report generated" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        exit $exit_code
     
     - name: Comment PR with coverage
+      if: always()
       uses: actions/github-script@v6
       with:
         script: |

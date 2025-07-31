@@ -267,7 +267,7 @@ def _find_mock_file(request_path: str, file_list: List[Path]) -> Optional[Dict]:
         file_name = file_name[: file_name.rfind(".")]  # Remove .json extension
         path_param_keys = re.findall(r"\{([^}/?&]+)\}", str(file_name))  # 1 group per key of path parameters
         file_path_pattern = (
-            "^" + re.sub(r"\{([^}/?&]+)\}", r"[^\/}?&.]*?", str(file_name)) + "$"
+            "^" + re.sub(r"\{([^}/?&]+)\}", r"[^\/}?&.]+", str(file_name)) + "$"
         )  # file path with 1 group for each path parameter
         if re.fullmatch(file_path_pattern, request_filename):
             return {
