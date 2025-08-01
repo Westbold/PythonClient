@@ -54,8 +54,7 @@ jobs:
           $PYTHON_CMD \
           $PYTHON_CMD-dev \
           $PYTHON_CMD-distutils \
-          $PYTHON_CMD-venv \
-          $PYTHON_CMD-pip
+          $PYTHON_CMD-venv
         
         # Set up alternatives to make this the default python3
         sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/$PYTHON_CMD 1
