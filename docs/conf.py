@@ -4,9 +4,9 @@ import os
 import sys
 from pathlib import Path
 
-if sys.version_info < (3, 11):
+try:
     import tomli as tomllib
-else:
+except ImportError:
     import tomllib
 
 # -- Path setup --------------------------------------------------------------

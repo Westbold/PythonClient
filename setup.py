@@ -3,11 +3,10 @@
 
 import setuptools
 from pathlib import Path
-import sys
 
-if sys.version_info < (3, 11):
+try:
     import tomli as tomllib
-else:
+except ImportError:
     import tomllib
 
 # Load project metadata from pyproject.toml
