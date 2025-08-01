@@ -49,32 +49,35 @@ jobs:
         PYTHON_CMD="${{ steps.python-version.outputs.python_cmd }}"
         MAJOR_MINOR="${{ steps.python-version.outputs.major_minor }}"
         
-        # Install Python and essential packages including pip
+        # Install Python and essential packages
         sudo apt-get install -y \
           $PYTHON_CMD \
           $PYTHON_CMD-dev \
           $PYTHON_CMD-distutils \
           $PYTHON_CMD-venv
         
-        # Set up alternatives to make this the default python3
-        sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/$PYTHON_CMD 1
+        # Download and install get-pip.py for this specific Python version
+        MAJOR_MINOR="${{ steps.python-version.outputs.major_minor }}"
+        wget -O get-pip.py "https://bootstrap.pypa.io/pip/$MAJOR_MINOR/get-pip.py"
+        $PYTHON_CMD get-pip.py --user
         
-        # Install pip using ensurepip (built into Python)
-        $PYTHON_CMD -m ensurepip --default-pip || true
-        # If ensurepip fails, try installing python3-pip package
-        if ! $PYTHON_CMD -m pip --version; then
-          sudo apt-get install -y python3-pip
-        fi
+        # Add user pip to PATH for this Python version
+        export PATH="$HOME/.local/bin:$PATH"
+        
+        # Verify installation
+        $PYTHON_CMD --version
+        $PYTHON_CMD -m pip --version
         
         echo "Successfully installed $PYTHON_CMD from deadsnakes"
     
     - name: Set Python environment variables
       run: |
         if [[ "${{ steps.standard-setup.outcome }}" == "failure" ]]; then
-          # Use deadsnakes installation
+          # Use deadsnakes installation with user pip
           PYTHON_CMD="${{ steps.python-version.outputs.python_cmd }}"
           echo "PYTHON=$PYTHON_CMD" >> $GITHUB_ENV
           echo "PIP=$PYTHON_CMD -m pip" >> $GITHUB_ENV
+          echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
           echo "Using deadsnakes Python: $PYTHON_CMD"
         else
           # Use standard installation
