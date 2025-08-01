@@ -83,7 +83,7 @@ jobs:
     
     - name: Install dependencies
       run: |
-        $PIP install setuptools wheel
+        $PIP install setuptools wheel tomli
         $PIP install -e "."
     
     - name: Build Release

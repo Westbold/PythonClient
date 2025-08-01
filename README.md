@@ -15,6 +15,11 @@ Download and install using
 pip install textverified
 ```
 
+If you're on an older version of python (`<3.11`), install `tomli` first:
+```
+pip install tomli
+```
+
 ## Features
 
 - **Complete API Coverage**: All TextVerified endpoints are supported
