@@ -85,7 +85,6 @@ jobs:
     
     - name: Install dependencies
       run: |
-        $PIP install --upgrade pip
         $PIP install setuptools wheel
         $PIP install -e "."
     
