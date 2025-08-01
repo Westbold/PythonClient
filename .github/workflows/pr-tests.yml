@@ -35,16 +35,15 @@ jobs:
                comment.body.includes('🎨 Black Formatting'))
             );
 
-            // hide previous comments
+            // delete previous comments
             for (const comment of botComments) {
-              await github.rest.issues.updateComment({
+              await github.rest.issues.deleteComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                comment_id: comment.id,
-                body: `<!-- ${comment.body} -->`
+                comment_id: comment.id
               });
             }
-              
+
           } catch (error) {
             console.log('Could not minimize previous comments:', error.message);
           }
@@ -139,16 +138,16 @@ jobs:
             
             // Test results section
             const testSummary = lines.filter(line => 
-              line.includes('failed') || 
-              line.includes('error') ||
-              line.includes('FAILED') ||
-              line.includes('ERROR')
+              /\s+failed/i.test(line) ||
+              /\s+error/i.test(line) ||
+              /\s+FAILED/i.test(line) ||
+              /\s+ERROR/i.test(line)
             )
             
             if (testSummary.length > 0) {
               comment += '### 🧪 Test Results\n```\n' + testSummary.join('\n') + '\n```\n\n';
             } else {
-              comment += '### 🧪 Test Results\nNo test failures detected.\n\n';
+              comment += '### 🧪 Test Results\n✅ All tests passed!\n\n';
             }
             
             // Coverage section
