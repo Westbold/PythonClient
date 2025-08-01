@@ -261,14 +261,20 @@ def _find_mock_file(request_path: str, file_list: List[Path]) -> Optional[Dict]:
     request_filename = re.sub(r"\?.*$", "", request_filename)  # Remove query params
     query_params = parse_qs(urlparse(request_path).query)
 
+    # Push paths with path parameters to the end of the list
+    file_list = sorted(file_list, key=lambda x: str(x).count("{"))
+
+    # Iterate over files
     for file_path in file_list:
         # Convert possible target to regex pattern
         file_name = file_path.name
         file_name = file_name[: file_name.rfind(".")]  # Remove .json extension
+        file_name = file_name.replace(".", "\\.")  # Escape dots for regex
         path_param_keys = re.findall(r"\{([^}/?&]+)\}", str(file_name))  # 1 group per key of path parameters
         file_path_pattern = (
-            "^" + re.sub(r"\{([^}/?&]+)\}", r"[^\/}?&.]*?", str(file_name)) + "$"
+            "^" + re.sub(r"\{([^}/?&]+)\}", r"[^\/}?&.]+", str(file_name)) + "$"
         )  # file path with 1 group for each path parameter
+
         if re.fullmatch(file_path_pattern, request_filename):
             return {
                 "path": file_path,

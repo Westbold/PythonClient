@@ -75,9 +75,11 @@ class ReservationsAPI:
         """
         data = (
             NewRentalRequest(
-                allow_back_order_reservations=allow_back_order_reservations
-                if allow_back_order_reservations is not None
-                else data.allow_back_order_reservations,
+                allow_back_order_reservations=(
+                    allow_back_order_reservations
+                    if allow_back_order_reservations is not None
+                    else data.allow_back_order_reservations
+                ),
                 always_on=always_on if always_on is not None else data.always_on,
                 area_code_select_option=area_code_select_option or data.area_code_select_option,
                 duration=duration or data.duration,
@@ -468,9 +470,9 @@ class ReservationsAPI:
         update_request = (
             RenewableRentalUpdateRequest(
                 user_notes=user_notes or data.user_notes,
-                include_for_renewal=include_for_renewal
-                if include_for_renewal is not None
-                else data.include_for_renewal,
+                include_for_renewal=(
+                    include_for_renewal if include_for_renewal is not None else data.include_for_renewal
+                ),
                 mark_all_sms_read=mark_all_sms_read if mark_all_sms_read is not None else data.mark_all_sms_read,
             )
             if data

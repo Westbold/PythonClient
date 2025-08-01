@@ -53,17 +53,17 @@ class VerificationsAPI:
 
         data = (
             NewVerificationRequest(
-                area_code_select_option=area_code_select_option
-                if area_code_select_option is not None
-                else data.area_code_select_option,
-                carrier_select_option=carrier_select_option
-                if carrier_select_option is not None
-                else data.carrier_select_option,
+                area_code_select_option=(
+                    area_code_select_option if area_code_select_option is not None else data.area_code_select_option
+                ),
+                carrier_select_option=(
+                    carrier_select_option if carrier_select_option is not None else data.carrier_select_option
+                ),
                 service_name=service_name or data.service_name,
                 capability=capability or data.capability,
-                service_not_listed_name=service_not_listed_name
-                if service_not_listed_name is not None
-                else data.service_not_listed_name,
+                service_not_listed_name=(
+                    service_not_listed_name if service_not_listed_name is not None else data.service_not_listed_name
+                ),
                 max_price=max_price if max_price is not None else data.max_price,
             )
             if data
@@ -135,7 +135,6 @@ class VerificationsAPI:
                 carrier=True if data.carrier_select_option else False,
                 number_type=NumberType.VOIP if data.capability == ReservationCapability.VOICE else NumberType.MOBILE,
             )
-            print(data)
 
         data = (
             VerificationPriceCheckRequest(
