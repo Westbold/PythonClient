@@ -53,5 +53,10 @@ addopts = """
 python_files = ["tests/*.py"]
 
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+requires = [
+    "setuptools>=45", 
+    "wheel", 
+    "setuptools_scm[toml]>=6.2",
+    "tomli>=1.2.0; python_version<'3.11'"
+]
 build-backend = "setuptools.build_meta"
