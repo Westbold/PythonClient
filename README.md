@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/textverified.svg)](https://pypi.python.org/pypi/textverified/)
 [![Issues](https://img.shields.io/github/issues/Westbold/PythonClient.svg)](https://github.com/Westbold/PythonClient/issues)
-[![Documentation Status](https://readthedocs.org/projects/textverified/badge/?version=latest)](https://textverified.readthedocs.io/)
+[![Documentation Status](https://readthedocs.org/projects/textverified-python/badge/?version=latest)](https://textverified-python.readthedocs.io/en/latest/)
 
 This library eases the use of the TextVerified REST API from Python and provides a comprehensive interface for phone number verification services. It has been designed for production use and includes robust error handling, type hints, and extensive documentation.
 
