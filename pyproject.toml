@@ -3,7 +3,7 @@ name = "textverified"
 version = "0.1.0a0"
 description = "Python wrapper for the TextVerified API"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = { text = "MIT" }
 authors = [
     { name = "Textverified" },
 ]
@@ -18,7 +18,8 @@ dev = [
     "pytest>=7.4.4",
     "pytest-cov>=4.1.0",
     "networkx>=3.1",
-    "build>=1.1.1"
+    "build>=1.1.1",
+    "tomli>=2.0.1",
 ]
 docs = [
     "sphinx>=5.3.0",
@@ -27,7 +28,10 @@ docs = [
 
 [project.urls]
 Homepage = "https://textverified.com"
-Download = "https://pypi.org"
+Download = "https://pypi.org/project/textverified/#files"
+Documentation = "https://textverified-python.readthedocs.io/en/latest/"
+Source = "https://github.com/Westbold/PythonClient"
+Issues = "https://github.com/Westbold/PythonClient/issues"
 
 [tool.black]
 line-length = 120
@@ -51,6 +55,15 @@ addopts = """
 --cov-report=xml"""
 python_files = ["tests/*.py"]
 
+[tool.setuptools]
+license-files = []
+
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+requires = [
+    "setuptools>=45", 
+    "wheel", 
+    "setuptools_scm[toml]>=6.2",
+    "tomli>=1.2.0; python_version<'3.11'",
+    "packaging>=24.0"
+]
 build-backend = "setuptools.build_meta"

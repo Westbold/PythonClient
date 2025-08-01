@@ -3,11 +3,10 @@
 
 import setuptools
 from pathlib import Path
-import sys
 
-if sys.version_info < (3, 11):
+try:
     import tomli as tomllib
-else:
+except ImportError:
     import tomllib
 
 # Load project metadata from pyproject.toml
@@ -32,6 +31,8 @@ setuptools.setup(
     description=project["description"],
     long_description=long_description,
     long_description_content_type="text/markdown",
+    license="MIT",
     keywords=project["keywords"],
     install_requires=project["dependencies"],
+    project_urls=project["urls"],
 )
