@@ -89,6 +89,14 @@ jobs:
     - name: Build Release
       run: |
         $PYTHON setup.py bdist_wheel
+        
+    - name: Validate wheel metadata
+      run: |
+        # List wheel contents to check for issues
+        ls -la dist/
+        # Check wheel metadata
+        python -m pip install twine
+        twine check dist/*
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4

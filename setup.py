@@ -31,6 +31,7 @@ setuptools.setup(
     description=project["description"],
     long_description=long_description,
     long_description_content_type="text/markdown",
+    license="MIT",
     keywords=project["keywords"],
     install_requires=project["dependencies"],
 )
