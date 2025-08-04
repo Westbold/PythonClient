@@ -1,6 +1,6 @@
 [project]
 name = "textverified"
-version = "0.1.0a0"
+version = "0.1.0a1"
 description = "Python wrapper for the TextVerified API"
 readme = "README.md"
 license = { text = "MIT" }
