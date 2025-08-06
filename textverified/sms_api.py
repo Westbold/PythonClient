@@ -96,10 +96,10 @@ class SMSApi:
             params["to"] = to_number
 
         if reservation_id:
-            params["reservation_id"] = reservation_id
+            params["reservationId"] = reservation_id
 
         if isinstance(reservation_type, ReservationType):
-            params["reservation_type"] = reservation_type.to_api()
+            params["reservationType"] = reservation_type.to_api()
 
         # Construct and perform the action
         action = _Action(method="GET", href="/api/pub/v2/sms")
