@@ -61,7 +61,7 @@ class WakeAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         # Actually takes in a WakeRequest, may need to change this later if API spec changes
@@ -90,7 +90,7 @@ class WakeAPI:
         """
         wake_request_id = wake_request_id.id if isinstance(wake_request_id, WakeResponse) else wake_request_id
 
-        if not wake_request_id or not isinstance(wake_request_id, str):
+        if not isinstance(wake_request_id, str) or not wake_request_id.strip():
             raise ValueError("wake_request_id must be a valid ID or instance of WakeResponse.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/wake-requests/{wake_request_id}")
@@ -138,7 +138,7 @@ class WakeAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         action = _Action(method="POST", href="/api/pub/v2/wake-requests/estimate")

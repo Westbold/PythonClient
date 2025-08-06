@@ -244,7 +244,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of BackOrderReservationCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/backorders/{reservation_id}")
@@ -288,7 +288,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of Reservation.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/reservations/{reservation_id}")
@@ -351,7 +351,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/reservations/rental/renewable/{reservation_id}")
@@ -379,7 +379,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of NonrenewableRentalCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/reservations/rental/nonrenewable/{reservation_id}")
@@ -424,7 +424,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError(
                 "reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded or NonrenewableRentalCompact/Expanded."
             )
@@ -464,7 +464,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         update_request = (
@@ -525,7 +525,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of NonrenewableRentalCompact/Expanded.")
 
         update_request = (
@@ -563,7 +563,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/renewable/{reservation_id}/refund")
@@ -591,7 +591,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of NonrenewableRentalCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/nonrenewable/{reservation_id}/refund")
@@ -622,7 +622,7 @@ class ReservationsAPI:
             else reservation_id
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of RenewableRentalCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/renewable/{reservation_id}/renew")

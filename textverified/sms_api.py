@@ -71,7 +71,7 @@ class SMSApi:
                 VerificationExpanded,
             ),
         ):
-            if hasattr(data, "number") and to_number:
+            if to_number:
                 raise ValueError("Cannot specify both rental/verification data and to_number.")
             to_number = data.number
 

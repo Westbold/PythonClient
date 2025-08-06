@@ -66,7 +66,7 @@ class CallAPI:
                 VerificationExpanded,
             ),
         ):
-            if hasattr(data, "number") and to_number:
+            if to_number:
                 raise ValueError("Cannot specify both rental/verification data and to_number.")
             to_number = data.number
 
@@ -156,7 +156,7 @@ class CallAPI:
             else reservation
         )
 
-        if not reservation_id or not isinstance(reservation_id, str):
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
             raise ValueError("reservation_id must be a valid ID or instance of Reservation/Verification.")
 
         action = _Action(method="POST", href="/api/pub/v2/calls/access-token")
