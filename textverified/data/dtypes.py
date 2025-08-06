@@ -170,7 +170,11 @@ class ReservationSaleState(Enum):
 @dataclass(frozen=True)
 class Account:
     username: str
+    """The username of the account holder."""
+
     current_balance: float
+    """The current balance of the account."""
+
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -238,6 +242,8 @@ class AreaCode:
 class BackOrderReservationCompact:
     id: str
     service_name: str
+    """Name of service"""
+
     status: BackOrderState
 
     def to_api(self) -> Dict[str, Any]:
@@ -326,6 +332,22 @@ class BillingCycleCompact:
             billing_cycle_ends_at=dateutil.parser.parse(data.get("billingCycleEndsAt", None)),
             email_notifications_enabled=bool(data.get("emailNotificationsEnabled", None)),
             state=str(data.get("state", None)),
+        )
+
+
+@dataclass(frozen=True)
+class CallSessionRequest:
+    reservation_id: str
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['reservationId'] = self.reservation_id
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'CallSessionRequest':
+        return cls(
+            reservation_id=str(data.get("reservationId", None)),
         )
 
 
@@ -472,6 +494,8 @@ class ReservationSaleCompact:
     id: str
     state: ReservationSaleState
     total_cost: float
+    """Example: 0.95"""
+
     updated_at: datetime.datetime
 
     def to_api(self) -> Dict[str, Any]:
@@ -540,6 +564,8 @@ class VerificationCompact:
     service_name: str
     state: ReservationState
     total_cost: float
+    """Example: 0.95"""
+
     number: str
 
     def to_api(self) -> Dict[str, Any]:
@@ -570,10 +596,10 @@ class VerificationPriceCheckRequest:
     """Example: yahoo"""
 
     area_code: bool
-    """Example: True"""
+    """Set to true if a specific area code will be requested when creating a verification, false if any area code can be used."""
 
     carrier: bool
-    """Example: True"""
+    """Set to true if a specific carrier will be requested when creating a verification, false if any carrier can be used."""
 
     number_type: NumberType
     capability: ReservationCapability
@@ -753,6 +779,34 @@ class BillingCycleWebhookEvent:
 
 
 @dataclass(frozen=True)
+class Call:
+    to_value: str
+    created_at: datetime.datetime
+    id: str
+    from_value: Optional[str] = None
+    recording_uri: Optional[str] = None
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['to'] = self.to_value
+        api_dict['createdAt'] = self.created_at.isoformat()
+        api_dict['id'] = self.id
+        api_dict['from'] = (self.from_value if self.from_value is not None else None)
+        api_dict['recordingUri'] = (self.recording_uri if self.recording_uri is not None else None)
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'Call':
+        return cls(
+            to_value=str(data.get("to", None)),
+            created_at=dateutil.parser.parse(data.get("createdAt", None)),
+            id=str(data.get("id", None)),
+            from_value=(str(data.get("from", None)) if data.get("from", None) is not None else None),
+            recording_uri=(str(data.get("recordingUri", None)) if data.get("recordingUri", None) is not None else None),
+        )
+
+
+@dataclass(frozen=True)
 class Error:
     error_code: Optional[str] = None
     error_description: Optional[str] = None
@@ -873,10 +927,14 @@ class RenewableRentalCompact:
     created_at: datetime.datetime
     id: str
     service_name: str
+    """Example: yahoo"""
+
     state: ReservationState
     billing_cycle_id: str
     is_included_for_next_renewal: bool
     number: str
+    """Example: 2223334444"""
+
     always_on: bool
     sale_id: Optional[str] = None
 
@@ -940,7 +998,7 @@ class RentalPriceCheckRequest:
     """Name of the service"""
 
     area_code: bool
-    """Example: True"""
+    """Set to true if a specific area code will be requested when creating a rental, false if any area code can be used."""
 
     number_type: NumberType
     capability: ReservationCapability
@@ -1109,6 +1167,22 @@ class SmsWebhookEvent:
 
 
 @dataclass(frozen=True)
+class TwilioCallingContextDto:
+    token: Optional[str] = None
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['token'] = (self.token if self.token is not None else None)
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'TwilioCallingContextDto':
+        return cls(
+            token=(str(data.get("token", None)) if data.get("token", None) is not None else None),
+        )
+
+
+@dataclass(frozen=True)
 class UsageWindowEstimateResponse:
     reservation_id: str
     """Id of the reservation that this usage window estimate is associated with."""
@@ -1168,6 +1242,8 @@ class WakeResponse:
 class RentalSnapshot:
     number: str
     renewal_cost: float
+    """Renewal cost, in account credits."""
+
     service_name: str
     already_renewed: bool
     included_add_ons: List[AddOnSnapshot]
@@ -1360,6 +1436,8 @@ class RenewableRentalExpanded:
     billing_cycle_id: str
     is_included_for_next_renewal: bool
     number: str
+    """Example: 2223334444"""
+
     always_on: bool
     sale_id: Optional[str] = None
 
@@ -1401,6 +1479,8 @@ class ReservationSaleExpanded:
     reservations: List[Reservation]
     state: ReservationSaleState
     total: float
+    """Total amount of the sale, in account credits."""
+
     updated_at: datetime.datetime
 
     def to_api(self) -> Dict[str, Any]:
@@ -1440,6 +1520,8 @@ class VerificationExpanded:
     service_name: str
     state: ReservationState
     total_cost: float
+    """Example: 0.95"""
+
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
@@ -1510,6 +1592,27 @@ class WebhookEventSmsWebhookEvent:
 
 
 @dataclass(frozen=True)
+class CallContext:
+    reservation_id: str
+    """Id of the verification that this call context is associated with."""
+
+    twilio_context: TwilioCallingContextDto
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['reservationId'] = self.reservation_id
+        api_dict['twilioContext'] = self.twilio_context.to_api()
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'CallContext':
+        return cls(
+            reservation_id=str(data.get("reservationId", None)),
+            twilio_context=TwilioCallingContextDto.from_api(data.get("twilioContext", None)),
+        )
+
+
+@dataclass(frozen=True)
 class BillingCycleRenewalInvoice:
     created_at: datetime.datetime
     id: str
@@ -1517,6 +1620,8 @@ class BillingCycleRenewalInvoice:
     included_rentals: List[RentalSnapshot]
     is_paid_for: bool
     total_cost: float
+    """Total amount cost of the invoice, in account credits."""
+
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()

@@ -10,6 +10,7 @@ from .services_api import ServicesAPI
 from .sms_api import SMSApi
 from .verifications_api import VerificationsAPI
 from .wake_api import WakeAPI
+from .call_api import CallAPI
 import requests
 import datetime
 from requests.adapters import HTTPAdapter
@@ -74,6 +75,10 @@ class TextVerified(_ActionPerformer):
     @property
     def sms(self) -> SMSApi:
         return SMSApi(self)
+
+    @property
+    def calls(self) -> CallAPI:
+        return CallAPI(self)
 
     def __post_init__(self):
         self.bearer = None
