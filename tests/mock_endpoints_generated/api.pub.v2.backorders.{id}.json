@@ -5,8 +5,8 @@
     },
     "response": {
       "reservation": {
-        "method": "string",
-        "href": "string"
+        "method": "GET|POST",
+        "href": "https://...."
       },
       "id": "string",
       "serviceName": "string",

@@ -12,10 +12,10 @@
           {
             "number": "string",
             "rental": {
-              "method": "string",
-              "href": "string"
+              "method": "GET|POST",
+              "href": "https://...."
             },
-            "renewalCost": 0.0,
+            "renewalCost": 5.95,
             "serviceName": "string",
             "alreadyRenewed": false,
             "includedAddOns": [
@@ -50,10 +50,10 @@
           {
             "number": "string",
             "rental": {
-              "method": "string",
-              "href": "string"
+              "method": "GET|POST",
+              "href": "https://...."
             },
-            "renewalCost": 0.0,
+            "renewalCost": 5.95,
             "serviceName": "string",
             "alreadyRenewed": false,
             "includedAddOns": [
@@ -90,10 +90,10 @@
           {
             "number": "string",
             "rental": {
-              "method": "string",
-              "href": "string"
+              "method": "GET|POST",
+              "href": "https://...."
             },
-            "renewalCost": 0.0,
+            "renewalCost": 5.95,
             "serviceName": "string",
             "alreadyRenewed": false,
             "includedAddOns": [
@@ -128,10 +128,10 @@
           {
             "number": "string",
             "rental": {
-              "method": "string",
-              "href": "string"
+              "method": "GET|POST",
+              "href": "https://...."
             },
-            "renewalCost": 0.0,
+            "renewalCost": 5.95,
             "serviceName": "string",
             "alreadyRenewed": false,
             "includedAddOns": [
@@ -165,7 +165,7 @@
           }
         ],
         "isPaidFor": false,
-        "totalCost": 0.0
+        "totalCost": 11.9
       }
     }
   }

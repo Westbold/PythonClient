@@ -9,20 +9,20 @@
       "backOrderReservations": [
         {
           "link": {
-            "method": "string",
-            "href": "string"
+            "method": "GET|POST",
+            "href": "https://...."
           },
           "id": "string",
-          "serviceName": "string",
+          "serviceName": "yahoo",
           "status": "created"
         },
         {
           "link": {
-            "method": "string",
-            "href": "string"
+            "method": "GET|POST",
+            "href": "https://...."
           },
           "id": "string",
-          "serviceName": "string",
+          "serviceName": "yahoo",
           "status": "created"
         }
       ],
@@ -30,24 +30,24 @@
         {
           "id": "string",
           "link": {
-            "method": "string",
-            "href": "string"
+            "method": "GET|POST",
+            "href": "https://...."
           },
           "reservationType": "renewable",
-          "serviceName": "string"
+          "serviceName": "yahoo"
         },
         {
           "id": "string",
           "link": {
-            "method": "string",
-            "href": "string"
+            "method": "GET|POST",
+            "href": "https://...."
           },
           "reservationType": "renewable",
-          "serviceName": "string"
+          "serviceName": "yahoo"
         }
       ],
       "state": "created",
-      "total": 0.0,
+      "total": 5.25,
       "updatedAt": "1970-01-01T00:00:00+00:00"
     }
   }

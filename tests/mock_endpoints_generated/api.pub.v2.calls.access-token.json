@@ -1,0 +1,10 @@
+{
+  "post": {
+    "response": {
+      "reservationId": "string",
+      "twilioContext": {
+        "token": "string"
+      }
+    }
+  }
+}

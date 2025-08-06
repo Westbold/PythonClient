@@ -6,11 +6,11 @@
     },
     "response": [
       {
-        "serviceName": "myservice",
+        "serviceName": "gmail",
         "capability": "sms"
       },
       {
-        "serviceName": "myservice",
+        "serviceName": "gmail",
         "capability": "sms"
       }
     ]

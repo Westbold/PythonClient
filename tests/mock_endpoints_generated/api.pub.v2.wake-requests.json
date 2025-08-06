@@ -1,8 +1,8 @@
 {
   "post": {
     "response": {
-      "method": "string",
-      "href": "string"
+      "method": "GET|POST",
+      "href": "https://...."
     }
   }
 }

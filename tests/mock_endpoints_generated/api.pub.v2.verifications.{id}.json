@@ -6,8 +6,8 @@
     "response": {
       "number": "string",
       "sale": {
-        "method": "string",
-        "href": "string"
+        "method": "GET|POST",
+        "href": "https://...."
       },
       "createdAt": "1970-01-01T00:00:00+00:00",
       "endsAt": "1970-01-01T00:00:00+00:00",
@@ -15,34 +15,34 @@
       "cancel": {
         "canCancel": false,
         "link": {
-          "method": "string",
-          "href": "string"
+          "method": "GET|POST",
+          "href": "https://...."
         }
       },
       "reactivate": {
         "canReactivate": false,
         "link": {
-          "method": "string",
-          "href": "string"
+          "method": "GET|POST",
+          "href": "https://...."
         }
       },
       "report": {
         "canReport": false,
         "link": {
-          "method": "string",
-          "href": "string"
+          "method": "GET|POST",
+          "href": "https://...."
         }
       },
       "reuse": {
         "link": {
-          "method": "string",
-          "href": "string"
+          "method": "GET|POST",
+          "href": "https://...."
         },
         "reusableUntil": "1970-01-01T00:00:00+00:00"
       },
       "serviceName": "string",
       "state": "verificationPending",
-      "totalCost": 0.0
+      "totalCost": 0.95
     }
   }
 }

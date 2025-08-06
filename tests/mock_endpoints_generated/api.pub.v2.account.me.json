@@ -1,8 +1,8 @@
 {
   "get": {
     "response": {
-      "username": "string",
-      "currentBalance": 0.0
+      "username": "john_doe@example.com",
+      "currentBalance": 1234.56
     }
   }
 }

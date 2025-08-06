@@ -660,8 +660,14 @@ import dateutil.parser
             if compiled_code.strip():
                 f.write(compiled_code)
                 f.write("\n\n")
+    print("Generating dtypes.py...")
+    print("===============================")
+    print(f"Total nodes: {len(compile_list)}")
+    print(f"Total properties: {len(raw_graph.edges())}")
 
     # Create mock endpoints
+    print("\nGenerating mock endpoints...")
+    print("===============================")
     os.makedirs("./tests/mock_endpoints_generated/", exist_ok=True)
     unfiltered_graph = create_dependency_graph(swagger.get("components", {}).get("schemas", {}), patterns_to_ignore=[])
     for path, path_data in swagger.get("paths", {}).items():
@@ -672,3 +678,60 @@ import dateutil.parser
         with open(f"./tests/mock_endpoints_generated/{path}.json", "w") as f:
             json.dump(mock_call_json, f, indent=2)
             print(f"Mock endpoint for {path} written to {f.name}")
+
+    # If swagger-old exists, show me what must be migrated
+    if os.path.exists("swagger-old.json"):
+        print("\nMigration report:")
+        print("===============================")
+
+        with open("swagger-old.json", "r") as f:
+            old_swagger = json.load(f)
+        old_graph = create_dependency_graph(old_swagger.get("components", {}).get("schemas", {}))
+
+        old_nodes = {node_name: node_data["node"] for node_name, node_data in old_graph.nodes(data=True)}
+        new_nodes = {node_name: node_data["node"] for node_name, node_data in raw_graph.nodes(data=True)}
+
+        for node_name in old_nodes.keys() - new_nodes.keys():
+            node = old_nodes[node_name]
+            if isinstance(node, ObjectNode):
+                print(f"CRITICAL: Object {node_name} was removed in the new schema.")
+            elif isinstance(node, EnumNode):
+                print(f"CRITICAL: Enum {node_name} was removed in the new schema.")
+                print(f"\tValues: {', '.join(node.values)}")
+            elif isinstance(node, (DtypeNode, DateTimeNode)):
+                pass  # not important for migration
+            else:
+                print(f"CRITICAL: Node {node_name} ({node.annotation_name}) was removed in the new schema.")
+
+        for node_name in new_nodes.keys() - old_nodes.keys():
+            node = new_nodes[node_name]
+            if isinstance(node, ObjectNode):
+                print(f"Object {node_name} was added in the new schema.")
+            elif isinstance(node, EnumNode):
+                print(f"Enum {node_name} was added in the new schema.")
+                print(f"\tValues: {', '.join(node.values)}")
+            elif isinstance(node, (DtypeNode, DateTimeNode)):
+                pass  # not important for migration
+            else:
+                print(f"Node {node_name} ({node.annotation_name}) was added in the new schema.")
+
+        old_edges = {(u, v) for u, v in old_graph.edges()}
+        new_edges = {(u, v) for u, v in raw_graph.edges()}
+
+        for src, dst in old_edges - new_edges:
+            if src in new_nodes:
+                print(f"CRITICAL: Node {src} lost property {dst} in the new schema.")
+
+        for src, dst in new_edges - old_edges:
+            if src in old_nodes:
+                print(f"Node {src} gained property {dst} in the new schema.")
+
+        old_endpoints = set(old_swagger.get("paths", {}).keys())
+        new_endpoints = set(swagger.get("paths", {}).keys())
+
+        print("\nEndpoints changes:")
+        for endpoint in old_endpoints - new_endpoints:
+            print(f"CRITICAL: Endpoint {endpoint} was removed in the new schema.")
+
+        for endpoint in new_endpoints - old_endpoints:
+            print(f"Endpoint {endpoint} was added in the new schema.")
