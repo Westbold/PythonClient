@@ -34,12 +34,6 @@ def test_list_calls_by_to_number(tv, mock_http_from_disk):
     calls_list = tv.calls.list(to_number="+1234567890")
 
     call_messages = [x.to_api() for x in calls_list]
-    print("truth", mock_http_from_disk.last_response["data"][0])
-    print("test", call_messages[0])
-    print([
-        dict_subset(call_test, call_truth)
-        for call_test, call_truth in zip(call_messages, mock_http_from_disk.last_response["data"])
-    ])
     assert all(
         dict_subset(call_test, call_truth) is None
         for call_test, call_truth in zip(call_messages, mock_http_from_disk.last_response["data"])
@@ -141,7 +135,7 @@ def test_list_calls_with_reservation_object(tv, mock_http_from_disk):
         reservation_type=ReservationType.RENEWABLE,
         service_name="allservices",
     )
-    
+
     calls_list = tv.calls.list(data=reservation)
 
     call_messages = [x.to_api() for x in calls_list]
@@ -164,7 +158,7 @@ def test_list_calls_error_data_and_to_number(tv):
         number="+1234567890",
         always_on=True,
     )
-    
+
     with pytest.raises(ValueError, match="Cannot specify both rental/verification data and to_number"):
         tv.calls.list(data=rental, to_number="+0987654321")
 
@@ -182,7 +176,7 @@ def test_list_calls_error_reservation_type_with_data(tv):
         number="+1234567890",
         always_on=True,
     )
-    
+
     with pytest.raises(ValueError, match="Cannot specify reservation_type when using a rental or verification object"):
         tv.calls.list(data=rental, reservation_type=ReservationType.RENEWABLE)
 
@@ -190,9 +184,9 @@ def test_list_calls_error_reservation_type_with_data(tv):
 def test_open_call_session_with_reservation_id(tv, mock_http_from_disk):
     """Test opening a call session with a reservation ID string."""
     reservation_id = "reservation_123"
-    
+
     twilio_context = tv.calls.open_call_session(reservation_id)
-    
+
     assert isinstance(twilio_context, TwilioCallingContextDto)
     # Verify the request was made with correct reservation ID
     assert mock_http_from_disk.last_body_params["reservationId"] == reservation_id
@@ -201,7 +195,7 @@ def test_open_call_session_with_reservation_id(tv, mock_http_from_disk):
 def test_open_call_session_with_renewable_rental_compact(tv, mock_http_from_disk, renewable_rental_compact):
     """Test opening a call session with a RenewableRentalCompact object."""
     twilio_context = tv.calls.open_call_session(renewable_rental_compact)
-    
+
     assert isinstance(twilio_context, TwilioCallingContextDto)
     # Verify the request was made with correct reservation ID
     assert mock_http_from_disk.last_body_params["reservationId"] == renewable_rental_compact.id
@@ -210,7 +204,7 @@ def test_open_call_session_with_renewable_rental_compact(tv, mock_http_from_disk
 def test_open_call_session_with_renewable_rental_expanded(tv, mock_http_from_disk, renewable_rental_expanded):
     """Test opening a call session with a RenewableRentalExpanded object."""
     twilio_context = tv.calls.open_call_session(renewable_rental_expanded)
-    
+
     assert isinstance(twilio_context, TwilioCallingContextDto)
     # Verify the request was made with correct reservation ID
     assert mock_http_from_disk.last_body_params["reservationId"] == renewable_rental_expanded.id
@@ -219,7 +213,7 @@ def test_open_call_session_with_renewable_rental_expanded(tv, mock_http_from_dis
 def test_open_call_session_with_nonrenewable_rental_compact(tv, mock_http_from_disk, nonrenewable_rental_compact):
     """Test opening a call session with a NonrenewableRentalCompact object."""
     twilio_context = tv.calls.open_call_session(nonrenewable_rental_compact)
-    
+
     assert isinstance(twilio_context, TwilioCallingContextDto)
     # Verify the request was made with correct reservation ID
     assert mock_http_from_disk.last_body_params["reservationId"] == nonrenewable_rental_compact.id
@@ -228,7 +222,7 @@ def test_open_call_session_with_nonrenewable_rental_compact(tv, mock_http_from_d
 def test_open_call_session_with_nonrenewable_rental_expanded(tv, mock_http_from_disk, nonrenewable_rental_expanded):
     """Test opening a call session with a NonrenewableRentalExpanded object."""
     twilio_context = tv.calls.open_call_session(nonrenewable_rental_expanded)
-    
+
     assert isinstance(twilio_context, TwilioCallingContextDto)
     # Verify the request was made with correct reservation ID
     assert mock_http_from_disk.last_body_params["reservationId"] == nonrenewable_rental_expanded.id
@@ -237,7 +231,7 @@ def test_open_call_session_with_nonrenewable_rental_expanded(tv, mock_http_from_
 def test_open_call_session_with_verification_compact(tv, mock_http_from_disk, verification_compact):
     """Test opening a call session with a VerificationCompact object."""
     twilio_context = tv.calls.open_call_session(verification_compact)
-    
+
     assert isinstance(twilio_context, TwilioCallingContextDto)
     # Verify the request was made with correct reservation ID
     assert mock_http_from_disk.last_body_params["reservationId"] == verification_compact.id
@@ -246,7 +240,7 @@ def test_open_call_session_with_verification_compact(tv, mock_http_from_disk, ve
 def test_open_call_session_with_verification_expanded(tv, mock_http_from_disk, verification_expanded):
     """Test opening a call session with a VerificationExpanded object."""
     twilio_context = tv.calls.open_call_session(verification_expanded)
-    
+
     assert isinstance(twilio_context, TwilioCallingContextDto)
     # Verify the request was made with correct reservation ID
     assert mock_http_from_disk.last_body_params["reservationId"] == verification_expanded.id
@@ -259,9 +253,9 @@ def test_open_call_session_with_reservation_object(tv, mock_http_from_disk):
         reservation_type=ReservationType.RENEWABLE,
         service_name="allservices",
     )
-    
+
     twilio_context = tv.calls.open_call_session(reservation)
-    
+
     assert isinstance(twilio_context, TwilioCallingContextDto)
     # Verify the request was made with correct reservation ID
     assert mock_http_from_disk.last_body_params["reservationId"] == reservation.id
