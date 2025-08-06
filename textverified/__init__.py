@@ -111,7 +111,7 @@ Example:
     account_info = account.me()
     
     # Get account balance
-    balance = account.balance()
+    balance = account.balance
 """,
 )
 
@@ -145,13 +145,16 @@ This is a static wrapper around the ReservationsAPI class that uses the globally
 configured TextVerified instance.
 
 Example:
-    from textverified import reservations
+    from textverified import reservations, NewRentalRequest
     
     # Create a new reservation
-    reservation = reservations.create(service_id=1, area_code="555")
+    reservation = reservations.create(NewRentalRequest(...))
     
-    # List all reservations
-    all_reservations = reservations.list()
+    # List renewable reservations
+    all_reservations = reservations.list_renewable()
+    
+    # List non-renewable reservations
+    non_renewable = reservations.list_nonrenewable()
 """,
 )
 
@@ -257,6 +260,22 @@ Example:
 """,
 )
 
+calls = _LazyAPI(
+    "calls",
+    """
+Static access to call management functionality.
+
+Provides methods for listing incoming calls, opening call sessions, and managing call-related data.
+This is a static wrapper around the CallAPI class that uses the globally
+configured TextVerified instance.
+
+Example:
+    from textverified import calls
+    
+    # List calls
+    call_list = calls.list()
+""",
+)
 
 # Available for import:
 __all__ = [
@@ -276,6 +295,7 @@ __all__ = [
     "verifications",
     "wake_requests",
     "sms",
+    "calls",
     # API classes (for direct instantiation if needed)
     "AccountAPI",
     "BillingCycleAPI",

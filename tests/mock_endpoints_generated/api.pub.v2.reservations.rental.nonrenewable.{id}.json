@@ -5,8 +5,8 @@
     },
     "response": {
       "sms": {
-        "method": "string",
-        "href": "string"
+        "method": "GET|POST",
+        "href": "https://...."
       },
       "createdAt": "1970-01-01T00:00:00+00:00",
       "endsAt": "1970-01-01T00:00:00+00:00",
@@ -14,8 +14,8 @@
       "refund": {
         "canRefund": false,
         "link": {
-          "method": "string",
-          "href": "string"
+          "method": "GET|POST",
+          "href": "https://...."
         },
         "refundableUntil": "1970-01-01T00:00:00+00:00"
       },

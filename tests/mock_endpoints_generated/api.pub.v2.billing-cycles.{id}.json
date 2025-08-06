@@ -11,8 +11,8 @@
       "emailNotificationsEnabled": false,
       "state": "string",
       "invoices": {
-        "method": "string",
-        "href": "string"
+        "method": "GET|POST",
+        "href": "https://...."
       }
     }
   },

@@ -1,8 +1,8 @@
 {
   "post": {
     "response": {
-      "method": "string",
-      "href": "string"
+      "method": "GET|POST",
+      "href": "https://...."
     }
   },
   "get": {
@@ -12,24 +12,24 @@
           "createdAt": "1970-01-01T00:00:00+00:00",
           "id": "string",
           "calls": {
-            "method": "string",
-            "href": "string"
+            "method": "GET|POST",
+            "href": "https://...."
           },
           "serviceName": "string",
           "state": "verificationPending",
-          "totalCost": 0.0,
+          "totalCost": 0.95,
           "number": "string"
         },
         {
           "createdAt": "1970-01-01T00:00:00+00:00",
           "id": "string",
           "calls": {
-            "method": "string",
-            "href": "string"
+            "method": "GET|POST",
+            "href": "https://...."
           },
           "serviceName": "string",
           "state": "verificationPending",
-          "totalCost": 0.0,
+          "totalCost": 0.95,
           "number": "string"
         }
       ],
@@ -38,8 +38,8 @@
       "count": 0,
       "links": {
         "next": {
-          "method": "string",
-          "href": "string"
+          "method": "GET|POST",
+          "href": "https://...."
         }
       }
     }

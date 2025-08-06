@@ -43,6 +43,12 @@ SMS API
 .. automodule:: textverified.sms_api
    :members:
 
+Call API
+~~~~~~~
+
+.. automodule:: textverified.call_api
+   :members:
+
 Reservations API
 ~~~~~~~~~~~~~~~
 

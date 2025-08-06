@@ -1,28 +1,25 @@
 {
   "get": {
+    "query_params": {
+      "to": "string",
+      "reservationId": "string",
+      "reservationType": "renewable"
+    },
     "response": {
       "data": [
         {
+          "from": "string",
+          "to": "string",
           "createdAt": "1970-01-01T00:00:00+00:00",
           "id": "string",
-          "link": {
-            "method": "GET|POST",
-            "href": "https://...."
-          },
-          "state": "created",
-          "totalCost": 0.95,
-          "updatedAt": "1970-01-01T00:00:00+00:00"
+          "recordingUri": "string"
         },
         {
+          "from": "string",
+          "to": "string",
           "createdAt": "1970-01-01T00:00:00+00:00",
           "id": "string",
-          "link": {
-            "method": "GET|POST",
-            "href": "https://...."
-          },
-          "state": "created",
-          "totalCost": 0.95,
-          "updatedAt": "1970-01-01T00:00:00+00:00"
+          "recordingUri": "string"
         }
       ],
       "hasNext": false,

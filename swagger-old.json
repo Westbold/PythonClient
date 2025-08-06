@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.4",
+  "openapi": "3.0.1",
   "info": {
     "title": "API Overview",
     "description": "<p>This is where you can get started with automating your workflows and integrating your apps with our API.</p>\n<p>For rentals (<b>long term use</b> of numbers), you'll need to check out the following links in order: </p><ol>\n<li>Authenticate: <a href='docs/api/v2#auth' target='_top'>Authentication</a></li>\n<li>Obtain a list of rental services: <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a></li>\n<li>Create a rental: <a href='docs/api/v2#post-/api/pub/v2/reservations/rental' target='_top'>Create New Rental</a></li>\n<li>Follow the location header returned to get the rental sale.</li>\n<li>From the sale, you'll be able to see the reservations and backorders.</li>\n</ol>\n<p>For verifications (<b>single use</b> of numbers), you'll need to check out the following links in order: </p><ol>\n<li>Authenticate: <a href='docs/api/v2#auth' target='_top'>Authentication</a></li>\n<li>Obtain a list of verification services: <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a></li>\n<li>Create a verification: <a href='docs/api/v2#post-/api/pub/v2/verifications' target='_top'>Create Verification</a></li>\n<li>Follow the location header returned to get the newly created verification.</li>\n</ol>\n<p>Our API documentation has an embedded javascript client so that you can try out the API. You will need to <a href='docs/api/v2#auth' target='_top'>setup your bearer token</a> to be able to access secured endpoints.\n</p><br/>\n<h2>Paginated List Responses</h2>\n<p>When you successfully get a list of data (generally, ordered by when the resource was created), for example <a href='docs/api/v2#get-/api/pub/v2/billing-cycles' target='_top'>List Billing Cycles</a>, you will need to follow it's <code>links</code> results.\n<br/>Inside the <code>links</code> result, you will get <code>current</code>, <code>previous</code>, and <code>next</code> values. Inside these values, there will be <code>href</code> and <code>method</code> values.\n<br/>With these values, you can get more of your list by navigating through them. </p>\n<h3><b>Example</b></h3>\n<p>We get the result from <a href='docs/api/v2#get-/api/pub/v2/billing-cycles' target='_top'>List Billing Cycles</a>, but we don't see what we need and need more billing cycles.<br/>\n<span style='color:#dc2626;'><b>The following code is whiteboarding code, use the language you are using for your integration with the API</b></span><br/>\nWe will need to do the following:</p>\n<ul><li>Get our api result <code>data = getListBillingCyclesResult()</code></li>\n<li>Get the <code>href = data['links']['next']['href']</code></li>\n<li>Get the <code>method = data['links']['next']['method']</code></li>\n<li>Now you can get the next page: <code>nextPage = fetch(href, {method=method})</code></li>\n<li>If we need the next page's result, we can repeat this process.</li></ul>\n<p>Note that only renewable rentals will be associated with a billing cycle.</p>\n<object width=\"630\" style=\"margin-top:60px\" data=\"/api/pub/v2/docs/rental-api-v2-purchase-flow.svg\" type=\"image/svg+xml\"></object>\n<object width=\"630\" style=\"margin-top:60px\" data=\"/api/pub/v2/docs/verification-api-v2-purchase-flow.svg\" type=\"image/svg+xml\"></object>\n",
@@ -22,7 +22,7 @@
           "Bearer Tokens"
         ],
         "summary": "Generate Bearer Token",
-        "description": "Generate a bearer token to start making requests to <b>secured endpoints</b>. \nYou will need to supply the following <b>headers</b>:\n1) ```X-API-KEY``` (your primary API key)\n2) ```X-API-USERNAME``` (your username, which is the email you used to register)  \nAll <b>secured endpoints</b> will need your <b>bearer token</b> supplied to them.\n\nBecause bearer tokens can <b>expire</b> due to having a limited lifespan, you will need to obtain a new bearer token by generating a new one periodically.\n\nYou can view and manage your API keys on under <a href=\"https://www.textverified.com/app/api/configure\">API Settings</a>.\n\nAfter successfully generating a bearer token ```eyJh...```, you can use set the bearer token <a href=\"docs/api/v2#auth\" target=\"_top\">here</a> and explore our secured API endpoints.",
+        "description": "Generate a bearer token to start making requests to <b>secured endpoints</b>. \r\nYou will need to supply the following <b>headers</b>:\r\n1) ```X-API-KEY``` (your primary API key)\r\n2) ```X-API-USERNAME``` (your username, which is the email you used to register)  \r\nAll <b>secured endpoints</b> will need your <b>bearer token</b> supplied to them.<br />\r\nBecause bearer tokens can <b>expire</b> due to having a limited lifespan, you will need to obtain a new bearer token by generating a new one periodically.<br />\r\nYou can view and manage your API keys on under <a href=\"https://www.textverified.com/app/account/settings/api\">API Settings</a>.<br />\r\nAfter successfully generating a bearer token ```eyJh...```, you can use set the bearer token <a href=\"docs/api/v2#auth\" target=\"_top\">here</a> and explore our secured API endpoints.",
         "parameters": [
           {
             "name": "X-API-USERNAME",
@@ -45,7 +45,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -69,11 +69,11 @@
           "Account"
         ],
         "summary": "Get Account Details",
-        "description": "Retrieves the details of the currently authenticated account. Returns the username and current balance (in account credits) of the user, or ``` 401 Unauthorized ``` if the user is not authenticated.",
+        "description": "Get the details of your user account.",
         "operationId": "GetAccountExpandedPublic",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -102,36 +102,17 @@
           "Services"
         ],
         "summary": "Area Codes List",
-        "description": "Returns a list of our supported area codes.\n\nThese supported area codes you get in the ```areaCode``` property from the response can be used for API calls where an ```areaCodeSelectOption``` is in the body or parameter.",
+        "description": "Returns a list of our supported area codes.\r\n\r\nThese supported area codes you get in the ```areaCode``` property from the response can be used for API calls where an ```areaCodeSelectOption``` is in the body or parameter.",
         "operationId": "ListAdvertisedAreaCodesPublic",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/AreaCode"
-                  }
-                },
-                "examples": {
-                  "areaCodeList": {
-                    "summary": "List of available area codes",
-                    "value": [
-  {
-    "areaCode": "205",
-    "state": "Alabama"
-  },
-  {
-    "areaCode": "251",
-    "state": "Alabama"
-  },
-  {
-    "areaCode": "307",
-    "state": "Wyoming"
-  }
-]
                   }
                 }
               }
@@ -160,7 +141,7 @@
           "Services"
         ],
         "summary": "Service List",
-        "description": "Returns a list of our supported services.\n\nThese supported services you get in the ```serviceName``` property from the response will be used for API calls where a ```serviceName``` is required in the body or parameter.",
+        "description": "Returns a list of our supported services.\r\n\r\nThese supported services you get in the ```serviceName``` property from the response will be used for API calls where a ```serviceName``` is required in the body or parameter.",
         "operationId": "ListAdvertisedTargetsPublic",
         "parameters": [
           {
@@ -184,32 +165,13 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Service"
-                  }
-                },
-                "examples": {
-                  "serviceList": {
-                    "summary": "List of available services",
-                    "value": [
-  {
-    "serviceName": "yahoo",
-    "capability": "Sms"
-  },
-  {
-    "serviceName": "facebook",
-    "capability": "Sms"
-  },
-  {
-    "serviceName": "google",
-    "capability": "Sms"
-  }
-]
                   }
                 }
               }
@@ -238,7 +200,7 @@
           "Services"
         ],
         "summary": "Rental Pricing",
-        "description": "Get rental prices for a specific service and option(s). The ```serviceName``` is required, and the list of supported service names can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\n\nNot all service and options are compatible with each other. This endpoint point will return a ```400 Bad Request``` for unsupported service and option combinations.",
+        "description": "Get rental prices for a specific service and option(s). The ```serviceName``` is required, and the list of supported service names can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\r\n\r\nNot all service and options are compatible with each other. This endpoint point will return a ```400 Bad Request``` for unsupported service and option combinations.",
         "operationId": "PriceCheckRentalPublic",
         "requestBody": {
           "content": {
@@ -261,7 +223,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -293,7 +255,7 @@
           "Services"
         ],
         "summary": "Verification Pricing",
-        "description": "Clients can call this endpoint to check the verification price of a specific service and option(s). The list of supported services (```serviceName```) can be found <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">here</a>.\n\nNot all service and options are compatible with each other. This endpoint point will return a ```400 Bad Request``` for unsupported service and option combinations.",
+        "description": "Clients can call this endpoint to check the verification price of a specific service and option(s). The list of supported services (```serviceName```) can be found <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">here</a>.<br />\r\nNot all service and options are compatible with each other. This endpoint point will return a ```400 Bad Request``` for unsupported service and option combinations.",
         "operationId": "PriceCheckVerificationPublic",
         "requestBody": {
           "content": {
@@ -316,7 +278,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -348,7 +310,7 @@
           "Sales"
         ],
         "summary": "Get Reservation Sale Details",
-        "description": "Get the details on a reservation sale by ID.\n\nNote: This endpoint returns a paginated list of reservations and back ordered reservations (if applicable) associated with the provided sale ID, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Get the details on a reservation sale by ID.",
         "operationId": "GetReservationSaleExpandedPublic",
         "parameters": [
           {
@@ -363,7 +325,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -395,10 +357,10 @@
           "Sales"
         ],
         "summary": "List Reservation Sales",
-        "description": "Get a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your reservation sales.\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Get a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your reservation sales.\r\n\r\nNote: This endpoint returns a paginated result of the list, check\r\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\r\nif you are having problems.",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -427,7 +389,7 @@
           "Billing Cycles"
         ],
         "summary": "Get Billing Cycle Details",
-        "description": "Get the details of a billing cycle by ID. A billing cycle can have one or many renewable rentals.\nOnly renewable rentals are associated with a billing cycle.",
+        "description": "Get the details of a billing cycle by ID. A billing cycle can have one or many renewable rentals. Only renewable rentals are associated with a billing cycle.",
         "operationId": "GetBillingCyclePublic",
         "parameters": [
           {
@@ -442,7 +404,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -472,7 +434,7 @@
           "Billing Cycles"
         ],
         "summary": "Updating a Billing Cycle",
-        "description": "Update a billing cycle by ID.\n\nWhat you can currently update are:\n- ```nickname``` (Your custom string to identify the billing cycle)\n- ```remindersEnabled``` (Email reminders)\n\nNot providing an update option will leave it unchanged. For example, not providing ```remindersEnabled``` but having \n```\"nickname\": \"aNickname\"``` will only update the nickname.",
+        "description": "Update a billing cycle by ID.\r\n\r\nWhat you can currently update are:\r\n- ```nickname``` (Your custom string to identify the billing cycle)\r\n- ```remindersEnabled``` (Email reminders)\r\n\r\nNot providing an update option will leave it unchanged. For example, not providing ```remindersEnabled``` but having \r\n```\"nickname\": \"aNickname\"``` will only update the nickname.",
         "operationId": "UpdateBillingCyclePublic",
         "parameters": [
           {
@@ -507,7 +469,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
           "400": {
             "description": "Bad Request"
@@ -532,7 +494,7 @@
           "Billing Cycles"
         ],
         "summary": "Get Billing Cycle Invoices",
-        "description": "Get a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> invoice history of a billing cycle by it's ID.\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Get a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> invoice history of a billing cycle by it's ID.\r\n\r\nNote: This endpoint returns a paginated result of the list, check\r\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\r\nif you are having problems.",
         "operationId": "ListBillingCycleInvoicesPublic",
         "parameters": [
           {
@@ -547,7 +509,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -576,11 +538,11 @@
           "Billing Cycles"
         ],
         "summary": "List Billing Cycles",
-        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your billing cycles. A billing cycle can have one or many renewable rentals. Only renewable rentals are associated with a billing cycle.\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your billing cycles. A billing cycle can have one or many renewable rentals. Only renewable rentals are associated with a billing cycle.\r\n\r\nNote: This endpoint returns a paginated result of the list, check\r\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\r\nif you are having problems.",
         "operationId": "ListBillingCyclesPublic",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -624,7 +586,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -656,7 +618,7 @@
           "Billing Cycles"
         ],
         "summary": "Renew Billing Cycle",
-        "description": "Renew the active rentals on your billing cycle by it's ID.\n            \nThis will not renew overdue rentals. To renew overdue rentals, you must explicitly renew them using the\n<a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental/renewable/-id-/renew\" target=\"_top\">Renew Overdue Rental</a> endpoint.",
+        "description": "Renew the active rentals on your billing cycle by it's ID.\r\n            \r\nThis will not renew overdue rentals.",
         "operationId": "RenewBillingCyclePublic",
         "parameters": [
           {
@@ -671,7 +633,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -703,7 +665,7 @@
           "Back Order Rental Reservations"
         ],
         "summary": "Get Back Order Reservation Detail",
-        "description": "Get the details on a back order reservation by ID.\n\nBack order reservations are created if you have a parameter set when creating a new rental and there is no available stock. See <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a> for more info.",
+        "description": "Get the details on a back order reservation by ID.\r\n\r\nBack order reservations are created if you have a parameter set when creating a new rental and there is no available stock. See <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a> for more info.",
         "operationId": "GetBackOrderReservationExpandedPublic",
         "parameters": [
           {
@@ -718,7 +680,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -750,7 +712,7 @@
           "Line Reservations"
         ],
         "summary": "Line Reservation Details",
-        "description": "Get the details on a line reservation by ID.\n\nSuccessfully getting the details of the line reservation will require following the ```href``` link provided in the response.",
+        "description": "Get the details on a line reservation by ID.\r\n\r\nSuccessfully getting the details of the line reservation will require following the ```href``` link provided in the response.",
         "operationId": "GetLineReservationExpandedPublic",
         "parameters": [
           {
@@ -773,7 +735,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -805,7 +767,6 @@
           "Line Reservations"
         ],
         "summary": "Reservation Health Check",
-        "description": "Gets the health of a reservation and its line number.",
         "operationId": "GetReservationLineHealthPublic",
         "parameters": [
           {
@@ -820,7 +781,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -852,7 +813,7 @@
           "New Verification"
         ],
         "summary": "Create Verification",
-        "description": "Create/purchase a new verification. The ```serviceName``` is required, and the list of supported service names can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\n            \nIf successful, a 201 response will be returned with the location of the newly created verification in the <b>http response 'location' header</b>.\nSome combinations of options are unavailable. Will return ```400 Bad Request``` if the request is invalid. To validate without the risk of using credits, use the <a href=\"docs/api/v2#post-/api/pub/v2/pricing/verifications\" target=\"_top\">verification pricing</a> endpoint.",
+        "description": "Create/purchase a new verification. If successful, a 201 response will be returned with the location of the newly created verification in the <b>http response 'location' header</b>. <br /><br />\r\nThe ```serviceName``` is required, and the list of supported service names can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>. <br />",
         "requestBody": {
           "description": "",
           "content": {
@@ -922,11 +883,11 @@
           "Verifications"
         ],
         "summary": "List Verifications",
-        "description": "Retrieves a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of current verifications.\n            \nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Clients can call this endpoint to retrieve the paginated list of verifications.",
         "operationId": "ListVerificationsPublic",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -955,7 +916,7 @@
           "Verifications"
         ],
         "summary": "Verification Details",
-        "description": "Retrieves the details of a verification. Also returns actions that can be performed on the verification, including the ability to <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/cancel\" target=\"_top\">cancel</a>, <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/report\" target=\"_top\">report</a>, <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/reactivate\" target=\"_top\">reactivate</a>, or <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/reuse\" target=\"_top\">reuse</a> the verification.",
+        "description": "Clients can call this endpoint to retrieve the details of a verification.",
         "operationId": "GetVerificationExpandedPublic",
         "parameters": [
           {
@@ -970,7 +931,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -1002,7 +963,7 @@
           "Verifications"
         ],
         "summary": "Cancel Verification",
-        "description": "Call this to <b>attempt</b> to cancel a verification by ID.\n\nReturns ```400 Bad Request``` if the verification does not allow cancellation.",
+        "description": "Clients can call this endpoint to try to cancel a verification.",
         "operationId": "CancelVerificationPublic",
         "parameters": [
           {
@@ -1017,7 +978,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
           "400": {
             "description": "Bad Request"
@@ -1042,7 +1003,7 @@
           "Verifications"
         ],
         "summary": "Reactivate Verification",
-        "description": "Call this to <b>attempt</b> to reactivate a completed verification that can no longer be <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/reuse\" target=\"_top\">reused</a>.\nThis may not be possible due to a number of reasons - to check eligibility, use <a href=\"docs/api/v2#get-/api/pub/v2/verifications/-id-\" target=\"_top\">verification details</a>.\n\nIf successful, a 201 response will be returned with the location of the newly created verification ID in the <b>http response 'location' header</b>.\nIf the verification is not eligible for reactivation, a ```400 Bad Request``` will be returned with an error message.",
+        "description": "Clients can call this endpoint to try to reactivate a verification. If successful, a 201 response will be returned with the location of the newly created verification in the <b>http response 'location' header</b>.",
         "operationId": "ReactivateVerificationPublic",
         "parameters": [
           {
@@ -1106,7 +1067,7 @@
           "Verifications"
         ],
         "summary": "Report Verification",
-        "description": "Call this to <b>attempt</b> to report a verification by ID for issues such as \"number already in use\", \"verification failed\", or \"code not received\".\n\nReturns ```400 Bad Request``` if the verification does not allow reporting.",
+        "description": "Clients can call this endpoint to try to report an verification.",
         "operationId": "ReportVerificationPublic",
         "parameters": [
           {
@@ -1121,7 +1082,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
           "400": {
             "description": "Bad Request"
@@ -1146,7 +1107,7 @@
           "Verifications"
         ],
         "summary": "Reuse Verification",
-        "description": "Call this to <b>attempt</b> to reuse a verification by ID.\nThis is usable only shortly after a verification has been completed successfully on this ID. To check eligibility, use <a href=\"docs/api/v2#get-/api/pub/v2/verifications/-id-\" target=\"_top\">verification details</a>.\n            \nIf successful, a 201 response will be returned with the location of the newly created verification ID in the <b>http response 'location' header</b>.\nIf the verification is not eligible for reuse, a ```400 Bad Request``` will be returned with an error message.",
+        "description": "Clients can call this endpoint to try to reuse a verification. If successful, a 201 response will be returned with the location of the newly created verification in the <b>http response 'location' header</b>.",
         "operationId": "ReuseVerificationPublic",
         "parameters": [
           {
@@ -1210,7 +1171,7 @@
           "New Rental"
         ],
         "summary": "Create New Rental",
-        "description": "Create/purchase a new rental. The ```serviceName``` is required, and the list of supported service names can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>. \n\nIf ```allowBackOrderReservations``` is ```true``` in the request body, a rental back order will be created if the requested rental is out of stock.\n            \nIf successful, a 201 response will be returned with the location of the sale in the <b>http response 'location' header</b>. This sale will have details on the outcome of the rental purchase.\nSome combinations of options are unavailable. Will return ```400 Bad Request``` if the request is invalid. To validate without the risk of using credits, use the <a href=\"docs/api/v2#post-/api/pub/v2/pricing/rentals\" target=\"_top\">rental pricing</a> endpoint.",
+        "description": "Create/purchase a new rental. If successful, a 201 response will be returned with the location of the sale in the <b>http response 'location' header</b>. This sale will have details on the outcome of the rental purchase.<br /><br />\r\nThe ```serviceName``` is required, and the list of supported service names can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>. <br />\r\nIf ```allowBackOrderReservations``` is ```true``` in the request body, a rental back order will be created if the requested rental is out of stock.",
         "requestBody": {
           "description": "",
           "content": {
@@ -1282,7 +1243,7 @@
           "Renewable Rentals"
         ],
         "summary": "Renewable Rental Details",
-        "description": "Get the details of a renewable rental by ID. Also returns relevant links to the billing cycle, calls, SMS, and sale information as well as a refund action if applicable.",
+        "description": "Get the details of a renewable rental by ID.",
         "operationId": "GetRenewableRentalPublic",
         "parameters": [
           {
@@ -1297,7 +1258,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -1327,7 +1288,7 @@
           "Renewable Rentals"
         ],
         "summary": "Update a Renewable Rental",
-        "description": "Update a renewable rental by ID.\n\nWhat you can currently update are:\n- ```userNotes``` (Notes)\n- ```includeForRenewal``` (Include/Exclude rental for renew)\n- ```markAllSmsRead``` (Mark SMS as read)\n\nNot providing an update option will leave it unchanged. For example, not providing\n```userNotes``` but having ```\"includeForRenewal\": true``` will only include the rental for renew.",
+        "description": "Update a renewable rental by ID.\r\n\r\nWhat you can currently update are:\r\n- ```userNotes``` (Notes)\r\n- ```includeForRenewal``` (Include/Exclude rental for renew)\r\n- ```markAllSmsRead``` (Mark SMS as read)\r\n\r\nNot providing an update option will leave it unchanged. For example, not providing\r\n```userNotes``` but having ```\"includeForRenewal\": true``` will only include the rental for renew.",
         "operationId": "UpdateRenewableRentalPublic",
         "parameters": [
           {
@@ -1362,7 +1323,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
           "400": {
             "description": "Bad Request"
@@ -1387,7 +1348,7 @@
           "Renewable Rentals"
         ],
         "summary": "List Renewable Rentals",
-        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your renewable rentals.\n\nOptional Parameters:\n- ```billingCycleId``` (Get renewable rentals under this billing cycle ID)\n\nTo create a new rental, see <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a>.\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your renewable rentals.\r\n\r\nOptional Parameters:\r\n- ```billingCycleId``` (Get renewable rentals under this billing cycle ID)\r\n\r\nTo create a new rental, see <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a>.\r\n\r\nNote: This endpoint returns a paginated result of the list, check\r\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\r\nif you are having problems.",
         "operationId": "ListRenewableLineRentalsPublic",
         "parameters": [
           {
@@ -1401,7 +1362,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -1430,7 +1391,7 @@
           "Renewable Rentals"
         ],
         "summary": "Refund Renewable Rental",
-        "description": "Call this to <b>attempt</b> to refund a renewable rental by ID.\n\nThis could fail if the rental is not refundable or the refund period has passsed.\nWill return ```400 Bad Request``` if the request is invalid or refund is not possible.",
+        "description": "<b>Attempt</b> to refund a renewable rental by ID.",
         "operationId": "RenewableSelfServiceRefundRentalPublic",
         "parameters": [
           {
@@ -1445,7 +1406,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
           "400": {
             "description": "Bad Request"
@@ -1470,7 +1431,7 @@
           "Renewable Rentals"
         ],
         "summary": "Renew Overdue Rental",
-        "description": "Renew an overdue rental by its ID. \n\nCalling this method will automatically include the rental for renewal and perform the renewal. Only overdue rentals may be renewed this way.",
+        "description": "Renew an overdue rental by it's ID. \r\n\r\nCalling this method will automatically include the rental for renewal and perform the renewal. Only overdue rentals may be renewed this way.",
         "operationId": "RenewOverdueRenewableRental",
         "parameters": [
           {
@@ -1485,7 +1446,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
           "400": {
             "description": "Bad Request"
@@ -1510,7 +1471,7 @@
           "Non-Renewable Rentals"
         ],
         "summary": "Non-Renewable Rental Details",
-        "description": "Get the details of a non-renewable rental by ID. Also returns relevant links to the billing cycle, calls, SMS, and sale information as well as a refund action if applicable.",
+        "description": "Get the details of a non-renewable rental by ID.",
         "operationId": "GetNonrenewableRentalPublic",
         "parameters": [
           {
@@ -1525,7 +1486,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -1555,7 +1516,7 @@
           "Non-Renewable Rentals"
         ],
         "summary": "Update a Non-Renewable Rental",
-        "description": "Update a non-renewable rental by ID.\n\nWhat you can currently update are:\n- ```userNotes``` (Notes)\n- ```markAllSmsRead``` (Mark SMS as read)",
+        "description": "Update a non-renewable rental by ID.\r\n\r\nWhat you can currently update are:\r\n- ```userNotes``` (Notes)\r\n- ```markAllSmsRead``` (Mark SMS as read)",
         "operationId": "UpdateNonrenewableRentalPublic",
         "parameters": [
           {
@@ -1590,7 +1551,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
           "400": {
             "description": "Bad Request"
@@ -1615,11 +1576,11 @@
           "Non-Renewable Rentals"
         ],
         "summary": "List Non-Renewable Rentals",
-        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your non-renewable rentals.\n\nTo create a new rental, see <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a>.\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your non-renewable rentals.\r\n\r\nTo create a new rental, see <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a>.\r\n\r\nNote: This endpoint returns a paginated result of the list, check\r\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\r\nif you are having problems.",
         "operationId": "ListNonrenewableRentalsPublic",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -1648,7 +1609,7 @@
           "Non-Renewable Rentals"
         ],
         "summary": "Extend a Non-Renewable rental",
-        "description": "<span style=\"color:var(--red)\">\n  <p>Extensions are <b>NOT</b> refundable and cannot be undone.</p>\n</span>\n<p>\n  <b>Attempt</b> to extend the duration of a non-renewable rental by ID.</p>",
+        "description": "<span style=\"color:var(--red)\">\r\n  <p>Extensions are <b>NOT</b> refundable and cannot be undone.</p>\r\n</span>\r\n<p>\r\n  <b>Attempt</b> to extend the duration of a non-renewable rental by ID.</p>",
         "operationId": "ExtendNonrenewableRentalPublic",
         "requestBody": {
           "description": "",
@@ -1672,7 +1633,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
           "400": {
             "description": "Bad Request"
@@ -1697,7 +1658,7 @@
           "Non-Renewable Rentals"
         ],
         "summary": "Refund Non-Renewable Rental",
-        "description": "Call this to <b>attempt</b> to refund a non-renewable rental by ID.\n\nThis could fail if the rental is not refundable or the refund period has passsed.\nWill return ```400 Bad Request``` if the request is invalid or refund is not possible.",
+        "description": "<b>Attempt</b> to refund a non-renewable rental by ID.",
         "operationId": "NonrenewableSelfServiceRefundRentalPublic",
         "parameters": [
           {
@@ -1712,7 +1673,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
           "400": {
             "description": "Bad Request"
@@ -1737,7 +1698,7 @@
           "Sms"
         ],
         "summary": "List Sms",
-        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your latest sms.\n\nOptional Parameters:\n- ```to``` (A phone number)\n- ```reservationId``` (The reservation's ID)\n- ```reservationType``` (The reservation's type)\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your latest sms.\r\n\r\nOptional Parameters:\r\n- ```to``` (A phone number)\r\n- ```reservationId``` (The reservation's ID)\r\n- ```reservationType``` (The reservation's type)\r\n\r\nNote: This endpoint returns a paginated result of the list, check\r\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\r\nif you are having problems.",
         "operationId": "ListSmsPublic",
         "parameters": [
           {
@@ -1767,7 +1728,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -1790,127 +1751,13 @@
         ]
       }
     },
-    "/api/pub/v2/calls": {
-      "get": {
-        "tags": [
-          "Calls And Voice - [ALPHA]"
-        ],
-        "summary": "List Calls",
-        "description": "Call this endpoint to obtain a list of calls associated with your account.",
-        "operationId": "ListCallsPublic",
-        "parameters": [
-          {
-            "name": "to",
-            "in": "query",
-            "description": "If provided, will filter results to only include calls made to the specified number.",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "reservationId",
-            "in": "query",
-            "description": "If provided, will filter results to only include calls associated with the specified reservation.",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "reservationType",
-            "in": "query",
-            "description": "If provided, will filter results to only include calls associated with the specified reservation type.",
-            "schema": {
-              "$ref": "#/components/schemas/ReservationType"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaginatedData.Call"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too many requests"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      }
-    },
-    "/api/pub/v2/calls/access-token": {
-      "post": {
-        "tags": [
-          "Calls And Voice - [ALPHA]"
-        ],
-        "summary": "Create Call Access Token",
-        "description": "Call this endpoint to create a call access token. This supports <b>incoming calls only</b>.\n\nCall sessions are established by:\n\n1. <a href=\"docs/api/v2#post-/api/pub/v2/verifications\" target=\"_top\">Creating a voice verification</a> and getting the corresponding ```reservation id```.\n2. Posting to this endpoint to obtain a short-lived Twilio access token associated with the ```reservation id```.\n3. Using the access token with <a href=\"https://www.twilio.com/docs/voice/sdks/javascript\" target=\"_blank\">Twilio's integration</a> to handle an incoming call.\n\n\n<span style=\"color:var(--red)\"><b>Warning:</b></span>\nThis is an <b>advanced</b> integration. \n<span style=\"color:var(--red)\"><b>No integration/implementation/debugging support will be provided for this endpoint.</b></span> \nIt is up to you to implement the appropriate provider's integration (connectivity, acceptance, termination, etc.) to successfully handle an incoming call.",
-        "operationId": "SetupCallingContextPublic",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CallSessionRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CallSessionRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CallSessionRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CallContext"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "429": {
-            "description": "Too many requests"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      }
-    },
     "/api/pub/v2/wake-requests/{id}": {
       "get": {
         "tags": [
           "Wake Requests"
         ],
         "summary": "Get Wake Request",
-        "description": "Get a wake request by ID.\n\nThe details of a wake request include:\n- ```isScheduled``` (Indicates if the wake request has been successfully created and enqueued.)\n- ```usageWindowStart``` (The datetime when you can start using the reservation.)\n- ```usageWindowEnd``` (The datetime when you will no longer be able to use the reservation.)\nRefer to the ```SCHEMA``` below for more details.\n\nTo create a wake request, see <a href=\"docs/api/v2#post-/api/pub/v2/wake-requests\" target=\"_top\">Create Wake Request</a>.",
+        "description": "Get a wake request by ID.\r\n\r\nThe details of a wake request include:\r\n- ```isScheduled``` (Indicates if the wake request has been successfully created and enqueued.)\r\n- ```usageWindowStart``` (The datetime when you can start using the reservation.)\r\n- ```usageWindowEnd``` (The datetime when you will no longer be able to use the reservation.)\r\nRefer to the ```SCHEMA``` below for more details.\r\n\r\nTo create a wake request, see <a href=\"docs/api/v2#post-/api/pub/v2/wake-requests\" target=\"_top\">Create Wake Request</a>.",
         "operationId": "GetWakeRequestPublic",
         "parameters": [
           {
@@ -1925,7 +1772,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -1957,7 +1804,7 @@
           "Wake Requests"
         ],
         "summary": "Create Wake Request",
-        "description": "Create a wake request for a reservation. Some reservation types, including lines where alwaysOn=false, will require a wake request before the line reservation can be used.\n\nCreating a successful wake request will <b>enqueue</b> your request on that line reservation.\nTo see the details of your wake request, see <a href=\"docs/api/v2#get-/api/pub/v2/wake-requests/-id-\" target=\"_top\">Get Wake Request</a>.\n\nIf successful, a 201 response will be returned with the location of the newly created wake request in the <b>http response 'location' header</b>.",
+        "description": "Create a wake request for a reservation. If successful, a 201 response will be returned with the location of the newly created wake request in the <b>http response 'location' header</b>. <br /><br />\r\nSome reservation types will require a wake request before the line reservation can be used. <br />\r\nCreating a successful wake request will <b>enqueue</b> your request on that line reservation.\r\n\r\nTo see the details of your wake request, see <a href=\"docs/api/v2#get-/api/pub/v2/wake-requests/-id-\" target=\"_top\">Get Wake Request</a>.",
         "operationId": "CreateWakeRequestPublic",
         "requestBody": {
           "description": "",
@@ -2023,7 +1870,7 @@
           "Wake Requests"
         ],
         "summary": "Estimate Usage Window",
-        "description": "Estimate the usage window for a reservation if you were to create a wake request now.\n\nDoes <b>NOT</b> create a wake request. \nTo create a wake request, see <a href=\"docs/api/v2#post-/api/pub/v2/wake-requests\" target=\"_top\">Create Wake Request</a>.\n    \nThe details of an usage window estimate include:\n- ```estimatedWindowStart``` (The estimated datetime when you can start using the reservation.)\n- ```estimatedWindowEnd``` (The estimated datetime when you will no longer be able to use the reservation.)\nRefer to the ```SCHEMA``` below for more details.",
+        "description": "Estimate the usage window for a reservation if you were to create a wake request now.\r\n\r\nDoes <b>NOT</b> create a wake request. \r\nTo create a wake request, see <a href=\"docs/api/v2#post-/api/pub/v2/wake-requests\" target=\"_top\">Create Wake Request</a>.\r\n    \r\nThe details of an usage window estimate include:\r\n- ```estimatedWindowStart``` (The estimated datetime when you can start using the reservation.)\r\n- ```estimatedWindowEnd``` (The estimated datetime when you will no longer be able to use the reservation.)\r\nRefer to the ```SCHEMA``` below for more details.",
         "operationId": "EstimateUsageWindow",
         "requestBody": {
           "description": "",
@@ -2047,7 +1894,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -2079,11 +1926,11 @@
           "Webhooks"
         ],
         "summary": "List Webhook Events",
-        "description": "Returns a list of webhook events that can be subscribed to. You will need to configure your <a href=\"https://www.textverified.com/app/api/configure/webhooks\">API Webhook Settings</a> and subscribe to events first.\n\n\n\nThe schema of the webhook events are documented below. We serialize webhook event data using Json to the `Data` property. All of our webhooks are sent as a HTTP POST to the webhook uri configured on your account.\nWe sign all of our webhooks with HMAC and SHA512 which should be validated by your server.\n\n\n<b>Webhook validation:</b>\n\nWe sign all webhook requests using HMAC-SHA512 and your webhook secret (`whsec_...`).\nThe signature HTTP Header is `X-Webhook-Signature` and the HTTP Value will be\nprefixed by the signing algorithm `HMAC-SHA512='.\nThe signature after the prefix is BASE-64 encoded.\nThe process for validating a signature is as follows:\n1) Extract the HTTP Header with the name `X-Webhook-Signature`.\n2) Remove the prefix `HMAC-SHA512=` from the HTTP Header value, which is obtained from step 1.\n  - This BASE-64 encoded value will be compared to the HTTP Request body hash later.\n3) Apply the HMAC-SHA512 hashing algorithm to the HTTP Request body to obtain a byte array.\n4) Apply BASE-64 encoding to the byte array (obtained from step 3).\n5) Compare the value from step 2 to the value from step 4 and verify that they are the same.\n            \nWebhooks are automatically retried for a period of time with exponential back off. \nAfter multiple failed webhook send attempts, webhooks will be automatically disabled.\nIf this happens, you will have to manually re-enable your webhooks again.",
+        "description": "Returns a list of webhook events that can be subscribed to. You will need to configure your <a href=\"https://www.textverified.com/app/account/settings/webhooks\">API Webhook Settings</a> and subscribe to events first.\r\n<br /><br />\r\nThe schema of the webhook events are documented below. We serialize webhook event data using Json to the `Data` property. All of our webhooks are sent as a HTTP POST to the webhook uri configured on your account.\r\nWe sign all of our webhooks with HMAC and SHA512 which should be validated by your server.\r\n<br /><br /><b>Webhook validation:</b><br />\r\nWe sign all webhook requests using HMAC-SHA512 and your webhook secret (`whsec_...`).\r\nThe signature HTTP Header is `X-Webhook-Signature` and the HTTP Value will be\r\nprefixed by the signing algorithm `HMAC-SHA512='.\r\nThe signature after the prefix is BASE-64 encoded.\r\nThe process for validating a signature is as follows:\r\n1) Extract the HTTP Header with the name `X-Webhook-Signature`.\r\n2) Remove the prefix `HMAC-SHA512=` from the HTTP Header value, which is obtained from step 1.\r\n  - This BASE-64 encoded value will be compared to the HTTP Request body hash later.\r\n3) Apply the HMAC-SHA512 hashing algorithm to the HTTP Request body to obtain a byte array.\r\n4) Apply BASE-64 encoding to the byte array (obtained from step 3).\r\n5) Compare the value from step 2 to the value from step 4 and verify that they are the same.\r\n            \r\nWebhooks are automatically retried for a period of time with exponential back off. \r\nAfter multiple failed webhook send attempts, webhooks will be automatically disabled.\r\nIf this happens, you will have to manually re-enable your webhooks again.",
         "operationId": "GetWebhookEventDefinitionsPublic",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Success"
           },
           "429": {
             "description": "Too many requests"
@@ -2094,7 +1941,7 @@
         },
         "callbacks": {
           "v2.rental.billingcycle.renewed": {
-            "https://your.webhook-server.url/": {
+            "https://www.example.com/": {
               "post": {
                 "requestBody": {
                   "description": "Triggers when a billing cycle on your account has renewed. Renewal of individual reservations on a billing cycle can occur independently.",
@@ -2121,7 +1968,7 @@
             }
           },
           "v2.rental.billingcycle.expired": {
-            "https://your.webhook-server.url/": {
+            "https://www.example.com/": {
               "post": {
                 "requestBody": {
                   "description": "Triggers when a billing cycle on your account has expired.",
@@ -2148,7 +1995,7 @@
             }
           },
           "v2.sms.received": {
-            "https://your.webhook-server.url/": {
+            "https://www.example.com/": {
               "post": {
                 "requestBody": {
                   "description": "Triggers when an sms is received and assigned to your account.",
@@ -2175,7 +2022,7 @@
             }
           },
           "v2.rental.backorder.fulfilled": {
-            "https://your.webhook-server.url/": {
+            "https://www.example.com/": {
               "post": {
                 "requestBody": {
                   "description": "Triggers when a back order reservation is fulfilled.",
@@ -2202,7 +2049,7 @@
             }
           },
           "v2.reservation.created": {
-            "https://your.webhook-server.url/": {
+            "https://www.example.com/": {
               "post": {
                 "requestBody": {
                   "description": "Triggers when a reservation is created.",
@@ -2242,7 +2089,7 @@
           "Legacy"
         ],
         "summary": "Legacy Reservation Id Look Up",
-        "description": "You can use this legacy endpoint for looking up the 'new' ID of a rental reservation (begins with the prefix 'lr_') by supplying a legacy ID (GUID/UUID format). This may be helpful when migration from our deprecated endpoints to our current endpoints.\nThis endpoint will be removed in the future without notice.",
+        "description": "You can use this legacy endpoint for looking up the 'new' ID of a rental reservation (begins with the prefix 'lr_') by supplying a legacy ID (GUID/UUID format). This may be helpful when migration from our deprecated endpoints to our current endpoints.\r\nThis endpoint will be removed in the future without notice.",
         "operationId": "GetNewReservationId",
         "parameters": [
           {
@@ -2287,32 +2134,19 @@
   "components": {
     "schemas": {
       "Account": {
-        "required": [
-          "username"
-        ],
         "type": "object",
         "properties": {
           "username": {
-            "type": "string",
-            "description": "The username of the account holder.",
-            "example": "john_doe@example.com"
+            "type": "string"
           },
           "currentBalance": {
             "type": "number",
-            "description": "The current balance of the account.",
-            "format": "double",
-            "example": 1234.56
+            "format": "double"
           }
         },
         "additionalProperties": false
       },
       "AddOnSnapshot": {
-        "required": [
-          "addOnId",
-          "alreadyRenewed",
-          "description",
-          "renewalCost"
-        ],
         "type": "object",
         "properties": {
           "addOnId": {
@@ -2332,10 +2166,6 @@
         "additionalProperties": false
       },
       "AreaCode": {
-        "required": [
-          "areaCode",
-          "state"
-        ],
         "type": "object",
         "properties": {
           "areaCode": {
@@ -2352,12 +2182,6 @@
         "additionalProperties": false
       },
       "BackOrderReservationCompact": {
-        "required": [
-          "id",
-          "link",
-          "serviceName",
-          "status"
-        ],
         "type": "object",
         "properties": {
           "link": {
@@ -2367,9 +2191,7 @@
             "type": "string"
           },
           "serviceName": {
-            "type": "string",
-            "description": "Name of service",
-            "example": "yahoo"
+            "type": "string"
           },
           "status": {
             "$ref": "#/components/schemas/BackOrderState"
@@ -2378,16 +2200,6 @@
         "additionalProperties": false
       },
       "BackOrderReservationExpanded": {
-        "required": [
-          "id",
-          "link",
-          "reservation",
-          "reservationId",
-          "sale",
-          "saleId",
-          "serviceName",
-          "status"
-        ],
         "type": "object",
         "properties": {
           "link": {
@@ -2420,9 +2232,6 @@
         "additionalProperties": false
       },
       "BackOrderReservationWebhookEvent": {
-        "required": [
-          "backOrderId"
-        ],
         "type": "object",
         "properties": {
           "backOrderId": {
@@ -2441,11 +2250,6 @@
         "type": "string"
       },
       "BearerToken": {
-        "required": [
-          "expiresAt",
-          "expiresIn",
-          "token"
-        ],
         "type": "object",
         "properties": {
           "token": {
@@ -2469,12 +2273,6 @@
         "additionalProperties": false
       },
       "BillingCycleCompact": {
-        "required": [
-          "billingCycleEndsAt",
-          "emailNotificationsEnabled",
-          "id",
-          "state"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -2495,16 +2293,6 @@
         "additionalProperties": false
       },
       "BillingCycleExpanded": {
-        "required": [
-          "billingCycleEndsAt",
-          "emailNotificationsEnabled",
-          "id",
-          "invoices",
-          "nextAutoRenewAttempt",
-          "renewedThrough",
-          "rentals",
-          "state"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -2544,14 +2332,6 @@
         "additionalProperties": false
       },
       "BillingCycleRenewalInvoice": {
-        "required": [
-          "createdAt",
-          "excludedRentals",
-          "id",
-          "includedRentals",
-          "isPaidFor",
-          "totalCost"
-        ],
         "type": "object",
         "properties": {
           "createdAt": {
@@ -2578,18 +2358,12 @@
           },
           "totalCost": {
             "type": "number",
-            "description": "Total amount cost of the invoice, in account credits.",
-            "format": "double",
-            "example": 11.9
+            "format": "double"
           }
         },
         "additionalProperties": false
       },
       "BillingCycleRenewalInvoicePreview": {
-        "required": [
-          "billingCycleId",
-          "renewalEstimate"
-        ],
         "type": "object",
         "properties": {
           "billingCycleId": {
@@ -2617,9 +2391,6 @@
         "description": "Supplying a value of 'null' or not supplying a value for any nullable properties will cause the property to be ignored."
       },
       "BillingCycleWebhookEvent": {
-        "required": [
-          "billingCycleId"
-        ],
         "type": "object",
         "properties": {
           "billingCycleId": {
@@ -2630,71 +2401,7 @@
         },
         "additionalProperties": false
       },
-      "Call": {
-        "required": [
-          "createdAt",
-          "from",
-          "id",
-          "recordingUri",
-          "to"
-        ],
-        "type": "object",
-        "properties": {
-          "from": {
-            "type": "string",
-            "nullable": true
-          },
-          "to": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "id": {
-            "type": "string"
-          },
-          "recordingUri": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "CallContext": {
-        "required": [
-          "reservationId",
-          "twilioContext"
-        ],
-        "type": "object",
-        "properties": {
-          "reservationId": {
-            "type": "string",
-            "description": "Id of the verification that this call context is associated with."
-          },
-          "twilioContext": {
-            "$ref": "#/components/schemas/TwilioCallingContextDto"
-          }
-        },
-        "additionalProperties": false
-      },
-      "CallSessionRequest": {
-        "required": [
-          "reservationId"
-        ],
-        "type": "object",
-        "properties": {
-          "reservationId": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
       "CancelAction": {
-        "required": [
-          "canCancel",
-          "link"
-        ],
         "type": "object",
         "properties": {
           "canCancel": {
@@ -2707,10 +2414,6 @@
         "additionalProperties": false
       },
       "Error": {
-        "required": [
-          "errorCode",
-          "errorDescription"
-        ],
         "type": "object",
         "properties": {
           "errorCode": {
@@ -2732,16 +2435,11 @@
         "type": "string"
       },
       "LineHealth": {
-        "required": [
-          "checkedAt",
-          "lineNumber"
-        ],
         "type": "object",
         "properties": {
           "lineNumber": {
             "type": "string",
-            "description": "Line number associated with the reservation.",
-            "example": "2223334444"
+            "description": "Line number associated with the reservation."
           },
           "checkedAt": {
             "type": "string",
@@ -2760,23 +2458,17 @@
         "type": "string"
       },
       "Link": {
-        "required": [
-          "href",
-          "method"
-        ],
         "type": "object",
         "properties": {
           "method": {
             "type": "string",
             "description": "The HTTP method for this link.",
-            "nullable": true,
-            "example": "GET|POST"
+            "nullable": true
           },
           "href": {
             "type": "string",
             "description": "The HTTP location of the resource.",
-            "nullable": true,
-            "example": "https://...."
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2830,7 +2522,7 @@
           "serviceName": {
             "type": "string",
             "description": "Name of the service",
-            "example": "google"
+            "example": "myservice"
           },
           "capability": {
             "$ref": "#/components/schemas/ReservationCapability"
@@ -2887,24 +2579,12 @@
             "type": "number",
             "description": "Optional decimal to specify the maximum total price you are willing to pay for the requested reservation. If the price exceeds this amount, the request will be rejected and no reservation will be created.",
             "format": "double",
-            "nullable": true,
-            "example": 2.95
+            "nullable": true
           }
         },
         "additionalProperties": false
       },
       "NonrenewableRentalCompact": {
-        "required": [
-          "alwaysOn",
-          "createdAt",
-          "id",
-          "link",
-          "number",
-          "sale",
-          "saleId",
-          "serviceName",
-          "state"
-        ],
         "type": "object",
         "properties": {
           "createdAt": {
@@ -2941,20 +2621,6 @@
         "additionalProperties": false
       },
       "NonrenewableRentalExpanded": {
-        "required": [
-          "alwaysOn",
-          "calls",
-          "createdAt",
-          "endsAt",
-          "id",
-          "number",
-          "refund",
-          "sale",
-          "saleId",
-          "serviceName",
-          "sms",
-          "state"
-        ],
         "type": "object",
         "properties": {
           "calls": {
@@ -3032,13 +2698,6 @@
         "type": "string"
       },
       "PaginatedData.BillingCycleCompact": {
-        "required": [
-          "count",
-          "data",
-          "hasNext",
-          "hasPrevious",
-          "links"
-        ],
         "type": "object",
         "properties": {
           "data": {
@@ -3064,13 +2723,6 @@
         "additionalProperties": false
       },
       "PaginatedData.BillingCycleRenewalInvoice": {
-        "required": [
-          "count",
-          "data",
-          "hasNext",
-          "hasPrevious",
-          "links"
-        ],
         "type": "object",
         "properties": {
           "data": {
@@ -3095,46 +2747,7 @@
         },
         "additionalProperties": false
       },
-      "PaginatedData.Call": {
-        "required": [
-          "count",
-          "data",
-          "hasNext",
-          "hasPrevious",
-          "links"
-        ],
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Call"
-            }
-          },
-          "hasNext": {
-            "type": "boolean"
-          },
-          "hasPrevious": {
-            "type": "boolean"
-          },
-          "count": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "links": {
-            "$ref": "#/components/schemas/PaginationLinks"
-          }
-        },
-        "additionalProperties": false
-      },
       "PaginatedData.NonrenewableRentalCompact": {
-        "required": [
-          "count",
-          "data",
-          "hasNext",
-          "hasPrevious",
-          "links"
-        ],
         "type": "object",
         "properties": {
           "data": {
@@ -3160,13 +2773,6 @@
         "additionalProperties": false
       },
       "PaginatedData.RenewableRentalCompact": {
-        "required": [
-          "count",
-          "data",
-          "hasNext",
-          "hasPrevious",
-          "links"
-        ],
         "type": "object",
         "properties": {
           "data": {
@@ -3192,13 +2798,6 @@
         "additionalProperties": false
       },
       "PaginatedData.ReservationSaleCompact": {
-        "required": [
-          "count",
-          "data",
-          "hasNext",
-          "hasPrevious",
-          "links"
-        ],
         "type": "object",
         "properties": {
           "data": {
@@ -3224,13 +2823,6 @@
         "additionalProperties": false
       },
       "PaginatedData.Sms": {
-        "required": [
-          "count",
-          "data",
-          "hasNext",
-          "hasPrevious",
-          "links"
-        ],
         "type": "object",
         "properties": {
           "data": {
@@ -3256,13 +2848,6 @@
         "additionalProperties": false
       },
       "PaginatedData.VerificationCompact": {
-        "required": [
-          "count",
-          "data",
-          "hasNext",
-          "hasPrevious",
-          "links"
-        ],
         "type": "object",
         "properties": {
           "data": {
@@ -3288,11 +2873,6 @@
         "additionalProperties": false
       },
       "PaginationLinks": {
-        "required": [
-          "current",
-          "next",
-          "previous"
-        ],
         "type": "object",
         "properties": {
           "current": {
@@ -3308,16 +2888,12 @@
         "additionalProperties": false
       },
       "PricingSnapshot": {
-        "required": [
-          "price",
-          "serviceName"
-        ],
         "type": "object",
         "properties": {
           "serviceName": {
             "type": "string",
             "description": "Name of the service.",
-            "example": "hotmail"
+            "example": "myservice"
           },
           "price": {
             "type": "number",
@@ -3329,10 +2905,6 @@
         "additionalProperties": false
       },
       "ReactivationAction": {
-        "required": [
-          "canReactivate",
-          "link"
-        ],
         "type": "object",
         "properties": {
           "canReactivate": {
@@ -3345,11 +2917,6 @@
         "additionalProperties": false
       },
       "RefundAction": {
-        "required": [
-          "canRefund",
-          "link",
-          "refundableUntil"
-        ],
         "type": "object",
         "properties": {
           "canRefund": {
@@ -3367,20 +2934,6 @@
         "additionalProperties": false
       },
       "RenewableRentalCompact": {
-        "required": [
-          "alwaysOn",
-          "billingCycle",
-          "billingCycleId",
-          "createdAt",
-          "id",
-          "isIncludedForNextRenewal",
-          "link",
-          "number",
-          "sale",
-          "saleId",
-          "serviceName",
-          "state"
-        ],
         "type": "object",
         "properties": {
           "createdAt": {
@@ -3399,8 +2952,7 @@
             "nullable": true
           },
           "serviceName": {
-            "type": "string",
-            "example": "yahoo"
+            "type": "string"
           },
           "link": {
             "$ref": "#/components/schemas/Link"
@@ -3418,8 +2970,7 @@
             "type": "boolean"
           },
           "number": {
-            "type": "string",
-            "example": "2223334444"
+            "type": "string"
           },
           "alwaysOn": {
             "type": "boolean"
@@ -3428,22 +2979,6 @@
         "additionalProperties": false
       },
       "RenewableRentalExpanded": {
-        "required": [
-          "alwaysOn",
-          "billingCycle",
-          "billingCycleId",
-          "calls",
-          "createdAt",
-          "id",
-          "isIncludedForNextRenewal",
-          "number",
-          "refund",
-          "sale",
-          "saleId",
-          "serviceName",
-          "sms",
-          "state"
-        ],
         "type": "object",
         "properties": {
           "sms": {
@@ -3486,8 +3021,7 @@
             "type": "boolean"
           },
           "number": {
-            "type": "string",
-            "example": "2223334444"
+            "type": "string"
           },
           "alwaysOn": {
             "type": "boolean"
@@ -3533,10 +3067,6 @@
         "type": "string"
       },
       "RentalExtensionRequest": {
-        "required": [
-          "extensionDuration",
-          "rentalId"
-        ],
         "type": "object",
         "properties": {
           "extensionDuration": {
@@ -3563,11 +3093,11 @@
           "serviceName": {
             "type": "string",
             "description": "Name of the service",
-            "example": "yahoo"
+            "example": "myservice"
           },
           "areaCode": {
             "type": "boolean",
-            "description": "Set to true if a specific area code will be requested when creating a rental, false if any area code can be used.",
+            "description": "",
             "example": true
           },
           "numberType": {
@@ -3583,9 +3113,9 @@
           },
           "callForwarding": {
             "type": "boolean",
-            "description": "Not supported at this time.",
+            "description": "",
             "nullable": true,
-            "example": false
+            "example": true
           },
           "billingCycleIdToAssignTo": {
             "type": "string",
@@ -3605,15 +3135,6 @@
         "additionalProperties": false
       },
       "RentalSnapshot": {
-        "required": [
-          "alreadyRenewed",
-          "excludedAddOns",
-          "includedAddOns",
-          "number",
-          "renewalCost",
-          "rental",
-          "serviceName"
-        ],
         "type": "object",
         "properties": {
           "number": {
@@ -3624,9 +3145,7 @@
           },
           "renewalCost": {
             "type": "number",
-            "description": "Renewal cost, in account credits.",
-            "format": "double",
-            "example": 5.95
+            "format": "double"
           },
           "serviceName": {
             "type": "string"
@@ -3652,10 +3171,6 @@
         "additionalProperties": false
       },
       "ReportAction": {
-        "required": [
-          "canReport",
-          "link"
-        ],
         "type": "object",
         "properties": {
           "canReport": {
@@ -3668,12 +3183,6 @@
         "additionalProperties": false
       },
       "Reservation": {
-        "required": [
-          "id",
-          "link",
-          "reservationType",
-          "serviceName"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -3688,8 +3197,7 @@
           },
           "serviceName": {
             "type": "string",
-            "description": "Name of service",
-            "example": "yahoo"
+            "description": "Name of service"
           }
         },
         "additionalProperties": false
@@ -3703,10 +3211,6 @@
         "type": "string"
       },
       "ReservationCreatedWebhookEvent": {
-        "required": [
-          "id",
-          "type"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -3720,14 +3224,6 @@
         "additionalProperties": false
       },
       "ReservationSaleCompact": {
-        "required": [
-          "createdAt",
-          "id",
-          "link",
-          "state",
-          "totalCost",
-          "updatedAt"
-        ],
         "type": "object",
         "properties": {
           "createdAt": {
@@ -3745,8 +3241,7 @@
           },
           "totalCost": {
             "type": "number",
-            "format": "double",
-            "example": 0.95
+            "format": "double"
           },
           "updatedAt": {
             "type": "string",
@@ -3756,15 +3251,6 @@
         "additionalProperties": false
       },
       "ReservationSaleExpanded": {
-        "required": [
-          "backOrderReservations",
-          "createdAt",
-          "id",
-          "reservations",
-          "state",
-          "total",
-          "updatedAt"
-        ],
         "type": "object",
         "properties": {
           "createdAt": {
@@ -3793,9 +3279,7 @@
           },
           "total": {
             "type": "number",
-            "description": "Total amount of the sale, in account credits.",
-            "format": "double",
-            "example": 5.25
+            "format": "double"
           },
           "updatedAt": {
             "type": "string",
@@ -3842,10 +3326,6 @@
         "type": "string"
       },
       "ReuseAction": {
-        "required": [
-          "link",
-          "reusableUntil"
-        ],
         "type": "object",
         "properties": {
           "link": {
@@ -3861,16 +3341,12 @@
         "additionalProperties": false
       },
       "Service": {
-        "required": [
-          "capability",
-          "serviceName"
-        ],
         "type": "object",
         "properties": {
           "serviceName": {
             "type": "string",
             "description": "Name of the service. Supply this value when a ```ServiceName``` is required.",
-            "example": "gmail"
+            "example": "myservice"
           },
           "capability": {
             "$ref": "#/components/schemas/ReservationCapability"
@@ -3879,15 +3355,6 @@
         "additionalProperties": false
       },
       "Sms": {
-        "required": [
-          "createdAt",
-          "encrypted",
-          "from",
-          "id",
-          "parsedCode",
-          "smsContent",
-          "to"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -3920,15 +3387,6 @@
         "description": "Sms"
       },
       "SmsWebhookEvent": {
-        "required": [
-          "createdAt",
-          "encrypted",
-          "from",
-          "parsedCode",
-          "reservationId",
-          "smsContent",
-          "to"
-        ],
         "type": "object",
         "properties": {
           "from": {
@@ -3962,20 +3420,6 @@
         },
         "additionalProperties": false
       },
-      "TwilioCallingContextDto": {
-        "required": [
-          "token"
-        ],
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "description": "Token used for establish a client call session.",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "UsageWindowEstimateRequest": {
         "required": [
           "reservationId"
@@ -3990,11 +3434,6 @@
         "additionalProperties": false
       },
       "UsageWindowEstimateResponse": {
-        "required": [
-          "estimatedWindowEnd",
-          "estimatedWindowStart",
-          "reservationId"
-        ],
         "type": "object",
         "properties": {
           "estimatedWindowStart": {
@@ -4017,17 +3456,6 @@
         "additionalProperties": false
       },
       "VerificationCompact": {
-        "required": [
-          "calls",
-          "createdAt",
-          "id",
-          "link",
-          "number",
-          "serviceName",
-          "sms",
-          "state",
-          "totalCost"
-        ],
         "type": "object",
         "properties": {
           "createdAt": {
@@ -4048,8 +3476,7 @@
           },
           "totalCost": {
             "type": "number",
-            "format": "double",
-            "example": 0.95
+            "format": "double"
           },
           "number": {
             "type": "string"
@@ -4064,22 +3491,6 @@
         "additionalProperties": false
       },
       "VerificationExpanded": {
-        "required": [
-          "calls",
-          "cancel",
-          "createdAt",
-          "endsAt",
-          "id",
-          "number",
-          "reactivate",
-          "report",
-          "reuse",
-          "sale",
-          "serviceName",
-          "sms",
-          "state",
-          "totalCost"
-        ],
         "type": "object",
         "properties": {
           "number": {
@@ -4125,8 +3536,7 @@
           },
           "totalCost": {
             "type": "number",
-            "format": "double",
-            "example": 0.95
+            "format": "double"
           }
         },
         "additionalProperties": false
@@ -4148,12 +3558,12 @@
           },
           "areaCode": {
             "type": "boolean",
-            "description": "Set to true if a specific area code will be requested when creating a verification, false if any area code can be used.",
+            "description": "",
             "example": true
           },
           "carrier": {
             "type": "boolean",
-            "description": "Set to true if a specific carrier will be requested when creating a verification, false if any carrier can be used.",
+            "description": "",
             "example": true
           },
           "numberType": {
@@ -4179,13 +3589,6 @@
         "additionalProperties": false
       },
       "WakeResponse": {
-        "required": [
-          "id",
-          "isScheduled",
-          "reservationId",
-          "usageWindowEnd",
-          "usageWindowStart"
-        ],
         "type": "object",
         "properties": {
           "id": {
@@ -4217,13 +3620,6 @@
         "additionalProperties": false
       },
       "WebhookEvent.BackOrderReservationWebhookEvent": {
-        "required": [
-          "attempt",
-          "data",
-          "event",
-          "id",
-          "occurredAt"
-        ],
         "type": "object",
         "properties": {
           "attempt": {
@@ -4251,13 +3647,6 @@
         "additionalProperties": false
       },
       "WebhookEvent.BillingCycleWebhookEvent": {
-        "required": [
-          "attempt",
-          "data",
-          "event",
-          "id",
-          "occurredAt"
-        ],
         "type": "object",
         "properties": {
           "attempt": {
@@ -4285,13 +3674,6 @@
         "additionalProperties": false
       },
       "WebhookEvent.ReservationCreatedWebhookEvent": {
-        "required": [
-          "attempt",
-          "data",
-          "event",
-          "id",
-          "occurredAt"
-        ],
         "type": "object",
         "properties": {
           "attempt": {
@@ -4319,13 +3701,6 @@
         "additionalProperties": false
       },
       "WebhookEvent.SmsWebhookEvent": {
-        "required": [
-          "attempt",
-          "data",
-          "event",
-          "id",
-          "occurredAt"
-        ],
         "type": "object",
         "properties": {
           "attempt": {

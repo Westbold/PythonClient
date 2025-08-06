@@ -71,7 +71,7 @@ class SMSApi:
                 VerificationExpanded,
             ),
         ):
-            if hasattr(data, "number") and to_number:
+            if to_number:
                 raise ValueError("Cannot specify both rental/verification data and to_number.")
             to_number = data.number
 
@@ -96,10 +96,10 @@ class SMSApi:
             params["to"] = to_number
 
         if reservation_id:
-            params["reservation_id"] = reservation_id
+            params["reservationId"] = reservation_id
 
         if isinstance(reservation_type, ReservationType):
-            params["reservation_type"] = reservation_type.to_api()
+            params["reservationType"] = reservation_type.to_api()
 
         # Construct and perform the action
         action = _Action(method="GET", href="/api/pub/v2/sms")

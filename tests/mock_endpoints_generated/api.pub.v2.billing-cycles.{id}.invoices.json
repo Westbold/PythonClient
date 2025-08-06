@@ -12,10 +12,10 @@
             {
               "number": "string",
               "rental": {
-                "method": "string",
-                "href": "string"
+                "method": "GET|POST",
+                "href": "https://...."
               },
-              "renewalCost": 0.0,
+              "renewalCost": 5.95,
               "serviceName": "string",
               "alreadyRenewed": false,
               "includedAddOns": [
@@ -50,10 +50,10 @@
             {
               "number": "string",
               "rental": {
-                "method": "string",
-                "href": "string"
+                "method": "GET|POST",
+                "href": "https://...."
               },
-              "renewalCost": 0.0,
+              "renewalCost": 5.95,
               "serviceName": "string",
               "alreadyRenewed": false,
               "includedAddOns": [
@@ -90,10 +90,10 @@
             {
               "number": "string",
               "rental": {
-                "method": "string",
-                "href": "string"
+                "method": "GET|POST",
+                "href": "https://...."
               },
-              "renewalCost": 0.0,
+              "renewalCost": 5.95,
               "serviceName": "string",
               "alreadyRenewed": false,
               "includedAddOns": [
@@ -128,10 +128,10 @@
             {
               "number": "string",
               "rental": {
-                "method": "string",
-                "href": "string"
+                "method": "GET|POST",
+                "href": "https://...."
               },
-              "renewalCost": 0.0,
+              "renewalCost": 5.95,
               "serviceName": "string",
               "alreadyRenewed": false,
               "includedAddOns": [
@@ -165,7 +165,7 @@
             }
           ],
           "isPaidFor": false,
-          "totalCost": 0.0
+          "totalCost": 11.9
         },
         {
           "createdAt": "1970-01-01T00:00:00+00:00",
@@ -174,10 +174,10 @@
             {
               "number": "string",
               "rental": {
-                "method": "string",
-                "href": "string"
+                "method": "GET|POST",
+                "href": "https://...."
               },
-              "renewalCost": 0.0,
+              "renewalCost": 5.95,
               "serviceName": "string",
               "alreadyRenewed": false,
               "includedAddOns": [
@@ -212,10 +212,10 @@
             {
               "number": "string",
               "rental": {
-                "method": "string",
-                "href": "string"
+                "method": "GET|POST",
+                "href": "https://...."
               },
-              "renewalCost": 0.0,
+              "renewalCost": 5.95,
               "serviceName": "string",
               "alreadyRenewed": false,
               "includedAddOns": [
@@ -252,10 +252,10 @@
             {
               "number": "string",
               "rental": {
-                "method": "string",
-                "href": "string"
+                "method": "GET|POST",
+                "href": "https://...."
               },
-              "renewalCost": 0.0,
+              "renewalCost": 5.95,
               "serviceName": "string",
               "alreadyRenewed": false,
               "includedAddOns": [
@@ -290,10 +290,10 @@
             {
               "number": "string",
               "rental": {
-                "method": "string",
-                "href": "string"
+                "method": "GET|POST",
+                "href": "https://...."
               },
-              "renewalCost": 0.0,
+              "renewalCost": 5.95,
               "serviceName": "string",
               "alreadyRenewed": false,
               "includedAddOns": [
@@ -327,7 +327,7 @@
             }
           ],
           "isPaidFor": false,
-          "totalCost": 0.0
+          "totalCost": 11.9
         }
       ],
       "hasNext": false,
@@ -335,8 +335,8 @@
       "count": 0,
       "links": {
         "next": {
-          "method": "string",
-          "href": "string"
+          "method": "GET|POST",
+          "href": "https://...."
         }
       }
     }

@@ -190,7 +190,7 @@ class VerificationsAPI:
             else verification_id
         )
 
-        if not verification_id or not isinstance(verification_id, str):
+        if not isinstance(verification_id, str) or not verification_id.strip():
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="GET", href=f"/api/pub/v2/verifications/{verification_id}")
@@ -233,7 +233,7 @@ class VerificationsAPI:
             else verification_id
         )
 
-        if not verification_id or not isinstance(verification_id, str):
+        if not isinstance(verification_id, str) or not verification_id.strip():
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/cancel")
@@ -266,7 +266,7 @@ class VerificationsAPI:
             else verification_id
         )
 
-        if not verification_id or not isinstance(verification_id, str):
+        if not isinstance(verification_id, str) or not verification_id.strip():
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/reactivate")
@@ -299,7 +299,7 @@ class VerificationsAPI:
             else verification_id
         )
 
-        if not verification_id or not isinstance(verification_id, str):
+        if not isinstance(verification_id, str) or not verification_id.strip():
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/reuse")
@@ -329,7 +329,7 @@ class VerificationsAPI:
             else verification_id
         )
 
-        if not verification_id or not isinstance(verification_id, str):
+        if not isinstance(verification_id, str) or not verification_id.strip():
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/report")
