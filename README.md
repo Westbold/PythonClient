@@ -99,6 +99,27 @@ print("Username:", account_info.username)
 print("Balance:", account_info.current_balance)
 ```
 
+
+
+## Documentation
+
+See the [documentation](https://textverified.readthedocs.io/) for full details, including:
+
+- **API Reference**: Complete documentation of all classes and methods  
+- **Quick Start Guide**: Get up and running quickly
+- **Examples**: Real-world usage examples and patterns
+- **Error Handling**: Best practices for robust applications
+
+## Support and Resources
+
+When working with the TextVerified API, please refer to the official documentation:
+
+1. [TextVerified API Documentation](https://www.textverified.com/docs/api/v2) - Main REST API reference
+2. [TextVerified Dashboard](https://www.textverified.com/app/api/configure) - Manage your account and view usage
+3. [TextVerified Support](https://www.textverified.com/app/support) - Get help and contact support
+
+For support, please open a ticket at [TextVerified Support](https://www.textverified.com/app/support)
+
 ## Examples
 
 ### Complete Verification Workflow
@@ -200,32 +221,3 @@ except Exception as e:
     print(f"Unexpected error: {e}")
     # Handle other exceptions
 ```
-
-## Documentation
-
-See the [documentation](https://textverified.readthedocs.io/) for full details, including:
-
-- **API Reference**: Complete documentation of all classes and methods  
-- **Quick Start Guide**: Get up and running quickly
-- **Examples**: Real-world usage examples and patterns
-- **Error Handling**: Best practices for robust applications
-
-## TextVerified API Reference Links
-
-When working with the TextVerified API, please refer to the official documentation:
-
-1. [TextVerified API Documentation](https://www.textverified.com/docs/api/v2) - Main REST API reference
-2. [TextVerified Dashboard](https://www.textverified.com/app/api/configure) - Manage your account and view usage
-3. [TextVerified Support](https://www.textverified.com/app/support) - Get help and contact support
-
-## Credits
-
-This library is developed and maintained by **Westbold LLC**.
-
-Special thanks to:
-
-* **TextVerified** for providing a reliable phone verification service and comprehensive API
-* **Python Community** for the excellent tools and libraries that make this project possible
-* **Our Users** for feedback and contributions that help improve the library
-
-For support, please open a ticket at [TextVerified Support](https://www.textverified.com/app/support)
