@@ -242,7 +242,7 @@ class SMSApi:
         if not data.content:
             raise ValueError("content is required to send a message.")
 
-        action = _Action(method="POST", href="/api/pub/v2/sms/reply")
+        action = _Action(method="POST", href="/api/pub/v2/sms/send")
         self.client._perform_action(action, json=data.to_api())
 
         return True
@@ -281,7 +281,7 @@ class SMSApi:
         if not data.content:
             raise ValueError("content is required to send a reply.")
 
-        action = _Action(method="POST", href="/api/pub/v2/sms/send")
+        action = _Action(method="POST", href="/api/pub/v2/sms/reply")
         self.client._perform_action(action, json=data.to_api())
 
         return True
