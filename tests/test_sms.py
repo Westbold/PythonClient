@@ -212,7 +212,9 @@ def test_send_sms_with_renewable_rental_expanded_instance(tv, mock_http_from_dis
 
 def test_send_sms_with_nonrenewable_rental_compact_instance(tv, mock_http_from_disk, nonrenewable_rental_compact):
     """Test sending SMS using NonrenewableRentalCompact instance as reservation_id."""
-    result = tv.sms.send(reservation_id=nonrenewable_rental_compact, send_to="5551112222", content="Test nonrenewable compact")
+    result = tv.sms.send(
+        reservation_id=nonrenewable_rental_compact, send_to="5551112222", content="Test nonrenewable compact"
+    )
 
     assert result is True
     assert mock_http_from_disk.last_body_params["reservationId"] == nonrenewable_rental_compact.id
@@ -222,7 +224,9 @@ def test_send_sms_with_nonrenewable_rental_compact_instance(tv, mock_http_from_d
 
 def test_send_sms_with_nonrenewable_rental_expanded_instance(tv, mock_http_from_disk, nonrenewable_rental_expanded):
     """Test sending SMS using NonrenewableRentalExpanded instance as reservation_id."""
-    result = tv.sms.send(reservation_id=nonrenewable_rental_expanded, send_to="5553334444", content="Test nonrenewable expanded")
+    result = tv.sms.send(
+        reservation_id=nonrenewable_rental_expanded, send_to="5553334444", content="Test nonrenewable expanded"
+    )
 
     assert result is True
     assert mock_http_from_disk.last_body_params["reservationId"] == nonrenewable_rental_expanded.id
