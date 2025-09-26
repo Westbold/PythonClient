@@ -196,7 +196,7 @@ class SMSApi:
         self,
         data: SendSmsRequest = None,
         *,
-        reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded] = None,
+        reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded] = None,
         send_to: str = None,
         content: str = None,
     ) -> bool:
@@ -217,13 +217,13 @@ class SMSApi:
         Returns:
             bool: True if the SMS was sent successfully, False otherwise.
         """
-        if reservation_id and isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded)):
+        if reservation_id and isinstance(reservation_id, (RenewableRentalCompact, RenewableRentalExpanded, NonrenewableRentalCompact, NonrenewableRentalExpanded)):
             reservation_id = reservation_id.id
 
         data = SendSmsRequest(
-            reservation_id=reservation_id or data.reservation_id,
-            send_to=send_to or data.send_to,
-            content=content or data.content,
+            reservation_id=reservation_id or (data.reservation_id if data else None),
+            send_to=send_to or (data.send_to if data else None),
+            content=content or (data.content if data else None),
         )
 
         if not isinstance(data.reservation_id, str) or not data.reservation_id.strip():
@@ -265,7 +265,10 @@ class SMSApi:
         if reply_to_sms_id and isinstance(reply_to_sms_id, Sms):
             reply_to_sms_id = reply_to_sms_id.id
 
-        data = ReplySmsRequest(reply_to_sms_id=reply_to_sms_id or data.reply_to_sms_id, content=content or data.content)
+        data = ReplySmsRequest(
+            reply_to_sms_id=reply_to_sms_id or (data.reply_to_sms_id if data else None), 
+            content=content or (data.content if data else None)
+        )
 
         if not isinstance(data.reply_to_sms_id, str) or not data.reply_to_sms_id.strip():
             raise ValueError("reply_to_sms_id must be a valid ID or instance of Sms.")
