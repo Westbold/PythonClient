@@ -220,7 +220,7 @@ class ReservationsAPI:
             )
 
         action = _Action(method="POST", href="/api/pub/v2/pricing/rentals")
-        response = self.client._perform_action(action, json=data)
+        response = self.client._perform_action(action, json=data.to_api())
 
         return PricingSnapshot.from_api(response.data)
 
@@ -491,7 +491,7 @@ class ReservationsAPI:
             )
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/renewable/{reservation_id}")
-        response = self.client._perform_action(action, json=update_request.to_api())
+        self.client._perform_action(action, json=update_request.to_api())
 
         return True
 
@@ -541,7 +541,7 @@ class ReservationsAPI:
             raise ValueError("At least one field must be updated: user_notes or mark_all_sms_read.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/nonrenewable/{reservation_id}")
-        response = self.client._perform_action(action, json=update_request.to_api())
+        self.client._perform_action(action, json=update_request.to_api())
 
         return True
 
@@ -663,7 +663,7 @@ class ReservationsAPI:
         if not data or not data.extension_duration or not data.rental_id:
             raise ValueError("Both extension_duration and rental_id must be provided.")
 
-        action = _Action(method="POST", href=f"/api/pub/v2/reservations/rentals/extensions")
+        action = _Action(method="POST", href="/api/pub/v2/reservations/rentals/extensions")
         self.client._perform_action(action, json=data.to_api())
 
         return True

@@ -10,4 +10,4 @@ class TextVerifiedError(Exception):
     context: str = ""
 
     def __str__(self):
-        return f"{self.error_code} - {self.error_description}\n" f"{self.context}"
+        return f"{self.error_code} - {self.error_description}\n {self.context}"

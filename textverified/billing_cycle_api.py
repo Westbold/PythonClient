@@ -86,7 +86,7 @@ class BillingCycleAPI:
             raise ValueError("At least one field must be updated: reminders_enabled or nickname.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/billing-cycles/{billing_cycle_id}")
-        response = self.client._perform_action(action, json=update_request.to_api())
+        self.client._perform_action(action, json=update_request.to_api())
 
         return True
 
