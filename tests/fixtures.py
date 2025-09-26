@@ -313,6 +313,7 @@ def _replace_placeholders(obj, replacements):
             obj = obj.replace(placeholder, value)
     return obj
 
+
 @pytest.fixture
 def mock_http_from_disk():
     """

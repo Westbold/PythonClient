@@ -304,7 +304,7 @@ class ReservationsAPI:
 
         elif "reservations/rental/renewable/" in action.href:
             return RenewableRentalExpanded.from_api(response.data)
-        
+
         raise ValueError("Unexpected reservation type in response.")
 
     def list_renewable(self) -> PaginatedList[RenewableRentalCompact]:

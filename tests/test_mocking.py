@@ -140,10 +140,7 @@ def test_mock_object_name_property():
 
 def test_all_mock_ids_contain_separator(tv):
     """Test that all mock ID generation methods produce IDs with '_$_' separator"""
-    methods_returning_strings = [
-        tv.mocking.target,
-        tv.mocking.service
-    ]
+    methods_returning_strings = [tv.mocking.target, tv.mocking.service]
 
     methods_returning_mock_objects = [
         tv.mocking.verification,
