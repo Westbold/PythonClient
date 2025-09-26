@@ -272,7 +272,7 @@ def _find_mock_file(request_path: str, file_list: List[Path]) -> Optional[Dict]:
         file_name = file_name.replace(".", "\\.")  # Escape dots for regex
         path_param_keys = re.findall(r"\{([^}/?&]+)\}", str(file_name))  # 1 group per key of path parameters
         file_path_pattern = (
-            "^" + re.sub(r"\{([^}/?&]+)\}", r"[^\/}?&.]+", str(file_name)) + "$"
+            "^" + re.sub(r"\{([^}/?&]+)\}", r"([^\/}?&.]+)", str(file_name)) + "$"
         )  # file path with 1 group for each path parameter
 
         if re.fullmatch(file_path_pattern, request_filename):
@@ -300,6 +300,18 @@ def _load_mock_data(mock_file_path, method):
 
     return mock_data[method_lower]
 
+
+def _replace_placeholders(obj, replacements):
+    if isinstance(obj, dict):
+        for key in obj:
+            obj[key] = _replace_placeholders(obj[key], replacements)
+    elif isinstance(obj, list):
+        for i in range(len(obj)):
+            obj[i] = _replace_placeholders(obj[i], replacements)
+    elif isinstance(obj, str):
+        for placeholder, value in replacements.items():
+            obj = obj.replace(placeholder, value)
+    return obj
 
 @pytest.fixture
 def mock_http_from_disk():
@@ -335,6 +347,11 @@ def mock_http_from_disk():
 
         # Load mock data
         response_data = _load_mock_data(mock_file_data.get("path"), method)
+
+        # Replace parameters in response
+        if "response" in response_data:
+            replacements = {f"{{{k}}}": v for k, v in mock_file_data.get("path_params", {}).items()}
+            response_data["response"] = _replace_placeholders(response_data["response"], replacements)
 
         # Apply hooks if any
         for hook in mock.hooks:
