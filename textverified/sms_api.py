@@ -240,7 +240,7 @@ class SMSApi:
             raise ValueError("send_to must be a valid phone number in the form of 1112223333.")
 
         if not data.content:
-            raise ValueError("content is required to send a reply.")
+            raise ValueError("content is required to send a message.")
 
         action = _Action(method="POST", href="/api/pub/v2/sms/reply")
         self.client._perform_action(action, json=data.to_api())
