@@ -426,6 +426,29 @@ class RentalExtensionRequest:
 
 
 @dataclass(frozen=True)
+class ReplySmsRequest:
+    reply_to_sms_id: str
+    """The Sms Id to reply to. If a valid Sms does not exist or the Sms cannot be replied to, a 400 response will be returned."""
+
+    content: str
+    """The Sms content to send. If the content is invalid, a 400 response will be returned."""
+
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['replyToSmsId'] = self.reply_to_sms_id
+        api_dict['content'] = self.content
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'ReplySmsRequest':
+        return cls(
+            reply_to_sms_id=str(data.get("replyToSmsId", None)),
+            content=str(data.get("content", None)),
+        )
+
+
+@dataclass(frozen=True)
 class ReportAction:
     can_report: bool
 
@@ -515,6 +538,34 @@ class ReservationSaleCompact:
             state=ReservationSaleState.from_api(data.get("state", None)),
             total_cost=float(data.get("totalCost", None)),
             updated_at=dateutil.parser.parse(data.get("updatedAt", None)),
+        )
+
+
+@dataclass(frozen=True)
+class SendSmsRequest:
+    reservation_id: str
+    """The reservation Id to send from. If a valid reservation does not exist or the reservation does not have sending capabilities, a 400 response will be returned."""
+
+    send_to: str
+    """The number to send to. If the number is invalid, a 400 response will be returned."""
+
+    content: str
+    """The Sms content to send. If the content is invalid, a 400 response will be returned."""
+
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['reservationId'] = self.reservation_id
+        api_dict['sendTo'] = self.send_to
+        api_dict['content'] = self.content
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'SendSmsRequest':
+        return cls(
+            reservation_id=str(data.get("reservationId", None)),
+            send_to=str(data.get("sendTo", None)),
+            content=str(data.get("content", None)),
         )
 
 

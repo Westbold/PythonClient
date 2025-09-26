@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "API Overview",
-    "description": "<p>This is where you can get started with automating your workflows and integrating your apps with our API.</p>\n<p>For rentals (<b>long term use</b> of numbers), you'll need to check out the following links in order: </p><ol>\n<li>Authenticate: <a href='docs/api/v2#auth' target='_top'>Authentication</a></li>\n<li>Obtain a list of rental services: <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a></li>\n<li>Create a rental: <a href='docs/api/v2#post-/api/pub/v2/reservations/rental' target='_top'>Create New Rental</a></li>\n<li>Follow the location header returned to get the rental sale.</li>\n<li>From the sale, you'll be able to see the reservations and backorders.</li>\n</ol>\n<p>For verifications (<b>single use</b> of numbers), you'll need to check out the following links in order: </p><ol>\n<li>Authenticate: <a href='docs/api/v2#auth' target='_top'>Authentication</a></li>\n<li>Obtain a list of verification services: <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a></li>\n<li>Create a verification: <a href='docs/api/v2#post-/api/pub/v2/verifications' target='_top'>Create Verification</a></li>\n<li>Follow the location header returned to get the newly created verification.</li>\n</ol>\n<p>Our API documentation has an embedded javascript client so that you can try out the API. You will need to <a href='docs/api/v2#auth' target='_top'>setup your bearer token</a> to be able to access secured endpoints.\n</p><br/>\n<h2>Paginated List Responses</h2>\n<p>When you successfully get a list of data (generally, ordered by when the resource was created), for example <a href='docs/api/v2#get-/api/pub/v2/billing-cycles' target='_top'>List Billing Cycles</a>, you will need to follow it's <code>links</code> results.\n<br/>Inside the <code>links</code> result, you will get <code>current</code>, <code>previous</code>, and <code>next</code> values. Inside these values, there will be <code>href</code> and <code>method</code> values.\n<br/>With these values, you can get more of your list by navigating through them. </p>\n<h3><b>Example</b></h3>\n<p>We get the result from <a href='docs/api/v2#get-/api/pub/v2/billing-cycles' target='_top'>List Billing Cycles</a>, but we don't see what we need and need more billing cycles.<br/>\n<span style='color:#dc2626;'><b>The following code is whiteboarding code, use the language you are using for your integration with the API</b></span><br/>\nWe will need to do the following:</p>\n<ul><li>Get our api result <code>data = getListBillingCyclesResult()</code></li>\n<li>Get the <code>href = data['links']['next']['href']</code></li>\n<li>Get the <code>method = data['links']['next']['method']</code></li>\n<li>Now you can get the next page: <code>nextPage = fetch(href, {method=method})</code></li>\n<li>If we need the next page's result, we can repeat this process.</li></ul>\n<p>Note that only renewable rentals will be associated with a billing cycle.</p>\n<object width=\"630\" style=\"margin-top:60px\" data=\"/api/pub/v2/docs/rental-api-v2-purchase-flow.svg\" type=\"image/svg+xml\"></object>\n<object width=\"630\" style=\"margin-top:60px\" data=\"/api/pub/v2/docs/verification-api-v2-purchase-flow.svg\" type=\"image/svg+xml\"></object>\n",
+    "description": "<p>This is where you can get started with automating your workflows and integrating your apps with our API.</p>\n<p>Use our official <a href='https://pypi.org/project/textverified/' target='_blank'>Python client</a> for faster integration.</p>\n<p>For rentals (<b>long term use</b> of numbers), you'll need to check out the following links in order: </p><ol>\n<li>Authenticate: <a href='docs/api/v2#auth' target='_top'>Authentication</a></li>\n<li>Obtain a list of rental services: <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a></li>\n<li>Create a rental: <a href='docs/api/v2#post-/api/pub/v2/reservations/rental' target='_top'>Create New Rental</a></li>\n<li>Follow the location header returned to get the rental sale.</li>\n<li>From the sale, you'll be able to see the reservations and backorders.</li>\n</ol>\n<p>For verifications (<b>single use</b> of numbers), you'll need to check out the following links in order: </p><ol>\n<li>Authenticate: <a href='docs/api/v2#auth' target='_top'>Authentication</a></li>\n<li>Obtain a list of verification services: <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a></li>\n<li>Create a verification: <a href='docs/api/v2#post-/api/pub/v2/verifications' target='_top'>Create Verification</a></li>\n<li>Follow the location header returned to get the newly created verification.</li>\n</ol>\n<p>Our API documentation has an embedded javascript client so that you can try out the API. You will need to <a href='docs/api/v2#auth' target='_top'>setup your bearer token</a> to be able to access secured endpoints.\n</p><br/>\n<h2>Paginated List Responses</h2>\n<p>When you successfully get a list of data (generally, ordered by when the resource was created), for example <a href='docs/api/v2#get-/api/pub/v2/billing-cycles' target='_top'>List Billing Cycles</a>, you will need to follow it's <code>links</code> results.\n<br/>Inside the <code>links</code> result, you will get <code>current</code>, <code>previous</code>, and <code>next</code> values. Inside these values, there will be <code>href</code> and <code>method</code> values.\n<br/>With these values, you can get more of your list by navigating through them. </p>\n<h3><b>Example</b></h3>\n<p>We get the result from <a href='docs/api/v2#get-/api/pub/v2/billing-cycles' target='_top'>List Billing Cycles</a>, but we don't see what we need and need more billing cycles.<br/>\n<span style='color:#dc2626;'><b>The following code is whiteboarding code, use the language you are using for your integration with the API</b></span><br/>\nWe will need to do the following:</p>\n<ul><li>Get our api result <code>data = getListBillingCyclesResult()</code></li>\n<li>Get the <code>href = data['links']['next']['href']</code></li>\n<li>Get the <code>method = data['links']['next']['method']</code></li>\n<li>Now you can get the next page: <code>nextPage = fetch(href, {method=method})</code></li>\n<li>If we need the next page's result, we can repeat this process.</li></ul>\n<p>Note that only renewable rentals will be associated with a billing cycle.</p>\n<object width=\"630\" style=\"margin-top:60px\" data=\"/api/pub/v2/docs/rental-api-v2-purchase-flow.svg\" type=\"image/svg+xml\"></object>\n<object width=\"630\" style=\"margin-top:60px\" data=\"/api/pub/v2/docs/verification-api-v2-purchase-flow.svg\" type=\"image/svg+xml\"></object>\n",
     "version": "v2",
     "x-logo": {
       "url": "../../tvlogo.svg",
@@ -1775,6 +1775,104 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/sms/reply": {
+      "post": {
+        "tags": [
+          "Sms"
+        ],
+        "summary": "Reply to a Sms",
+        "description": "<p>\n  <b>Attempt</b> to reply to a Sms by ID.</p>",
+        "operationId": "ReplyToSmsPublic",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplySmsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplySmsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplySmsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/sms/send": {
+      "post": {
+        "tags": [
+          "Sms"
+        ],
+        "summary": "Send a Sms",
+        "description": "<p>\n  <b>Attempt</b> to send a Sms by reservation ID.</p>",
+        "operationId": "SendSmsPublic",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSmsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSmsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSmsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "429": {
             "description": "Too many requests"
@@ -3651,6 +3749,24 @@
         },
         "additionalProperties": false
       },
+      "ReplySmsRequest": {
+        "required": [
+          "content",
+          "replyToSmsId"
+        ],
+        "type": "object",
+        "properties": {
+          "replyToSmsId": {
+            "type": "string",
+            "description": "The Sms Id to reply to. If a valid Sms does not exist or the Sms cannot be replied to, a 400 response will be returned."
+          },
+          "content": {
+            "type": "string",
+            "description": "The Sms content to send. If the content is invalid, a 400 response will be returned."
+          }
+        },
+        "additionalProperties": false
+      },
       "ReportAction": {
         "required": [
           "canReport",
@@ -3856,6 +3972,29 @@
             "description": "If the verification is reusable, this value will be populated.",
             "format": "date-time",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SendSmsRequest": {
+        "required": [
+          "content",
+          "reservationId",
+          "sendTo"
+        ],
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "description": "The reservation Id to send from. If a valid reservation does not exist or the reservation does not have sending capabilities, a 400 response will be returned."
+          },
+          "sendTo": {
+            "type": "string",
+            "description": "The number to send to. If the number is invalid, a 400 response will be returned."
+          },
+          "content": {
+            "type": "string",
+            "description": "The Sms content to send. If the content is invalid, a 400 response will be returned."
           }
         },
         "additionalProperties": false
