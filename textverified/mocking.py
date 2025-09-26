@@ -1,4 +1,4 @@
-from typing import  Union, Generic, TypeVar, Callable
+from typing import Union, Generic, TypeVar, Callable
 from enum import Enum
 from dataclasses import dataclass
 from .data import (
