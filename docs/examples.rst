@@ -206,17 +206,10 @@ Wakeable Rental Example
     # 2. Start a wake request for the rental
     print("Sending wake request and waiting for active window...")
     wake_request = wake_requests.create(rental)
-    duration = wake_request.usage_window_end - wake_request.usage_window_start
-    print(
-        f"Number {rental.number} is active from {wake_request.usage_window_start}"
-        f" to {wake_request.usage_window_end} (duration: {duration})"
-    )
-
-    # 3. Wait for the wake request to complete
-    time_until_start = wake_request.usage_window_start - datetime.datetime.now(datetime.timezone.utc)
-    print(f"Waiting for the number to become active... ({time_until_start})")
     wake_response = wake_requests.wait_for_wake_request(wake_request)
 
+    duration = wake_response.usage_window_end - wake_response.usage_window_start
+    print(f"Number {rental.number} is now active until {wake_response.usage_window_end} (duration: {duration})")
 
     # 3. Poll for SMS messages on the awakened number
     print(f"Polling SMS messages for number {rental.number}...")
@@ -259,4 +252,120 @@ Proper error handling for production use:
         print(f"Unexpected error (attempt {attempt + 1}): {e}")
 
 Note that all API requests use exponential backoff for retries, and retries on connection error or ratelimit errors.
+
+Mocking Examples
+----------------
+
+The mocking feature allows you to create mock objects for testing and development without making actual API calls.
+
+Basic Verification Workflow with Mock ID
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    from textverified import TextVerified, mocking
+
+    # Create a mock verification
+    mock_verification = mocking.verification()
+    print(f"Mock verification ID: {mock_verification.id}")
+
+    client = TextVerified(api_key="your_key", api_username="your_username")
+
+    # Use mock ID with real API methods
+    verification = client.verifications.details(mock_verification.id)
+    print(f"Verification number: {verification.number}")
+
+    # Poll for SMS messages
+    messages = client.sms.incoming(verification, timeout=10)
+    for message in messages:
+        print(f"Received code: {message.parsed_code}")
+        break
+
+Verification Mock Purchase
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    from textverified import TextVerified, mocking, ReservationCapability, NewVerificationRequest
+
+    # Create a mock service name
+    mock_service = mocking.target()
+    print(f"Mock service: {mock_service}")
+
+    client = TextVerified(api_key="your_key", api_username="your_username")
+
+    # Create verification request with mock service
+    request = NewVerificationRequest(
+        service_name=mock_service,
+        capability=ReservationCapability.SMS
+    )
+
+    # Get pricing and create verification
+    price_snapshot = client.verifications.pricing(request)
+    assert price_snapshot.price == 0.0 # will be 0.0 for mock
+    verification = client.verifications.create(request)
+    print(f"Created verification: {verification.id}")
+
+Testing Error Handling with Random Failures
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    from textverified import TextVerified, mocking, MockBehavior
+
+    # Create mock that fails randomly (helps test error handling)
+    mock_verification = mocking.verification(behavior=MockBehavior.FailsRandomly)
+
+    client = TextVerified(api_key="your_key", api_username="your_username")
+
+    # API calls will fail ~ 33% of the time, use this to test your error handling
+    try:
+        verification = client.verifications.details(mock_verification.id)
+        print("Verification succeeded")
+    except Exception as e:
+        print(f"Verification failed: {e}")
+
+Rental Workflow with Mock ID
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    from textverified import TextVerified, mocking
+
+    # Create a mock rental
+    mock_rental = mocking.rental()
+    print(f"Mock rental ID: {mock_rental.id}")
+
+    client = TextVerified(api_key="your_key", api_username="your_username")
+
+    # Get rental details
+    rental = client.reservations.details(mock_rental.id)
+    print(f"Rental number: {rental.number}")
+
+    # List SMS messages
+    messages = client.sms.list()
+    print(f"Found {len(messages)} messages")
+
+Wake Rental Workflow with Mock ID
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    from textverified import TextVerified, mocking
+
+    # Create mock rental for wake testing
+    mock_rental = mocking.rental()
+
+    client = TextVerified(api_key="your_key", api_username="your_username")
+
+    # Get rental and create wake request
+    rental = client.reservations.details(mock_rental.id)
+    wake_request = client.wake_requests.create(rental)
+
+    # Poll for messages during wake window
+    wake_request.wait_for_wake_request() # This will block for mocks
+    messages = client.sms.incoming(rental, timeout=10)
+    for message in messages:
+        print(f"Received: {message.sms_content}")
+        break
 

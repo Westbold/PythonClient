@@ -19,15 +19,18 @@ print("Sending wake request and waiting for active window...")
 wake_request = wake_requests.create(rental)
 duration = wake_request.usage_window_end - wake_request.usage_window_start
 print(
-    f"Number {rental.number} is active from {wake_request.usage_window_start}"
+    f"Number {rental.number} is estimated to be active from {wake_request.usage_window_start}"
     f" to {wake_request.usage_window_end} (duration: {duration})"
 )
 
 # 3. Wait for the wake request to complete
 time_until_start = wake_request.usage_window_start - datetime.datetime.now(datetime.timezone.utc)
-print(f"Waiting for the number to become active... ({time_until_start})")
+print(f"Waiting for the number to become active... (estimate: {time_until_start})")
 wake_response = wake_requests.wait_for_wake_request(wake_request)
 
+# Refresh duration based on actual active window
+duration = wake_response.usage_window_end - wake_response.usage_window_start
+print(f"Number {rental.number} is now active until {wake_response.usage_window_end} (duration: {duration})")
 
 # 3. Poll for SMS messages on the awakened number
 print(f"Polling SMS messages for number {rental.number}...")

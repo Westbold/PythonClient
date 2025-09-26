@@ -11,6 +11,11 @@ import textverified
 
 textverified.configure(api_key="your_api_key", api_username="your_username")
 
+# Now we can call any API method as usual.
+
+# The order of imports is not important -
+# this import could have been before .configure
+
 from textverified import account as tv_account
 
 # Get account details

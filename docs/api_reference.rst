@@ -73,6 +73,12 @@ Wake API
 .. automodule:: textverified.wake_api
    :members:
 
+Mocking API
+~~~~~~~~~~~
+
+.. automodule:: textverified.mocking
+   :members:
+
 PaginatedList
 ---------------
 
