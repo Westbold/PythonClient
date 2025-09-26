@@ -11,6 +11,7 @@ from .sms_api import SMSApi
 from .verifications_api import VerificationsAPI
 from .wake_api import WakeAPI
 from .call_api import CallAPI
+from .mocking import Mocking
 import requests
 import datetime
 from requests.adapters import HTTPAdapter
@@ -80,6 +81,16 @@ class TextVerified(_ActionPerformer):
     def calls(self) -> CallAPI:
         return CallAPI(self)
 
+    @property
+    def mocking(self) -> Mocking:
+        return Mocking(
+            verifications_api=self.verifications,
+            reservations_api=self.reservations,
+            billing_cycle_api=self.billing_cycles,
+            sales_api=self.sales,
+            wake_api=self.wake_requests,
+        )
+
     def __post_init__(self):
         self.bearer = None
         self.base_url = self.base_url.rstrip("/")
@@ -128,7 +139,7 @@ class TextVerified(_ActionPerformer):
             return self.__perform_action_internal(action.method, href, **kwargs)
 
     def __perform_action_internal(self, method: str, href: str, **kwargs) -> _ActionResponse:
-        """Internal action performance with authorization"""
+        """Internal action (to localhost or base_url) with authorization"""
         # Check if bearer token is set and valid
         self.refresh_bearer()
 
@@ -144,7 +155,7 @@ class TextVerified(_ActionPerformer):
         return _ActionResponse(data=response.json() if response.text else {}, headers=response.headers)
 
     def __perform_action_external(self, method: str, href: str, **kwargs) -> _ActionResponse:
-        """External action performance without authorization"""
+        """External action (to unknown domain) without authorization"""
         # Allow unverified certificates for localhost
         verify = not href.startswith("http://localhost") and not href.startswith("https://localhost")
 

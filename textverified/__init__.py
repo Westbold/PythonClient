@@ -277,6 +277,26 @@ Example:
 """,
 )
 
+mocking = _LazyAPI(
+    "mocking",
+    """
+Static access to mocking functionality for testing.
+
+Provides methods for creating mock identifiers and objects for testing purposes.
+This is a static wrapper around the Mocking class that uses the globally
+configured TextVerified instance.
+
+Example:
+    from textverified import mocking
+    
+    # Create a mock verification
+    mock_verification = mocking.verification()
+    
+    # Get verification details
+    details = mock_verification.get()
+""",
+)
+
 # Available for import:
 __all__ = [
     # Main classes
@@ -296,6 +316,7 @@ __all__ = [
     "wake_requests",
     "sms",
     "calls",
+    "mocking",
     # API classes (for direct instantiation if needed)
     "AccountAPI",
     "BillingCycleAPI",
