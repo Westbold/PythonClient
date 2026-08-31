@@ -1,0 +1,31 @@
+{
+  "post": {
+    "response": {
+      "data": [
+        {
+          "reservationId": "string",
+          "tags": [
+            "string",
+            "string"
+          ]
+        },
+        {
+          "reservationId": "string",
+          "tags": [
+            "string",
+            "string"
+          ]
+        }
+      ],
+      "hasNext": false,
+      "hasPrevious": false,
+      "count": 0,
+      "links": {
+        "next": {
+          "method": "GET|POST",
+          "href": "https://...."
+        }
+      }
+    }
+  }
+}

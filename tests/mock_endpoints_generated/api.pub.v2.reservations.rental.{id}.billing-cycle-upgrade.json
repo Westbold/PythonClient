@@ -1,0 +1,32 @@
+{
+  "post": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "reservationId": "string",
+      "desiredRentalDuration": "oneDay",
+      "scheduledFor": "1970-01-01T00:00:00+00:00",
+      "cancellableBefore": "1970-01-01T00:00:00+00:00",
+      "nextRenewalAfterJobCompleted": "1970-01-01T00:00:00+00:00",
+      "cost": 0.0,
+      "state": "created",
+      "id": "string"
+    }
+  },
+  "get": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "reservationId": "string",
+      "desiredRentalDuration": "oneDay",
+      "scheduledFor": "1970-01-01T00:00:00+00:00",
+      "cancellableBefore": "1970-01-01T00:00:00+00:00",
+      "nextRenewalAfterJobCompleted": "1970-01-01T00:00:00+00:00",
+      "cost": 0.0,
+      "state": "created",
+      "id": "string"
+    }
+  }
+}

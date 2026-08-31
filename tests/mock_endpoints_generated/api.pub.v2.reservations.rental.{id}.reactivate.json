@@ -1,0 +1,19 @@
+{
+  "get": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "price": 12.5
+    }
+  },
+  "post": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "method": "GET|POST",
+      "href": "https://...."
+    }
+  }
+}

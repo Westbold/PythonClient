@@ -2,7 +2,15 @@ import pytest
 from .fixtures import tv, mock_http_from_disk, mock_http, dict_subset
 from textverified.textverified import TextVerified, BearerToken
 from textverified.action import _Action
-from textverified.data import AreaCode, Service, NumberType, ReservationType
+from textverified.data import (
+    AreaCode,
+    InventoryQuantity,
+    NumberType,
+    RentalDuration,
+    ReservationCapability,
+    ReservationType,
+    Service,
+)
 import datetime
 
 
@@ -26,3 +34,32 @@ def test_get_services(tv, mock_http_from_disk):
         for service_test, service_truth in zip(services_list, mock_http_from_disk.last_response)
     )
     assert all(isinstance(service, Service) for service in services)
+
+
+def test_get_rental_inventory(tv, mock_http_from_disk):
+    inventory = tv.services.rental_inventory(
+        duration=RentalDuration.THIRTY_DAY,
+        number_type=NumberType.MOBILE,
+        service_name="test_service",
+        capability=ReservationCapability.SMS,
+    )
+
+    assert isinstance(inventory, InventoryQuantity)
+    assert inventory.available_quantity == 37
+    assert mock_http_from_disk.last_body_params == {
+        "duration": RentalDuration.THIRTY_DAY.value,
+        "numberType": NumberType.MOBILE.value,
+        "serviceName": "test_service",
+        "capability": ReservationCapability.SMS.value,
+    }
+
+
+def test_get_verification_inventory(tv, mock_http_from_disk):
+    inventory = tv.services.verification_inventory(
+        number_type=NumberType.MOBILE,
+        service_name="test_service",
+        capability=ReservationCapability.SMS,
+    )
+
+    assert isinstance(inventory, InventoryQuantity)
+    assert inventory.available_quantity == 37

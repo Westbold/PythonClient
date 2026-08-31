@@ -1,5 +1,8 @@
 {
   "get": {
-    "response": {}
+    "response": [
+      "string",
+      "string"
+    ]
   }
 }

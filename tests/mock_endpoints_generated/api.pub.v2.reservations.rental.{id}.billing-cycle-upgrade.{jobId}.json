@@ -1,0 +1,9 @@
+{
+  "delete": {
+    "path_params": {
+      "id": "string",
+      "jobId": "string"
+    },
+    "response": {}
+  }
+}

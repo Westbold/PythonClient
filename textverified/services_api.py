@@ -1,6 +1,16 @@
 from .action import _ActionPerformer, _Action
 from typing import List
-from .data import AreaCode, Service, NumberType, ReservationType
+from .data import (
+    AreaCode,
+    InventoryQuantity,
+    NumberType,
+    RentalDuration,
+    RentalInventoryCheckRequest,
+    ReservationCapability,
+    ReservationType,
+    Service,
+    VerificationInventoryCheckRequest,
+)
 
 
 class ServicesAPI:
@@ -45,4 +55,64 @@ class ServicesAPI:
         )
         return [Service.from_api(i) for i in response.data]
 
-    # Pricing endpoints in verifications and rentals
+    def rental_inventory(
+        self,
+        data: RentalInventoryCheckRequest = None,
+        *,
+        duration: RentalDuration = None,
+        number_type: NumberType = None,
+        service_name: str = None,
+        capability: ReservationCapability = None,
+    ) -> InventoryQuantity:
+        """Get available inventory for a rental configuration.
+
+        ``data`` may be supplied instead of individual arguments; explicit arguments
+        take precedence over its values.
+        """
+        data = (
+            RentalInventoryCheckRequest(
+                duration=duration if duration is not None else data.duration,
+                number_type=number_type if number_type is not None else data.number_type,
+                service_name=service_name if service_name is not None else data.service_name,
+                capability=capability if capability is not None else data.capability,
+            )
+            if data
+            else RentalInventoryCheckRequest(duration, number_type, service_name, capability)
+        )
+        if not all((data.duration, data.number_type, data.service_name, data.capability)):
+            raise ValueError("All required fields must be provided: duration, number_type, service_name, capability.")
+
+        response = self.client._perform_action(
+            _Action(method="POST", href="/api/pub/v2/inventory/rentals"), json=data.to_api()
+        )
+        return InventoryQuantity.from_api(response.data)
+
+    def verification_inventory(
+        self,
+        data: VerificationInventoryCheckRequest = None,
+        *,
+        number_type: NumberType = None,
+        service_name: str = None,
+        capability: ReservationCapability = None,
+    ) -> InventoryQuantity:
+        """Get available inventory for a verification configuration.
+
+        ``data`` may be supplied instead of individual arguments; explicit arguments
+        take precedence over its values.
+        """
+        data = (
+            VerificationInventoryCheckRequest(
+                number_type=number_type if number_type is not None else data.number_type,
+                service_name=service_name if service_name is not None else data.service_name,
+                capability=capability if capability is not None else data.capability,
+            )
+            if data
+            else VerificationInventoryCheckRequest(number_type, service_name, capability)
+        )
+        if not all((data.number_type, data.service_name, data.capability)):
+            raise ValueError("All required fields must be provided: number_type, service_name, capability.")
+
+        response = self.client._perform_action(
+            _Action(method="POST", href="/api/pub/v2/inventory/verifications"), json=data.to_api()
+        )
+        return InventoryQuantity.from_api(response.data)
