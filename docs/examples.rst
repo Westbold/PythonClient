@@ -91,6 +91,32 @@ Managing your account and billing:
         print("  ---")
 
 
+Domain Mapping
+--------------
+
+Find the service for a website before starting a verification, then retrieve
+all normalized domains mapped to that service:
+
+.. code-block:: python
+
+    from textverified import TextVerified
+
+    client = TextVerified(api_key="your_api_key", api_username="your_username")
+
+    # A hostname also works; full HTTP(S) URLs are normalized by the API.
+    services = client.services.services_for_domain("https://accounts.example.com/login")
+
+    if not services:
+        print("No matching TextVerified service was found.")
+    else:
+        service = services[0]
+        print(f"Matched {service.service_name}: {service.description}")
+
+        # The reverse lookup returns normalized registrable domains.
+        for domain in client.services.domains_for_service(service.service_name):
+            print(f"  {domain}")
+
+
 Bulk Rental Processing / Management
 ---------------------------
 

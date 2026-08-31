@@ -63,3 +63,18 @@ def test_get_verification_inventory(tv, mock_http_from_disk):
 
     assert isinstance(inventory, InventoryQuantity)
     assert inventory.available_quantity == 37
+
+
+def test_get_services_for_domain(tv, mock_http_from_disk):
+    services = tv.services.services_for_domain("https://login.example.com/path")
+
+    assert [service.service_name for service in services] == ["example-service"]
+    assert services[0].description == "Example Service"
+    assert services[0].capability == ReservationCapability.SMS
+    assert mock_http_from_disk.call_args[1]["params"] == {"domain": "https://login.example.com/path"}
+
+
+def test_get_domains_for_service(tv, mock_http_from_disk):
+    domains = tv.services.domains_for_service("example-service")
+
+    assert domains == ["example.com", "example.net"]

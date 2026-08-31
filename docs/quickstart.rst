@@ -106,6 +106,41 @@ increases frequently.
    for service in all_services:
       print(f"Service: {service.service_name}")
 
+Domain-to-Service and Service-to-Domain Mapping
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use the domain mapping methods when you have a website hostname or URL and
+need the matching TextVerified service, or when you need the normalized domains
+associated with a service. These endpoints accept authenticated client requests
+but are maintained outside the Swagger schema.
+
+``services_for_domain`` accepts a hostname or a complete HTTP(S) URL. The API
+normalizes the input to its registrable domain, so a URL such as
+``https://login.example.com/sign-in`` can match ``example.com``. It returns
+regular ``Service`` objects; the target's display name is available as
+``service.description``.
+
+``domains_for_service`` accepts a TextVerified service name and returns its
+normalized domains.
+
+.. code-block:: python
+
+   from textverified import TextVerified
+
+   client = TextVerified(api_key="your_api_key", api_username="your_username")
+
+   # Domain or URL -> matching services
+   matching_services = client.services.services_for_domain(
+       "https://login.example.com/sign-in"
+   )
+   for service in matching_services:
+       print(f"{service.service_name}: {service.description} ({service.capability.value})")
+
+   # Service name -> normalized domains
+   domains = client.services.domains_for_service("example-service")
+   for domain in domains:
+       print(domain)
+
 Creating a Verification
 ~~~~~~~~~~~~~~~~~~~~~~
 

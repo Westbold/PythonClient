@@ -1,0 +1,14 @@
+{
+  "get": {
+    "query_params": {
+      "domain": "https://login.example.com/path"
+    },
+    "response": [
+      {
+        "serviceName": "example-service",
+        "customerDisplayServiceName": "Example Service",
+        "capability": "sms"
+      }
+    ]
+  }
+}

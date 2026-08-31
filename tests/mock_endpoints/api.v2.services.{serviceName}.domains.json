@@ -1,0 +1,11 @@
+{
+  "get": {
+    "path_params": {
+      "serviceName": "example-service"
+    },
+    "response": [
+      "example.com",
+      "example.net"
+    ]
+  }
+}
