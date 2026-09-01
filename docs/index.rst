@@ -8,6 +8,7 @@ Python wrapper for the TextVerified API.
    :caption: Contents:
 
    quickstart
+   mocking
    api_reference
    examples
 

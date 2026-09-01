@@ -13,10 +13,12 @@ from .wake_api import WakeAPI
 from .call_api import CallAPI
 import requests
 import datetime
+import sys
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import dateutil.parser
 from http.client import responses
+from urllib.parse import urlparse
 
 
 @dataclass(frozen=True)
@@ -39,10 +41,23 @@ class BearerToken:
 class TextVerified(_ActionPerformer):
     """API Context for interacting with the Textverified API."""
 
+    _MOCKABLE_SERVICE_ENDPOINTS = frozenset(
+        (
+            "/api/pub/v2/verifications",
+            "/api/pub/v2/reservations/rental",
+            "/api/pub/v2/pricing/verifications",
+            "/api/pub/v2/pricing/rentals",
+            "/api/pub/v2/inventory/verifications",
+            "/api/pub/v2/inventory/rentals",
+        )
+    )
+    _MOCK_SERVICE_NAME = "test_success"
+
     api_key: str
     api_username: str
     base_url: str = "https://www.textverified.com"
     user_agent: str = "TextVerified-Python-Client/0.1.0"
+    mock_api: bool = False
 
     @property
     def account(self) -> AccountAPI:
@@ -81,6 +96,9 @@ class TextVerified(_ActionPerformer):
         return CallAPI(self)
 
     def __post_init__(self):
+        if not isinstance(self.mock_api, bool):
+            raise ValueError("mock_api must be a bool.")
+
         self.bearer = None
         self.base_url = self.base_url.rstrip("/")
 
@@ -132,6 +150,8 @@ class TextVerified(_ActionPerformer):
         # Check if bearer token is set and valid
         self.refresh_bearer()
 
+        kwargs = self.__apply_mock_service_name(method, href, kwargs)
+
         # Prepare and perform the request
         headers = {"Authorization": f"Bearer {self.bearer.token}", "User-Agent": self.user_agent}
 
@@ -142,6 +162,30 @@ class TextVerified(_ActionPerformer):
 
         TextVerified.__raise_for_status(method, href, response)
         return _ActionResponse(data=response.json() if response.text else {}, headers=response.headers)
+
+    def __apply_mock_service_name(self, method: str, href: str, request_kwargs: Dict) -> Dict:
+        """Apply the global server-backed mock setting to supported requests.
+
+        The Phoneblur API enables mocks by receiving a documented ``test_*``
+        service name; ``X-Phoneblur-Mock`` is a response header, not a request
+        header. Copy the request data to avoid mutating a caller's payload.
+        """
+        package = sys.modules.get(__package__)
+        if not self.mock_api and not (package and getattr(package, "mock_api", False)):
+            return request_kwargs
+
+        if method.upper() != "POST" or urlparse(href).path not in self._MOCKABLE_SERVICE_ENDPOINTS:
+            return request_kwargs
+
+        request_json = request_kwargs.get("json")
+        if not isinstance(request_json, dict) or "serviceName" not in request_json:
+            return request_kwargs
+
+        request_kwargs = request_kwargs.copy()
+        request_json = request_json.copy()
+        request_json["serviceName"] = self._MOCK_SERVICE_NAME
+        request_kwargs["json"] = request_json
+        return request_kwargs
 
     def __perform_action_external(self, method: str, href: str, **kwargs) -> _ActionResponse:
         """External action performance without authorization"""

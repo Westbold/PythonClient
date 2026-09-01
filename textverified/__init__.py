@@ -16,6 +16,26 @@ import os
 import sys
 from typing import Optional
 
+# Global API mock switch. When enabled, mock-capable requests use the server's
+# documented ``test_success`` service name instead of the supplied service name.
+# It is intentionally disabled by default.
+mock_api = False
+
+
+def set_mock_api(enabled: bool) -> None:
+    """Enable or disable server-backed API mocking globally.
+
+    When enabled, verification and rental create, pricing, and inventory calls
+    use the API's ``test_success`` mock service. This never affects requests
+    while the flag is disabled.
+    """
+    if not isinstance(enabled, bool):
+        raise ValueError("enabled must be a bool.")
+
+    global mock_api
+    mock_api = enabled
+
+
 # Import the main TextVerified class and API modules
 from .textverified import TextVerified, BearerToken
 from .account_api import AccountAPI
@@ -63,11 +83,16 @@ def configure(
     api_username: str,
     base_url: str = "https://www.textverified.com",
     user_agent: str = "TextVerified-Python-Client/0.1.0",
+    mock_api: bool = False,
 ) -> None:
     """Configure the static TextVerified instance."""
     global _static_instance
     _static_instance = TextVerified(
-        api_key=api_key, api_username=api_username, base_url=base_url, user_agent=user_agent
+        api_key=api_key,
+        api_username=api_username,
+        base_url=base_url,
+        user_agent=user_agent,
+        mock_api=mock_api,
     )
 
 
@@ -286,6 +311,8 @@ __all__ = [
     "TextVerifiedError",
     # Configuration
     "configure",
+    "mock_api",
+    "set_mock_api",
     # Static API access
     "account",
     "billing_cycles",
