@@ -1,5 +1,13 @@
 {
   "post": {
-    "response": {}
+    "response": {
+      "reservationId": "string",
+      "extensionAmount": "string",
+      "cost": 0.0,
+      "createdAt": "1970-01-01T00:00:00+00:00",
+      "originalEndsAt": "1970-01-01T00:00:00+00:00",
+      "newEndsAt": "1970-01-01T00:00:00+00:00",
+      "id": "string"
+    }
   }
 }

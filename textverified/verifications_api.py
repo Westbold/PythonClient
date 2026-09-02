@@ -237,7 +237,7 @@ class VerificationsAPI:
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/cancel")
-        response = self.client._perform_action(action)
+        self.client._perform_action(action)
 
         return True
 
@@ -270,7 +270,7 @@ class VerificationsAPI:
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/reactivate")
-        response = self.client._perform_action(action)
+        self.client._perform_action(action)
 
         return True
 
@@ -303,7 +303,7 @@ class VerificationsAPI:
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/reuse")
-        response = self.client._perform_action(action)
+        self.client._perform_action(action)
 
         return True
 
@@ -333,6 +333,6 @@ class VerificationsAPI:
             raise ValueError("verification_id must be a valid ID or instance of VerificationCompact/Expanded.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/verifications/{verification_id}/report")
-        response = self.client._perform_action(action)
+        self.client._perform_action(action)
 
         return True

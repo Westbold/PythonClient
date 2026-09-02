@@ -20,6 +20,10 @@ from textverified.data import (
     ReservationSaleExpanded,
     RenewableRentalUpdateRequest,
     NonrenewableRentalUpdateRequest,
+    RentalBillingCycleUpgrade,
+    RentalReactivationCost,
+    RentalTags,
+    RentalUserNotes,
 )
 import datetime
 
@@ -242,3 +246,47 @@ def test_extend_nonrenewable_reservation(tv, mock_http_from_disk):
     assert result is True
     assert mock_http_from_disk.last_body_params["extensionDuration"] == RentalDuration.THIRTY_DAY.value
     assert mock_http_from_disk.last_body_params["rentalId"] == rental_id
+
+
+def test_get_rental_user_notes(tv, mock_http_from_disk):
+    notes = tv.reservations.user_notes("string")
+
+    assert isinstance(notes, RentalUserNotes)
+    assert notes.reservation_id == "string"
+
+
+def test_reactivate_rental(tv, mock_http_from_disk):
+    cost = tv.reservations.reactivation_cost("string")
+    assert isinstance(cost, RentalReactivationCost)
+    assert cost.price == 12.5
+
+    assert tv.reservations.reactivate("string", max_price=13.0) is True
+    assert mock_http_from_disk.last_body_params == {"maxPrice": 13.0}
+
+
+def test_search_rental_tags(tv, mock_http_from_disk):
+    tags = list(tv.reservations.search_tags(reservation_ids=["string"]))
+
+    assert all(isinstance(item, RentalTags) for item in tags)
+    assert mock_http_from_disk.last_body_params == {"reservationIds": ["string"]}
+
+
+def test_rental_billing_cycle_upgrade(tv, mock_http_from_disk):
+    options = tv.reservations.billing_cycle_upgrade_options("string")
+    assert options == [RentalDuration.ONE_DAY, RentalDuration.ONE_DAY]
+
+    upgrade = tv.reservations.schedule_billing_cycle_upgrade("string", desired_duration=RentalDuration.NINETY_DAY)
+    assert isinstance(upgrade, RentalBillingCycleUpgrade)
+    assert mock_http_from_disk.last_body_params == {"desiredDuration": RentalDuration.NINETY_DAY.value}
+
+    pending_upgrade = tv.reservations.billing_cycle_upgrade("string")
+    assert isinstance(pending_upgrade, RentalBillingCycleUpgrade)
+    assert tv.reservations.cancel_billing_cycle_upgrade("string", pending_upgrade.id) is True
+
+
+def test_update_rental_tags(tv, mock_http_from_disk):
+    assert tv.reservations.update_renewable("string", tags=["customer", "priority"]) is True
+    assert mock_http_from_disk.last_body_params["tags"] == ["customer", "priority"]
+
+    assert tv.reservations.update_nonrenewable("string", tags=[]) is True
+    assert mock_http_from_disk.last_body_params["tags"] == []

@@ -1,5 +1,8 @@
 {
   "post": {
+    "header_params": {
+      "Idempotency-Key": "string"
+    },
     "response": {
       "method": "GET|POST",
       "href": "https://...."

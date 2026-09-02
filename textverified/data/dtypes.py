@@ -134,6 +134,23 @@ class ReservationState(Enum):
         raise ValueError(f'Unknown ReservationState value: nonrenewableRefunded')
 
 
+class RentalBillingCycleUpgradeState(Enum):
+    CREATED = 'created'
+    CANCELLED = 'cancelled'
+    SUCCEEDED = 'succeeded'
+    SUSPENDED = 'suspended'
+
+    def to_api(self) -> str:
+        return self.value
+
+    @classmethod
+    def from_api(cls, value: str) -> 'RentalBillingCycleUpgradeState':
+        for member in cls:
+            if member.value.lower() == value.lower():
+                return member
+        raise ValueError(f'Unknown RentalBillingCycleUpgradeState value: suspended')
+
+
 class ReservationType(Enum):
     RENEWABLE = 'renewable'
     NONRENEWABLE = 'nonrenewable'
@@ -265,7 +282,7 @@ class BackOrderReservationCompact:
 @dataclass(frozen=True)
 class BackOrderReservationWebhookEvent:
     back_order_id: str
-    """Id of the back order reservation."""
+    """ID of the back order reservation."""
 
 
     def to_api(self) -> Dict[str, Any]:
@@ -311,7 +328,7 @@ class BearerToken:
 @dataclass(frozen=True)
 class BillingCycleCompact:
     id: str
-    """Id of the billing cycle"""
+    """ID of the billing cycle"""
 
     billing_cycle_ends_at: datetime.datetime
     email_notifications_enabled: bool
@@ -332,6 +349,24 @@ class BillingCycleCompact:
             billing_cycle_ends_at=dateutil.parser.parse(data.get("billingCycleEndsAt", None)),
             email_notifications_enabled=bool(data.get("emailNotificationsEnabled", None)),
             state=str(data.get("state", None)),
+        )
+
+
+@dataclass(frozen=True)
+class BillingCycleWebhookEvent:
+    billing_cycle_id: str
+    """ID of the billing cycle."""
+
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['billingCycleId'] = self.billing_cycle_id
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'BillingCycleWebhookEvent':
+        return cls(
+            billing_cycle_id=str(data.get("billingCycleId", None)),
         )
 
 
@@ -364,6 +399,40 @@ class CancelAction:
     def from_api(cls, data: Dict[str, Any]) -> 'CancelAction':
         return cls(
             can_cancel=bool(data.get("canCancel", None)),
+        )
+
+
+@dataclass(frozen=True)
+class InventoryQuantity:
+    available_quantity: int
+    """Available inventory quantity for the requested selection. A value of ```9000``` means ```9000 or more``` are available."""
+
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['availableQuantity'] = self.available_quantity
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'InventoryQuantity':
+        return cls(
+            available_quantity=int(data.get("availableQuantity", None)),
+        )
+
+
+@dataclass(frozen=True)
+class RentalBillingCycleUpgradeRequest:
+    desired_duration: RentalDuration
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['desiredDuration'] = self.desired_duration.to_api()
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'RentalBillingCycleUpgradeRequest':
+        return cls(
+            desired_duration=RentalDuration.from_api(data.get("desiredDuration", None)),
         )
 
 
@@ -407,6 +476,89 @@ class ReactivationAction:
 
 
 @dataclass(frozen=True)
+class RentalBillingCycleUpgrade:
+    reservation_id: str
+    """ID of the rental."""
+
+    desired_rental_duration: RentalDuration
+    scheduled_for: datetime.datetime
+    """Time when the upgrade is scheduled to run."""
+
+    cancellable_before: datetime.datetime
+    """Last time the pending upgrade can be canceled."""
+
+    next_renewal_after_job_completed: datetime.datetime
+    """Next renewal time after the upgrade completes."""
+
+    cost: float
+    """Cost charged when the upgrade is scheduled."""
+
+    state: RentalBillingCycleUpgradeState
+    id: str
+    """ID of the pending upgrade job."""
+
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['reservationId'] = self.reservation_id
+        api_dict['desiredRentalDuration'] = self.desired_rental_duration.to_api()
+        api_dict['scheduledFor'] = self.scheduled_for.isoformat()
+        api_dict['cancellableBefore'] = self.cancellable_before.isoformat()
+        api_dict['nextRenewalAfterJobCompleted'] = self.next_renewal_after_job_completed.isoformat()
+        api_dict['cost'] = self.cost
+        api_dict['state'] = self.state.to_api()
+        api_dict['id'] = self.id
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'RentalBillingCycleUpgrade':
+        return cls(
+            reservation_id=str(data.get("reservationId", None)),
+            desired_rental_duration=RentalDuration.from_api(data.get("desiredRentalDuration", None)),
+            scheduled_for=dateutil.parser.parse(data.get("scheduledFor", None)),
+            cancellable_before=dateutil.parser.parse(data.get("cancellableBefore", None)),
+            next_renewal_after_job_completed=dateutil.parser.parse(data.get("nextRenewalAfterJobCompleted", None)),
+            cost=float(data.get("cost", None)),
+            state=RentalBillingCycleUpgradeState.from_api(data.get("state", None)),
+            id=str(data.get("id", None)),
+        )
+
+
+@dataclass(frozen=True)
+class RentalExtension:
+    reservation_id: str
+    extension_amount: str
+    cost: float
+    created_at: datetime.datetime
+    original_ends_at: datetime.datetime
+    new_ends_at: datetime.datetime
+    id: str
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['reservationId'] = self.reservation_id
+        api_dict['extensionAmount'] = self.extension_amount
+        api_dict['cost'] = self.cost
+        api_dict['createdAt'] = self.created_at.isoformat()
+        api_dict['originalEndsAt'] = self.original_ends_at.isoformat()
+        api_dict['newEndsAt'] = self.new_ends_at.isoformat()
+        api_dict['id'] = self.id
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'RentalExtension':
+        return cls(
+            reservation_id=str(data.get("reservationId", None)),
+            extension_amount=str(data.get("extensionAmount", None)),
+            cost=float(data.get("cost", None)),
+            created_at=dateutil.parser.parse(data.get("createdAt", None)),
+            original_ends_at=dateutil.parser.parse(data.get("originalEndsAt", None)),
+            new_ends_at=dateutil.parser.parse(data.get("newEndsAt", None)),
+            id=str(data.get("id", None)),
+        )
+
+
+@dataclass(frozen=True)
 class RentalExtensionRequest:
     extension_duration: RentalDuration
     rental_id: str
@@ -422,6 +574,111 @@ class RentalExtensionRequest:
         return cls(
             extension_duration=RentalDuration.from_api(data.get("extensionDuration", None)),
             rental_id=str(data.get("rentalId", None)),
+        )
+
+
+@dataclass(frozen=True)
+class RentalInventoryCheckRequest:
+    duration: RentalDuration
+    number_type: NumberType
+    service_name: str
+    """Service name to check inventory for. Use the same value you plan to send when creating the rental."""
+
+    capability: ReservationCapability
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['duration'] = self.duration.to_api()
+        api_dict['numberType'] = self.number_type.to_api()
+        api_dict['serviceName'] = self.service_name
+        api_dict['capability'] = self.capability.to_api()
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'RentalInventoryCheckRequest':
+        return cls(
+            duration=RentalDuration.from_api(data.get("duration", None)),
+            number_type=NumberType.from_api(data.get("numberType", None)),
+            service_name=str(data.get("serviceName", None)),
+            capability=ReservationCapability.from_api(data.get("capability", None)),
+        )
+
+
+@dataclass(frozen=True)
+class RentalReactivationCost:
+    price: float
+    """Current total cost to reactivate the rental."""
+
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['price'] = self.price
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'RentalReactivationCost':
+        return cls(
+            price=float(data.get("price", None)),
+        )
+
+
+@dataclass(frozen=True)
+class RentalReactivationRequest:
+    max_price: float
+    """Maximum total price you are willing to pay for the reactivation. The server recomputes the price at execution time and rejects the request if the total exceeds this value."""
+
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['maxPrice'] = self.max_price
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'RentalReactivationRequest':
+        return cls(
+            max_price=float(data.get("maxPrice", None)),
+        )
+
+
+@dataclass(frozen=True)
+class RentalUserNotes:
+    reservation_id: str
+    user_notes: str
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['reservationId'] = self.reservation_id
+        api_dict['userNotes'] = self.user_notes
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'RentalUserNotes':
+        return cls(
+            reservation_id=str(data.get("reservationId", None)),
+            user_notes=str(data.get("userNotes", None)),
+        )
+
+
+@dataclass(frozen=True)
+class ReplySmsRequest:
+    reply_to_sms_id: str
+    """The SMS ID to reply to. If a valid SMS does not exist or the SMS cannot be replied to, a 400 response will be returned."""
+
+    content: str
+    """The SMS content to send. If the content is invalid, a 400 response will be returned."""
+
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['replyToSmsId'] = self.reply_to_sms_id
+        api_dict['content'] = self.content
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'ReplySmsRequest':
+        return cls(
+            reply_to_sms_id=str(data.get("replyToSmsId", None)),
+            content=str(data.get("content", None)),
         )
 
 
@@ -444,7 +701,7 @@ class ReportAction:
 @dataclass(frozen=True)
 class Reservation:
     id: str
-    """Id of the reservation"""
+    """ID of the reservation"""
 
     reservation_type: ReservationType
     service_name: str
@@ -470,7 +727,7 @@ class Reservation:
 @dataclass(frozen=True)
 class ReservationCreatedWebhookEvent:
     id: str
-    """Id of the created reservation."""
+    """ID of the created reservation."""
 
     type: LineReservationType
 
@@ -519,30 +776,37 @@ class ReservationSaleCompact:
 
 
 @dataclass(frozen=True)
-class Service:
-    service_name: str
-    """Name of the service. Supply this value when a ```ServiceName``` is required."""
+class SendSmsRequest:
+    reservation_id: str
+    """The reservation ID to send from. If a valid reservation does not exist or the reservation does not have sending capabilities, a 400 response will be returned."""
 
-    capability: ReservationCapability
+    send_to: str
+    """The number to send to. If the number is invalid, a 400 response will be returned."""
+
+    content: str
+    """The SMS content to send. If the content is invalid, a 400 response will be returned."""
+
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['serviceName'] = self.service_name
-        api_dict['capability'] = self.capability.to_api()
+        api_dict['reservationId'] = self.reservation_id
+        api_dict['sendTo'] = self.send_to
+        api_dict['content'] = self.content
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'Service':
+    def from_api(cls, data: Dict[str, Any]) -> 'SendSmsRequest':
         return cls(
-            service_name=str(data.get("serviceName", None)),
-            capability=ReservationCapability.from_api(data.get("capability", None)),
+            reservation_id=str(data.get("reservationId", None)),
+            send_to=str(data.get("sendTo", None)),
+            content=str(data.get("content", None)),
         )
 
 
 @dataclass(frozen=True)
 class UsageWindowEstimateRequest:
     reservation_id: str
-    """The reservation Id to get the estimated usage window for. If a valid reservation does not exist, a 400 response will be returned."""
+    """The reservation ID to get the estimated usage window for. If a valid reservation does not exist, a 400 response will be returned."""
 
 
     def to_api(self) -> Dict[str, Any]:
@@ -591,9 +855,33 @@ class VerificationCompact:
 
 
 @dataclass(frozen=True)
+class VerificationInventoryCheckRequest:
+    number_type: NumberType
+    service_name: str
+    """Service name to check inventory for. Use the same value you plan to send when creating the verification."""
+
+    capability: ReservationCapability
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['numberType'] = self.number_type.to_api()
+        api_dict['serviceName'] = self.service_name
+        api_dict['capability'] = self.capability.to_api()
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'VerificationInventoryCheckRequest':
+        return cls(
+            number_type=NumberType.from_api(data.get("numberType", None)),
+            service_name=str(data.get("serviceName", None)),
+            capability=ReservationCapability.from_api(data.get("capability", None)),
+        )
+
+
+@dataclass(frozen=True)
 class VerificationPriceCheckRequest:
     service_name: str
-    """Example: yahoo"""
+    """Service name to price. Use the same value you plan to send when creating the verification."""
 
     area_code: bool
     """Set to true if a specific area code will be requested when creating a verification, false if any area code can be used."""
@@ -627,7 +915,7 @@ class VerificationPriceCheckRequest:
 @dataclass(frozen=True)
 class WakeRequest:
     reservation_id: str
-    """The reservation Id to create a wake request for. If a valid reservation does not exist, a 400 response will be returned."""
+    """The reservation ID to create a wake request for. If a valid reservation does not exist, a 400 response will be returned."""
 
 
     def to_api(self) -> Dict[str, Any]:
@@ -683,7 +971,10 @@ class WebhookEventBackOrderReservationWebhookEvent:
     """Name of the event"""
 
     id: str
-    """Id of event"""
+    """ID of the event."""
+
+    idempotency_key: str
+    """Idempotency key for webhook delivery deduplication."""
 
 
     def to_api(self) -> Dict[str, Any]:
@@ -693,6 +984,7 @@ class WebhookEventBackOrderReservationWebhookEvent:
         api_dict['data'] = self.data.to_api()
         api_dict['event'] = self.event
         api_dict['id'] = self.id
+        api_dict['idempotencyKey'] = self.idempotency_key
         return api_dict
 
     @classmethod
@@ -703,13 +995,14 @@ class WebhookEventBackOrderReservationWebhookEvent:
             data=BackOrderReservationWebhookEvent.from_api(data.get("data", None)),
             event=str(data.get("event", None)),
             id=str(data.get("id", None)),
+            idempotency_key=str(data.get("idempotencyKey", None)),
         )
 
 
 @dataclass(frozen=True)
 class BillingCycleExpanded:
     id: str
-    """Id of the billing cycle"""
+    """ID of the billing cycle"""
 
     renewed_through: datetime.datetime
     billing_cycle_ends_at: datetime.datetime
@@ -763,18 +1056,43 @@ class BillingCycleUpdateRequest:
 
 
 @dataclass(frozen=True)
-class BillingCycleWebhookEvent:
-    billing_cycle_id: Optional[str] = None
+class WebhookEventBillingCycleWebhookEvent:
+    attempt: int
+    """Send attempt count"""
+
+    occurred_at: datetime.datetime
+    """When the event occurred"""
+
+    data: BillingCycleWebhookEvent
+    event: str
+    """Name of the event"""
+
+    id: str
+    """ID of the event."""
+
+    idempotency_key: str
+    """Idempotency key for webhook delivery deduplication."""
+
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
-        api_dict['billingCycleId'] = (self.billing_cycle_id if self.billing_cycle_id is not None else None)
+        api_dict['attempt'] = self.attempt
+        api_dict['occurredAt'] = self.occurred_at.isoformat()
+        api_dict['data'] = self.data.to_api()
+        api_dict['event'] = self.event
+        api_dict['id'] = self.id
+        api_dict['idempotencyKey'] = self.idempotency_key
         return api_dict
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'BillingCycleWebhookEvent':
+    def from_api(cls, data: Dict[str, Any]) -> 'WebhookEventBillingCycleWebhookEvent':
         return cls(
-            billing_cycle_id=(str(data.get("billingCycleId", None)) if data.get("billingCycleId", None) is not None else None),
+            attempt=int(data.get("attempt", None)),
+            occurred_at=dateutil.parser.parse(data.get("occurredAt", None)),
+            data=BillingCycleWebhookEvent.from_api(data.get("data", None)),
+            event=str(data.get("event", None)),
+            id=str(data.get("id", None)),
+            idempotency_key=str(data.get("idempotencyKey", None)),
         )
 
 
@@ -881,29 +1199,6 @@ class NonrenewableRentalCompact:
 
 
 @dataclass(frozen=True)
-class NonrenewableRentalUpdateRequest:
-    """Supplying a value of 'null' or not supplying a value for any nullable properties will cause the property to be ignored.
-
-    """
-
-    user_notes: Optional[str] = None
-    mark_all_sms_read: Optional[bool] = None
-
-    def to_api(self) -> Dict[str, Any]:
-        api_dict = dict()
-        api_dict['userNotes'] = (self.user_notes if self.user_notes is not None else None)
-        api_dict['markAllSmsRead'] = (self.mark_all_sms_read if self.mark_all_sms_read is not None else None)
-        return api_dict
-
-    @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'NonrenewableRentalUpdateRequest':
-        return cls(
-            user_notes=(str(data.get("userNotes", None)) if data.get("userNotes", None) is not None else None),
-            mark_all_sms_read=(bool(data.get("markAllSmsRead", None)) if data.get("markAllSmsRead", None) is not None else None),
-        )
-
-
-@dataclass(frozen=True)
 class RefundAction:
     can_refund: bool
     refundable_until: Optional[datetime.datetime] = None
@@ -967,48 +1262,20 @@ class RenewableRentalCompact:
 
 
 @dataclass(frozen=True)
-class RenewableRentalUpdateRequest:
-    """Supplying a value of 'null' or not supplying a value for any nullable properties will cause the property to be ignored.
-
-    """
-
-    user_notes: Optional[str] = None
-    include_for_renewal: Optional[bool] = None
-    mark_all_sms_read: Optional[bool] = None
-
-    def to_api(self) -> Dict[str, Any]:
-        api_dict = dict()
-        api_dict['userNotes'] = (self.user_notes if self.user_notes is not None else None)
-        api_dict['includeForRenewal'] = (self.include_for_renewal if self.include_for_renewal is not None else None)
-        api_dict['markAllSmsRead'] = (self.mark_all_sms_read if self.mark_all_sms_read is not None else None)
-        return api_dict
-
-    @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'RenewableRentalUpdateRequest':
-        return cls(
-            user_notes=(str(data.get("userNotes", None)) if data.get("userNotes", None) is not None else None),
-            include_for_renewal=(bool(data.get("includeForRenewal", None)) if data.get("includeForRenewal", None) is not None else None),
-            mark_all_sms_read=(bool(data.get("markAllSmsRead", None)) if data.get("markAllSmsRead", None) is not None else None),
-        )
-
-
-@dataclass(frozen=True)
 class RentalPriceCheckRequest:
     service_name: str
-    """Name of the service"""
+    """Service name to price. Use the same value you plan to send when creating the rental."""
 
     area_code: bool
     """Set to true if a specific area code will be requested when creating a rental, false if any area code can be used."""
 
     number_type: NumberType
     capability: ReservationCapability
-    always_on: bool
-    """Example: True"""
-
     is_renewable: bool
-    """Example: True"""
+    """Set to true to price a renewable rental. Set to false to price a non-renewable rental."""
 
     duration: RentalDuration
+    always_on: Optional[bool] = None
     call_forwarding: Optional[bool] = None
     billing_cycle_id_to_assign_to: Optional[str] = None
 
@@ -1018,9 +1285,9 @@ class RentalPriceCheckRequest:
         api_dict['areaCode'] = self.area_code
         api_dict['numberType'] = self.number_type.to_api()
         api_dict['capability'] = self.capability.to_api()
-        api_dict['alwaysOn'] = self.always_on
         api_dict['isRenewable'] = self.is_renewable
         api_dict['duration'] = self.duration.to_api()
+        api_dict['alwaysOn'] = (self.always_on if self.always_on is not None else None)
         api_dict['callForwarding'] = (self.call_forwarding if self.call_forwarding is not None else None)
         api_dict['billingCycleIdToAssignTo'] = (self.billing_cycle_id_to_assign_to if self.billing_cycle_id_to_assign_to is not None else None)
         return api_dict
@@ -1032,11 +1299,27 @@ class RentalPriceCheckRequest:
             area_code=bool(data.get("areaCode", None)),
             number_type=NumberType.from_api(data.get("numberType", None)),
             capability=ReservationCapability.from_api(data.get("capability", None)),
-            always_on=bool(data.get("alwaysOn", None)),
             is_renewable=bool(data.get("isRenewable", None)),
             duration=RentalDuration.from_api(data.get("duration", None)),
+            always_on=(bool(data.get("alwaysOn", None)) if data.get("alwaysOn", None) is not None else None),
             call_forwarding=(bool(data.get("callForwarding", None)) if data.get("callForwarding", None) is not None else None),
             billing_cycle_id_to_assign_to=(str(data.get("billingCycleIdToAssignTo", None)) if data.get("billingCycleIdToAssignTo", None) is not None else None),
+        )
+
+
+@dataclass(frozen=True)
+class RentalTagsSearch:
+    reservation_ids: List[str]
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['reservationIds'] = [item for item in self.reservation_ids]
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'RentalTagsSearch':
+        return cls(
+            reservation_ids=[str(item) for item in data.get("reservationIds", None)],
         )
 
 
@@ -1053,7 +1336,10 @@ class WebhookEventReservationCreatedWebhookEvent:
     """Name of the event"""
 
     id: str
-    """Id of event"""
+    """ID of the event."""
+
+    idempotency_key: str
+    """Idempotency key for webhook delivery deduplication."""
 
 
     def to_api(self) -> Dict[str, Any]:
@@ -1063,6 +1349,7 @@ class WebhookEventReservationCreatedWebhookEvent:
         api_dict['data'] = self.data.to_api()
         api_dict['event'] = self.event
         api_dict['id'] = self.id
+        api_dict['idempotencyKey'] = self.idempotency_key
         return api_dict
 
     @classmethod
@@ -1073,6 +1360,7 @@ class WebhookEventReservationCreatedWebhookEvent:
             data=ReservationCreatedWebhookEvent.from_api(data.get("data", None)),
             event=str(data.get("event", None)),
             id=str(data.get("id", None)),
+            idempotency_key=str(data.get("idempotencyKey", None)),
         )
 
 
@@ -1093,8 +1381,32 @@ class ReuseAction:
 
 
 @dataclass(frozen=True)
+class Service:
+    service_name: str
+    """Name of the service. Supply this value when a ```ServiceName``` is required."""
+
+    capability: ReservationCapability
+    description: Optional[str] = None
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['serviceName'] = self.service_name
+        api_dict['capability'] = self.capability.to_api()
+        api_dict['description'] = (self.description if self.description is not None else None)
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'Service':
+        return cls(
+            service_name=str(data.get("serviceName", None)),
+            capability=ReservationCapability.from_api(data.get("capability", None)),
+            description=(str(data.get("description", None)) if data.get("description", None) is not None else None),
+        )
+
+
+@dataclass(frozen=True)
 class Sms:
-    """Sms
+    """SMS
 
     """
 
@@ -1135,7 +1447,7 @@ class SmsWebhookEvent:
     to_value: str
     created_at: datetime.datetime
     encrypted: bool
-    """True if the contents of the sms is encrypted at rest."""
+    """True if the contents of the SMS are encrypted at rest."""
 
     from_value: Optional[str] = None
     sms_content: Optional[str] = None
@@ -1185,7 +1497,7 @@ class TwilioCallingContextDto:
 @dataclass(frozen=True)
 class UsageWindowEstimateResponse:
     reservation_id: str
-    """Id of the reservation that this usage window estimate is associated with."""
+    """ID of the reservation that this usage window estimate is associated with."""
 
     estimated_window_start: Optional[datetime.datetime] = None
     estimated_window_end: Optional[datetime.datetime] = None
@@ -1209,10 +1521,10 @@ class UsageWindowEstimateResponse:
 @dataclass(frozen=True)
 class WakeResponse:
     id: str
-    """The Id of this wake request."""
+    """The ID of this wake request."""
 
     is_scheduled: bool
-    """Indicates whether or not the wake request was successfully scheduled. If a wake request fails to be scheduled, then you will have to submit a new wake request. Too many wake requests may result in wake request throttling."""
+    """Indicates whether the wake request was successfully scheduled. If a wake request fails to schedule, submit a new wake request. Too many wake requests may result in wake request throttling."""
 
     usage_window_start: Optional[datetime.datetime] = None
     usage_window_end: Optional[datetime.datetime] = None
@@ -1272,68 +1584,32 @@ class RentalSnapshot:
 
 
 @dataclass(frozen=True)
-class WebhookEventBillingCycleWebhookEvent:
-    attempt: int
-    """Send attempt count"""
-
-    occurred_at: datetime.datetime
-    """When the event occurred"""
-
-    data: BillingCycleWebhookEvent
-    event: str
-    """Name of the event"""
-
-    id: str
-    """Id of event"""
-
-
-    def to_api(self) -> Dict[str, Any]:
-        api_dict = dict()
-        api_dict['attempt'] = self.attempt
-        api_dict['occurredAt'] = self.occurred_at.isoformat()
-        api_dict['data'] = self.data.to_api()
-        api_dict['event'] = self.event
-        api_dict['id'] = self.id
-        return api_dict
-
-    @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> 'WebhookEventBillingCycleWebhookEvent':
-        return cls(
-            attempt=int(data.get("attempt", None)),
-            occurred_at=dateutil.parser.parse(data.get("occurredAt", None)),
-            data=BillingCycleWebhookEvent.from_api(data.get("data", None)),
-            event=str(data.get("event", None)),
-            id=str(data.get("id", None)),
-        )
-
-
-@dataclass(frozen=True)
 class NewRentalRequest:
     allow_back_order_reservations: bool
     """If set to true, a rental back order will be created if the requested rental is out of stock"""
 
-    always_on: bool
-    """If set to true, a line that does not require wake up will be assigned if in stock"""
-
     duration: RentalDuration
     is_renewable: bool
+    """Set to true to create a renewable rental. Set to false to create a non-renewable rental."""
+
     number_type: NumberType
     service_name: str
-    """Name of the service"""
+    """Service name returned by Service List, or a supported ```test_*``` mock service name."""
 
     capability: ReservationCapability
+    always_on: Optional[bool] = None
     area_code_select_option: Optional[List[str]] = None
     billing_cycle_id_to_assign_to: Optional[str] = None
 
     def to_api(self) -> Dict[str, Any]:
         api_dict = dict()
         api_dict['allowBackOrderReservations'] = self.allow_back_order_reservations
-        api_dict['alwaysOn'] = self.always_on
         api_dict['duration'] = self.duration.to_api()
         api_dict['isRenewable'] = self.is_renewable
         api_dict['numberType'] = self.number_type.to_api()
         api_dict['serviceName'] = self.service_name
         api_dict['capability'] = self.capability.to_api()
+        api_dict['alwaysOn'] = (self.always_on if self.always_on is not None else None)
         api_dict['areaCodeSelectOption'] = ([item for item in self.area_code_select_option] if self.area_code_select_option is not None else None)
         api_dict['billingCycleIdToAssignTo'] = (self.billing_cycle_id_to_assign_to if self.billing_cycle_id_to_assign_to is not None else None)
         return api_dict
@@ -1342,12 +1618,12 @@ class NewRentalRequest:
     def from_api(cls, data: Dict[str, Any]) -> 'NewRentalRequest':
         return cls(
             allow_back_order_reservations=bool(data.get("allowBackOrderReservations", None)),
-            always_on=bool(data.get("alwaysOn", None)),
             duration=RentalDuration.from_api(data.get("duration", None)),
             is_renewable=bool(data.get("isRenewable", None)),
             number_type=NumberType.from_api(data.get("numberType", None)),
             service_name=str(data.get("serviceName", None)),
             capability=ReservationCapability.from_api(data.get("capability", None)),
+            always_on=(bool(data.get("alwaysOn", None)) if data.get("alwaysOn", None) is not None else None),
             area_code_select_option=([str(item) for item in data.get("areaCodeSelectOption", None)] if data.get("areaCodeSelectOption", None) is not None else None),
             billing_cycle_id_to_assign_to=(str(data.get("billingCycleIdToAssignTo", None)) if data.get("billingCycleIdToAssignTo", None) is not None else None),
         )
@@ -1356,7 +1632,7 @@ class NewRentalRequest:
 @dataclass(frozen=True)
 class NewVerificationRequest:
     service_name: str
-    """Example: abra"""
+    """Service name returned by Service List, or a supported ```test_*``` mock service name."""
 
     capability: ReservationCapability
     area_code_select_option: Optional[List[str]] = None
@@ -1383,6 +1659,32 @@ class NewVerificationRequest:
             carrier_select_option=([str(item) for item in data.get("carrierSelectOption", None)] if data.get("carrierSelectOption", None) is not None else None),
             service_not_listed_name=(str(data.get("serviceNotListedName", None)) if data.get("serviceNotListedName", None) is not None else None),
             max_price=(float(data.get("maxPrice", None)) if data.get("maxPrice", None) is not None else None),
+        )
+
+
+@dataclass(frozen=True)
+class NonrenewableRentalUpdateRequest:
+    """Supplying a value of 'null' or not supplying a value for any nullable properties will cause the property to be ignored.
+
+    """
+
+    user_notes: Optional[str] = None
+    mark_all_sms_read: Optional[bool] = None
+    tags: Optional[List[str]] = None
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['userNotes'] = (self.user_notes if self.user_notes is not None else None)
+        api_dict['markAllSmsRead'] = (self.mark_all_sms_read if self.mark_all_sms_read is not None else None)
+        api_dict['tags'] = ([item for item in self.tags] if self.tags is not None else None)
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'NonrenewableRentalUpdateRequest':
+        return cls(
+            user_notes=(str(data.get("userNotes", None)) if data.get("userNotes", None) is not None else None),
+            mark_all_sms_read=(bool(data.get("markAllSmsRead", None)) if data.get("markAllSmsRead", None) is not None else None),
+            tags=([str(item) for item in data.get("tags", None)] if data.get("tags", None) is not None else None),
         )
 
 
@@ -1439,6 +1741,7 @@ class RenewableRentalExpanded:
     """Example: 2223334444"""
 
     always_on: bool
+    ends_at: Optional[datetime.datetime] = None
     sale_id: Optional[str] = None
 
     def to_api(self) -> Dict[str, Any]:
@@ -1452,6 +1755,7 @@ class RenewableRentalExpanded:
         api_dict['isIncludedForNextRenewal'] = self.is_included_for_next_renewal
         api_dict['number'] = self.number
         api_dict['alwaysOn'] = self.always_on
+        api_dict['endsAt'] = (self.ends_at.isoformat() if self.ends_at is not None else None)
         api_dict['saleId'] = (self.sale_id if self.sale_id is not None else None)
         return api_dict
 
@@ -1467,7 +1771,56 @@ class RenewableRentalExpanded:
             is_included_for_next_renewal=bool(data.get("isIncludedForNextRenewal", None)),
             number=str(data.get("number", None)),
             always_on=bool(data.get("alwaysOn", None)),
+            ends_at=(dateutil.parser.parse(data.get("endsAt", None)) if data.get("endsAt", None) is not None else None),
             sale_id=(str(data.get("saleId", None)) if data.get("saleId", None) is not None else None),
+        )
+
+
+@dataclass(frozen=True)
+class RenewableRentalUpdateRequest:
+    """Supplying a value of 'null' or not supplying a value for any nullable properties will cause the property to be ignored.
+
+    """
+
+    user_notes: Optional[str] = None
+    include_for_renewal: Optional[bool] = None
+    mark_all_sms_read: Optional[bool] = None
+    tags: Optional[List[str]] = None
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['userNotes'] = (self.user_notes if self.user_notes is not None else None)
+        api_dict['includeForRenewal'] = (self.include_for_renewal if self.include_for_renewal is not None else None)
+        api_dict['markAllSmsRead'] = (self.mark_all_sms_read if self.mark_all_sms_read is not None else None)
+        api_dict['tags'] = ([item for item in self.tags] if self.tags is not None else None)
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'RenewableRentalUpdateRequest':
+        return cls(
+            user_notes=(str(data.get("userNotes", None)) if data.get("userNotes", None) is not None else None),
+            include_for_renewal=(bool(data.get("includeForRenewal", None)) if data.get("includeForRenewal", None) is not None else None),
+            mark_all_sms_read=(bool(data.get("markAllSmsRead", None)) if data.get("markAllSmsRead", None) is not None else None),
+            tags=([str(item) for item in data.get("tags", None)] if data.get("tags", None) is not None else None),
+        )
+
+
+@dataclass(frozen=True)
+class RentalTags:
+    reservation_id: str
+    tags: Optional[List[str]] = None
+
+    def to_api(self) -> Dict[str, Any]:
+        api_dict = dict()
+        api_dict['reservationId'] = self.reservation_id
+        api_dict['tags'] = ([item for item in self.tags] if self.tags is not None else None)
+        return api_dict
+
+    @classmethod
+    def from_api(cls, data: Dict[str, Any]) -> 'RentalTags':
+        return cls(
+            reservation_id=str(data.get("reservationId", None)),
+            tags=([str(item) for item in data.get("tags", None)] if data.get("tags", None) is not None else None),
         )
 
 
@@ -1568,7 +1921,10 @@ class WebhookEventSmsWebhookEvent:
     """Name of the event"""
 
     id: str
-    """Id of event"""
+    """ID of the event."""
+
+    idempotency_key: str
+    """Idempotency key for webhook delivery deduplication."""
 
 
     def to_api(self) -> Dict[str, Any]:
@@ -1578,6 +1934,7 @@ class WebhookEventSmsWebhookEvent:
         api_dict['data'] = self.data.to_api()
         api_dict['event'] = self.event
         api_dict['id'] = self.id
+        api_dict['idempotencyKey'] = self.idempotency_key
         return api_dict
 
     @classmethod
@@ -1588,13 +1945,14 @@ class WebhookEventSmsWebhookEvent:
             data=SmsWebhookEvent.from_api(data.get("data", None)),
             event=str(data.get("event", None)),
             id=str(data.get("id", None)),
+            idempotency_key=str(data.get("idempotencyKey", None)),
         )
 
 
 @dataclass(frozen=True)
 class CallContext:
     reservation_id: str
-    """Id of the verification that this call context is associated with."""
+    """ID of the verification that this call context is associated with."""
 
     twilio_context: TwilioCallingContextDto
 

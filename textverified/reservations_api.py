@@ -20,6 +20,13 @@ from .data import (
     ReservationSaleExpanded,
     RenewableRentalUpdateRequest,
     NonrenewableRentalUpdateRequest,
+    RentalBillingCycleUpgrade,
+    RentalBillingCycleUpgradeRequest,
+    RentalReactivationCost,
+    RentalReactivationRequest,
+    RentalTags,
+    RentalTagsSearch,
+    RentalUserNotes,
 )
 
 
@@ -220,7 +227,7 @@ class ReservationsAPI:
             )
 
         action = _Action(method="POST", href="/api/pub/v2/pricing/rentals")
-        response = self.client._perform_action(action, json=data)
+        response = self.client._perform_action(action, json=data.to_api())
 
         return PricingSnapshot.from_api(response.data)
 
@@ -434,6 +441,201 @@ class ReservationsAPI:
 
         return LineHealth.from_api(response.data)
 
+    @staticmethod
+    def _rental_id(
+        reservation_id: Union[
+            str,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
+        ]
+    ) -> str:
+        """Normalize a rental ID supplied as an ID or rental instance."""
+        reservation_id = (
+            reservation_id.id
+            if isinstance(
+                reservation_id,
+                (
+                    RenewableRentalCompact,
+                    RenewableRentalExpanded,
+                    NonrenewableRentalCompact,
+                    NonrenewableRentalExpanded,
+                ),
+            )
+            else reservation_id
+        )
+        if not isinstance(reservation_id, str) or not reservation_id.strip():
+            raise ValueError("reservation_id must be a valid rental ID or rental instance.")
+        return reservation_id
+
+    def user_notes(
+        self,
+        reservation_id: Union[
+            str,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
+        ],
+    ) -> RentalUserNotes:
+        """Get the user notes for a rental."""
+        reservation_id = self._rental_id(reservation_id)
+        response = self.client._perform_action(
+            _Action(method="GET", href=f"/api/pub/v2/reservations/rental/{reservation_id}/user-notes")
+        )
+        return RentalUserNotes.from_api(response.data)
+
+    def reactivation_cost(
+        self,
+        reservation_id: Union[
+            str,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
+        ],
+    ) -> RentalReactivationCost:
+        """Get the current cost to reactivate an expired rental."""
+        reservation_id = self._rental_id(reservation_id)
+        response = self.client._perform_action(
+            _Action(method="GET", href=f"/api/pub/v2/reservations/rental/{reservation_id}/reactivate")
+        )
+        return RentalReactivationCost.from_api(response.data)
+
+    def reactivate(
+        self,
+        reservation_id: Union[
+            str,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
+        ],
+        data: RentalReactivationRequest = None,
+        *,
+        max_price: float = None,
+    ) -> bool:
+        """Attempt to reactivate an expired rental, up to ``max_price``."""
+        reservation_id = self._rental_id(reservation_id)
+        data = (
+            RentalReactivationRequest(max_price if max_price is not None else data.max_price)
+            if data
+            else RentalReactivationRequest(max_price)
+        )
+        if data.max_price is None:
+            raise ValueError("max_price must be provided.")
+        self.client._perform_action(
+            _Action(method="POST", href=f"/api/pub/v2/reservations/rental/{reservation_id}/reactivate"),
+            json=data.to_api(),
+        )
+        return True
+
+    def search_tags(
+        self, data: RentalTagsSearch = None, *, reservation_ids: List[str] = None
+    ) -> PaginatedList[RentalTags]:
+        """Return tags for up to 500 supplied rental reservation IDs."""
+        data = (
+            RentalTagsSearch(reservation_ids if reservation_ids is not None else data.reservation_ids)
+            if data
+            else RentalTagsSearch(reservation_ids)
+        )
+        if not data.reservation_ids:
+            raise ValueError("reservation_ids must contain at least one rental ID.")
+        response = self.client._perform_action(
+            _Action(method="POST", href="/api/pub/v2/reservations/rental/tags/search"), json=data.to_api()
+        )
+        return PaginatedList(request_json=response.data, parse_item=RentalTags.from_api, api_context=self.client)
+
+    def billing_cycle_upgrade_options(
+        self,
+        reservation_id: Union[
+            str,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
+        ],
+    ) -> List[RentalDuration]:
+        """List billing-cycle durations available for a rental upgrade."""
+        reservation_id = self._rental_id(reservation_id)
+        response = self.client._perform_action(
+            _Action(
+                method="GET", href=f"/api/pub/v2/reservations/rental/{reservation_id}/billing-cycle-upgrade-options"
+            )
+        )
+        return [RentalDuration.from_api(item) for item in response.data]
+
+    def schedule_billing_cycle_upgrade(
+        self,
+        reservation_id: Union[
+            str,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
+        ],
+        data: RentalBillingCycleUpgradeRequest = None,
+        *,
+        desired_duration: RentalDuration = None,
+    ) -> RentalBillingCycleUpgrade:
+        """Schedule a billing-cycle upgrade for a rental."""
+        reservation_id = self._rental_id(reservation_id)
+        data = (
+            RentalBillingCycleUpgradeRequest(
+                desired_duration if desired_duration is not None else data.desired_duration
+            )
+            if data
+            else RentalBillingCycleUpgradeRequest(desired_duration)
+        )
+        if data.desired_duration is None:
+            raise ValueError("desired_duration must be provided.")
+        response = self.client._perform_action(
+            _Action(method="POST", href=f"/api/pub/v2/reservations/rental/{reservation_id}/billing-cycle-upgrade"),
+            json=data.to_api(),
+        )
+        return RentalBillingCycleUpgrade.from_api(response.data)
+
+    def billing_cycle_upgrade(
+        self,
+        reservation_id: Union[
+            str,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
+        ],
+    ) -> RentalBillingCycleUpgrade:
+        """Get a rental's pending billing-cycle upgrade."""
+        reservation_id = self._rental_id(reservation_id)
+        response = self.client._perform_action(
+            _Action(method="GET", href=f"/api/pub/v2/reservations/rental/{reservation_id}/billing-cycle-upgrade")
+        )
+        return RentalBillingCycleUpgrade.from_api(response.data)
+
+    def cancel_billing_cycle_upgrade(
+        self,
+        reservation_id: Union[
+            str,
+            RenewableRentalCompact,
+            RenewableRentalExpanded,
+            NonrenewableRentalCompact,
+            NonrenewableRentalExpanded,
+        ],
+        job_id: str,
+    ) -> bool:
+        """Cancel a pending billing-cycle upgrade."""
+        reservation_id = self._rental_id(reservation_id)
+        if not isinstance(job_id, str) or not job_id.strip():
+            raise ValueError("job_id must be a valid pending upgrade ID.")
+        self.client._perform_action(
+            _Action(
+                method="DELETE",
+                href=f"/api/pub/v2/reservations/rental/{reservation_id}/billing-cycle-upgrade/{job_id}",
+            )
+        )
+        return True
+
     def update_renewable(
         self,
         reservation_id: Union[str, RenewableRentalCompact, RenewableRentalExpanded],
@@ -442,6 +644,7 @@ class ReservationsAPI:
         user_notes: str = None,
         include_for_renewal: bool = None,
         mark_all_sms_read: bool = None,
+        tags: List[str] = None,
     ) -> bool:
         """Update properties of a renewable reservation.
 
@@ -451,6 +654,7 @@ class ReservationsAPI:
             user_notes (str, optional): Custom notes for the reservation. Defaults to None.
             include_for_renewal (bool, optional): Whether to include this reservation in automatic renewals. Defaults to None.
             mark_all_sms_read (bool, optional): Whether to mark all SMS messages as read. Defaults to None.
+            tags (List[str], optional): Tags to replace on the reservation. An empty list clears all tags. Defaults to None.
 
         Raises:
             ValueError: If reservation_id is not valid or if no fields are provided to update.
@@ -469,29 +673,34 @@ class ReservationsAPI:
 
         update_request = (
             RenewableRentalUpdateRequest(
-                user_notes=user_notes or data.user_notes,
+                user_notes=user_notes if user_notes is not None else data.user_notes,
                 include_for_renewal=(
                     include_for_renewal if include_for_renewal is not None else data.include_for_renewal
                 ),
                 mark_all_sms_read=mark_all_sms_read if mark_all_sms_read is not None else data.mark_all_sms_read,
+                tags=tags if tags is not None else data.tags,
             )
             if data
             else RenewableRentalUpdateRequest(
-                user_notes=user_notes, include_for_renewal=include_for_renewal, mark_all_sms_read=mark_all_sms_read
+                user_notes=user_notes,
+                include_for_renewal=include_for_renewal,
+                mark_all_sms_read=mark_all_sms_read,
+                tags=tags,
             )
         )
 
         if not update_request or (
-            not update_request.user_notes
+            update_request.user_notes is None
             and update_request.include_for_renewal is None
             and update_request.mark_all_sms_read is None
+            and update_request.tags is None
         ):
             raise ValueError(
-                "At least one field must be updated: user_notes, include_for_renewal, or mark_all_sms_read."
+                "At least one field must be updated: user_notes, include_for_renewal, mark_all_sms_read, or tags."
             )
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/renewable/{reservation_id}")
-        response = self.client._perform_action(action, json=update_request.to_api())
+        self.client._perform_action(action, json=update_request.to_api())
 
         return True
 
@@ -504,6 +713,7 @@ class ReservationsAPI:
         *,
         user_notes: str = None,
         mark_all_sms_read: bool = None,
+        tags: List[str] = None,
     ) -> bool:
         """Update properties of a non-renewable reservation.
 
@@ -512,6 +722,7 @@ class ReservationsAPI:
             data (NonrenewableRentalUpdateRequest, optional): Data to update.  All kwargs will overwrite values in this object. Defaults to None.
             user_notes (str, optional): Custom notes for the reservation. Defaults to None.
             mark_all_sms_read (bool, optional): Whether to mark all SMS messages as read. Defaults to None.
+            tags (List[str], optional): Tags to replace on the reservation. An empty list clears all tags. Defaults to None.
 
         Raises:
             ValueError: If reservation_id is not valid or if no fields are provided to update.
@@ -530,18 +741,23 @@ class ReservationsAPI:
 
         update_request = (
             NonrenewableRentalUpdateRequest(
-                user_notes=user_notes or data.user_notes,
+                user_notes=user_notes if user_notes is not None else data.user_notes,
                 mark_all_sms_read=mark_all_sms_read if mark_all_sms_read is not None else data.mark_all_sms_read,
+                tags=tags if tags is not None else data.tags,
             )
             if data
-            else NonrenewableRentalUpdateRequest(user_notes=user_notes, mark_all_sms_read=mark_all_sms_read)
+            else NonrenewableRentalUpdateRequest(user_notes=user_notes, mark_all_sms_read=mark_all_sms_read, tags=tags)
         )
 
-        if not update_request or (not update_request.user_notes and update_request.mark_all_sms_read is None):
-            raise ValueError("At least one field must be updated: user_notes or mark_all_sms_read.")
+        if not update_request or (
+            update_request.user_notes is None
+            and update_request.mark_all_sms_read is None
+            and update_request.tags is None
+        ):
+            raise ValueError("At least one field must be updated: user_notes, mark_all_sms_read, or tags.")
 
         action = _Action(method="POST", href=f"/api/pub/v2/reservations/rental/nonrenewable/{reservation_id}")
-        response = self.client._perform_action(action, json=update_request.to_api())
+        self.client._perform_action(action, json=update_request.to_api())
 
         return True
 
@@ -663,7 +879,7 @@ class ReservationsAPI:
         if not data or not data.extension_duration or not data.rental_id:
             raise ValueError("Both extension_duration and rental_id must be provided.")
 
-        action = _Action(method="POST", href=f"/api/pub/v2/reservations/rentals/extensions")
+        action = _Action(method="POST", href="/api/pub/v2/reservations/rentals/extensions")
         self.client._perform_action(action, json=data.to_api())
 
         return True

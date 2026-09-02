@@ -624,6 +624,7 @@ def render_mock_call(graph, path: str, path_data: dict) -> str:
 
 
 if __name__ == "__main__":
+    # https://backend.textverified.com/swagger/v2/swagger.json
     import json
 
     with open("swagger.json", "r") as f:

@@ -7,10 +7,12 @@
     "response": [
       {
         "serviceName": "gmail",
+        "description": "Gmail",
         "capability": "sms"
       },
       {
         "serviceName": "gmail",
+        "description": "Gmail",
         "capability": "sms"
       }
     ]

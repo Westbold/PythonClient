@@ -1,0 +1,11 @@
+{
+  "get": {
+    "path_params": {
+      "id": "string"
+    },
+    "response": {
+      "reservationId": "string",
+      "userNotes": "string"
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "API Overview",
-    "description": "<p>This is where you can get started with automating your workflows and integrating your apps with our API.</p>\n<p>For rentals (<b>long term use</b> of numbers), you'll need to check out the following links in order: </p><ol>\n<li>Authenticate: <a href='docs/api/v2#auth' target='_top'>Authentication</a></li>\n<li>Obtain a list of rental services: <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a></li>\n<li>Create a rental: <a href='docs/api/v2#post-/api/pub/v2/reservations/rental' target='_top'>Create New Rental</a></li>\n<li>Follow the location header returned to get the rental sale.</li>\n<li>From the sale, you'll be able to see the reservations and backorders.</li>\n</ol>\n<p>For verifications (<b>single use</b> of numbers), you'll need to check out the following links in order: </p><ol>\n<li>Authenticate: <a href='docs/api/v2#auth' target='_top'>Authentication</a></li>\n<li>Obtain a list of verification services: <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a></li>\n<li>Create a verification: <a href='docs/api/v2#post-/api/pub/v2/verifications' target='_top'>Create Verification</a></li>\n<li>Follow the location header returned to get the newly created verification.</li>\n</ol>\n<p>Our API documentation has an embedded javascript client so that you can try out the API. You will need to <a href='docs/api/v2#auth' target='_top'>setup your bearer token</a> to be able to access secured endpoints.\n</p><br/>\n<h2>Paginated List Responses</h2>\n<p>When you successfully get a list of data (generally, ordered by when the resource was created), for example <a href='docs/api/v2#get-/api/pub/v2/billing-cycles' target='_top'>List Billing Cycles</a>, you will need to follow it's <code>links</code> results.\n<br/>Inside the <code>links</code> result, you will get <code>current</code>, <code>previous</code>, and <code>next</code> values. Inside these values, there will be <code>href</code> and <code>method</code> values.\n<br/>With these values, you can get more of your list by navigating through them. </p>\n<h3><b>Example</b></h3>\n<p>We get the result from <a href='docs/api/v2#get-/api/pub/v2/billing-cycles' target='_top'>List Billing Cycles</a>, but we don't see what we need and need more billing cycles.<br/>\n<span style='color:#dc2626;'><b>The following code is whiteboarding code, use the language you are using for your integration with the API</b></span><br/>\nWe will need to do the following:</p>\n<ul><li>Get our api result <code>data = getListBillingCyclesResult()</code></li>\n<li>Get the <code>href = data['links']['next']['href']</code></li>\n<li>Get the <code>method = data['links']['next']['method']</code></li>\n<li>Now you can get the next page: <code>nextPage = fetch(href, {method=method})</code></li>\n<li>If we need the next page's result, we can repeat this process.</li></ul>\n<p>Note that only renewable rentals will be associated with a billing cycle.</p>\n<object width=\"630\" style=\"margin-top:60px\" data=\"/api/pub/v2/docs/rental-api-v2-purchase-flow.svg\" type=\"image/svg+xml\"></object>\n<object width=\"630\" style=\"margin-top:60px\" data=\"/api/pub/v2/docs/verification-api-v2-purchase-flow.svg\" type=\"image/svg+xml\"></object>\n",
+    "description": "<p style='margin:0 0 10px;line-height:1.45;'>Use this API to automate Textverified workflows and integrate your applications.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>If you use Python, our official <a href='https://pypi.org/project/textverified/' target='_blank'>Python client</a> can help you get started faster.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>For a high-level summary of how to create a verification or rental, see <a href='docs/api/v2#purchase-flows' target='_top'>Purchase Flows</a>.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>To test without using account balance, start with <a href='docs/api/v2#testing-with-mock-responses' target='_top'>Testing with Mock Responses</a>, then use the <a href='docs/api/v2#postman-mock-collection' target='_top'>Postman Mock Collection</a> for runnable requests.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>You can also try requests from these docs. <a href='docs/api/v2#post-/api/pub/v2/auth' target='_top'>Create a bearer token</a>, <a href='docs/api/v2#auth' target='_top'>set it in Authentication</a>, then open the endpoint you want to call.</p>\n<hr style='margin:16px 0;border:0;border-top:1px solid #e5e7eb;'/>\n<span id='purchase-flows' style='display:block;position:relative;top:-8px;visibility:hidden;height:0;margin:0;padding:0;'></span>\n<h2>Purchase Flows</h2>\n<p style='margin:0 0 10px;line-height:1.45;'>These flows show the recommended request order for creating verifications and rentals.</p>\n<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,820px),1fr));gap:14px;align-items:start;'>\n<section style='min-width:0;'>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>Verification Flow</h3>\n<p style='margin:0 0 10px;line-height:1.45;'>Use this flow for <b>single-use of numbers</b>.</p>\n<ol style='margin:0 0 10px 20px;padding-left:14px;line-height:1.45;'>\n<li>Authenticate: <a href='docs/api/v2#auth' target='_top'>Authentication</a></li>\n<li>Choose a verification service: <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a></li>\n<li>Optional: check verification pricing or inventory before purchase.</li>\n<li>Create a verification: <a href='docs/api/v2#post-/api/pub/v2/verifications' target='_top'>Create Verification</a></li>\n<li>Follow the returned <code>Location</code> header to get verification details.</li>\n</ol>\n<div style='margin-top:8px;'><img src='/api/pub/v2/docs/verification-api-v2-purchase-flow.svg?v=20260506' alt='Verification purchase flow diagram' width='720' height='660' draggable='false' style='display:block;width:720px;max-width:none;height:auto;pointer-events:none;user-select:none;'/></div>\n</section>\n<section style='min-width:0;'>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>Rental Flow</h3>\n<p style='margin:0 0 10px;line-height:1.45;'>Use this flow for <b>long-term use of numbers</b>.</p>\n<ol style='margin:0 0 10px 20px;padding-left:14px;line-height:1.45;'>\n<li>Authenticate: <a href='docs/api/v2#auth' target='_top'>Authentication</a></li>\n<li>Choose a rental service: <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a></li>\n<li>Optional: check rental pricing or inventory before purchase.</li>\n<li>Create a rental: <a href='docs/api/v2#post-/api/pub/v2/reservations/rental' target='_top'>Create New Rental</a></li>\n<li>Follow the returned <code>Location</code> header to get sale details.</li>\n<li>Use the sale response to open the rental details. If the sale includes a backorder, follow that link to track it.</li>\n</ol>\n<div style='margin-top:8px;'><img src='/api/pub/v2/docs/rental-api-v2-purchase-flow.svg?v=20260506' alt='Rental purchase flow diagram' width='810' height='958' draggable='false' style='display:block;width:810px;max-width:none;height:auto;pointer-events:none;user-select:none;'/></div>\n</section>\n</div>\n<hr style='margin:16px 0;border:0;border-top:1px solid #e5e7eb;'/>\n<h2>Follow Links</h2>\n<p style='margin:0 0 10px;line-height:1.45;'>We recommend using returned links and <code>Location</code> headers for follow-up requests instead of constructing URLs manually. Each link includes the <code>href</code> and <code>method</code> to use next.</p>\n<ul>\n<li>After a successful create request, follow the returned <code>Location</code> header for the next request.</li>\n<li>Treat the <code>Location</code> header as the URL to follow; parsing IDs from it is unnecessary.</li>\n<li>Verification create responses return a verification details link. Fetch the verification to see its current status and follow-up links.</li>\n<li>Rental create responses return a sale details link. Fetch the sale to find the created rental and related links.</li>\n<li>Paginated responses include next and previous links. See <a href='docs/api/v2#paginated-list-responses' target='_top'>Paginated List Responses</a> for details.</li>\n<li>Mock responses use the same link pattern as live responses.</li>\n</ul>\n<hr style='margin:16px 0;border:0;border-top:1px solid #e5e7eb;'/>\n<span id='paginated-list-responses' style='display:block;position:relative;top:-8px;visibility:hidden;height:0;margin:0;padding:0;'></span>\n<h2>Paginated List Responses</h2>\n<p style='margin:0 0 10px;line-height:1.45;'>Paginated endpoints return results in pages. The response includes a <code>links</code> object with <code>current</code>, <code>previous</code>, and <code>next</code> values. Each link contains an <code>href</code> and <code>method</code>.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>To get more results, follow <code>links.next</code>. To move backward, follow <code>links.previous</code>. If a link is missing, there are no more results in that direction.</p>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>Example</h3>\n<p style='margin:0 0 10px;line-height:1.45;'>After calling <a href='docs/api/v2#get-/api/pub/v2/sms' target='_top'>List SMS</a>, fetch the next page like this:</p>\n<ul><li>Read <code>href = data['links']['next']['href']</code></li>\n<li>Read <code>method = data['links']['next']['method']</code></li>\n<li>Fetch the next page: <code>nextPage = fetch(href, { method })</code></li>\n<li>Repeat until <code>links.next</code> is missing.</li></ul>\n<hr style='margin:16px 0;border:0;border-top:1px solid #e5e7eb;'/>\n<h2>Rate Limits and Retries</h2>\n<p style='margin:0 0 10px;line-height:1.45;'>The API may return <code>429 Too Many Requests</code> for authentication, service list, pricing, inventory, and reservation-changing requests. Limits may change, so integrations should be able to handle throttling gracefully.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>As a safe default, reuse bearer tokens until they expire, cache stable lookup data, keep request rates steady, and send reservation-changing requests one at a time per account when possible.</p>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>Best Practices</h3>\n<ul>\n<li>Cache bearer tokens. Refresh a token only when it is close to expiring.</li>\n<li>For service list, pricing, and inventory, keep requests steady and cache stable lookup data. After a <code>429</code>, wait and retry with exponential backoff and jitter.</li>\n<li>Send reservation-changing requests one at a time per account when possible. For concurrent creates, use a different <code>Idempotency-Key</code> for each purchase.</li>\n<li>Retry temporary network errors and <code>5xx</code> responses with a retry limit and exponential backoff. After a create timeout, retry with the same <code>Idempotency-Key</code> if one was supplied. Otherwise check if a sale or reservation was created before you retry.</li>\n</ul>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>Safe Retries for Create Requests</h3>\n<p style='margin:0 0 10px;line-height:1.45;'><a href='docs/api/v2#post-/api/pub/v2/verifications' target='_top'>Create Verification</a> and <a href='docs/api/v2#post-/api/pub/v2/reservations/rental' target='_top'>Create New Rental</a> support an optional <code>Idempotency-Key</code> header. Use a new key for each purchase. Keys are trimmed and must be 1 to 256 characters.</p>\n<ul>\n<li>If a create request times out, retry with the same key.</li>\n<li>If the first request completed, the retry returns the same 201 response.</li>\n<li>If the first request is still running, the retry returns <code>409 Conflict</code> with error code <code>IdempotencyConflict</code>; wait and retry with the same key.</li>\n<li>If the first request expired without completing, the retry returns <code>400 Bad Request</code>; start a new purchase with a new key.</li>\n<li>Do not reuse a key for another purchase or reservation type.</li>\n<li>Without this header, create requests behave as before and should not be retried after an unclear timeout.</li>\n</ul>\n<hr style='margin:16px 0;border:0;border-top:1px solid #e5e7eb;'/>\n<span id='testing-with-mock-responses' style='display:block;position:relative;top:-8px;visibility:hidden;height:0;margin:0;padding:0;'></span>\n<h2>Testing with Mock Responses</h2>\n<p style='margin:0 0 10px;line-height:1.45;'>Use the documented <code>test_*</code> service names with pricing, inventory, and create endpoints.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>Use <code>mock_*</code> IDs when reading mock resources or following returned links.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>Create responses use the same <code>Location</code> header and link shape as live responses, so follow the returned <code>Location</code> header and response links.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>For runnable requests, use the <a href='docs/api/v2#postman-mock-collection' target='_top'>Postman Mock Collection</a>.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>Mock service names are documented here rather than returned by <a href='docs/api/v2#get-/api/pub/v2/services' target='_top'>Service List</a>. Mock resources are fixed test data and do not appear in account history.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>Supported mock responses include <code>X-Phoneblur-Mock: true</code>, which can help you identify mock traffic in tests and logs.</p>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>Mock Limits</h3>\n<ul>\n<li>Mock requests do not create real phone numbers or billing events.</li>\n<li>Mock create requests validate <code>Idempotency-Key</code> when sent, but mock responses are fixed test data and do not store idempotency state.</li>\n<li>Mock action responses are not persisted. For example, when a supported mock action returns success, later GET responses still show the original mock data.</li>\n<li>Mock pricing and inventory return fixed values regardless of duration, area code, carrier, or other options. Live responses may vary by those options.</li>\n<li>Mock resources are available only on endpoints that document mock support. Endpoints that do not document mock support return normal account data.</li>\n<li>To inspect final states, use fixed mock IDs such as <code>mock_ver_cancelled</code>, <code>mock_ver_reported</code>, <code>mock_ver_reused</code>, or <code>mock_bo_fulfilled</code>. Use <code>mock_bc_paginated</code> to test paginated rental links.</li>\n</ul>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>How To Use It</h3>\n<ol>\n<li>Authenticate normally.</li>\n<li>Use one of the listed <code>test_*</code> values in pricing, inventory, or create requests.</li>\n<li>Follow the returned <code>Location</code> header and response links the same way you would with live account data.</li>\n<li>Use <code>X-Phoneblur-Mock</code> when present to identify mock traffic in tests or logs.</li>\n</ol>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>Verification Scenarios</h3>\n<p style='margin:0 0 10px;line-height:1.45;'>Use these values as <code>serviceName</code> when calling <a href='docs/api/v2#post-/api/pub/v2/verifications' target='_top'>Create Verification</a>.</p>\n<table>\n<thead><tr><th style='text-align:left;'>Input</th><th style='text-align:left;'>Create Result</th><th style='text-align:left;'>Use For</th></tr></thead>\n<tbody>\n<tr><td><code>test_success</code></td><td><code>201</code> verification details link</td><td>Completed verification, SMS code <code>123456</code>, and successful reuse within the 30-second reuse window.</td></tr>\n<tr><td><code>test_delayed_success</code></td><td><code>201</code> verification details link</td><td>Pending verification that completes after about 30 seconds. You can poll verification details or SMS, but <a href='docs/api/v2#get-/api/pub/v2/webhook-events' target='_top'>webhooks</a> are recommended for production integrations.</td></tr>\n<tr><td><code>test_pending</code></td><td><code>201</code> verification details link</td><td>Pending verification with empty SMS results and cancel/report links.</td></tr>\n<tr><td><code>test_reactivatable</code></td><td><code>201</code> verification details link</td><td>Completed verification with an expired reuse window and a reactivate link.</td></tr>\n<tr><td><code>test_timeout</code></td><td><code>201</code> verification details link</td><td>Timed-out verification with empty SMS results.</td></tr>\n</tbody>\n</table>\n<p style='margin:0 0 10px;line-height:1.45;'>For create-error cases, see the <a href='docs/api/v2#mock-error-matrix' target='_top'>Mock Error Matrix</a>.</p>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>Rental Scenarios</h3>\n<p style='margin:0 0 10px;line-height:1.45;'>Use these values as <code>serviceName</code> when calling <a href='docs/api/v2#post-/api/pub/v2/reservations/rental' target='_top'>Create New Rental</a>.</p>\n<table>\n<thead><tr><th style='text-align:left;'>Input</th><th style='text-align:left;'>Create Result</th><th style='text-align:left;'>Use For</th></tr></thead>\n<tbody>\n<tr><td><code>test_success</code></td><td><code>201</code> sale link</td><td>Successful renewable or non-renewable rental. Fetch the sale to find the rental ID.</td></tr>\n<tr><td><code>test_renewable_expired</code></td><td><code>201</code> sale link</td><td>Renewable expired rental. Requires <code>isRenewable=true</code>. Use the returned rental ID to test rental reactivation.</td></tr>\n<tr><td><code>test_nonrenewable_expired</code></td><td><code>201</code> sale link</td><td>Non-renewable expired rental. Requires <code>isRenewable=false</code>. Use the returned rental ID to test rental reactivation.</td></tr>\n<tr><td><code>test_backorder</code></td><td><code>201</code> sale link when <code>allowBackOrderReservations=true</code></td><td>Backorder flow. Use <code>mock_bo_fulfilled</code> directly to test a fulfilled backorder.</td></tr>\n</tbody>\n</table>\n<p style='margin:0 0 10px;line-height:1.45;'>For create-error cases, see the <a href='docs/api/v2#mock-error-matrix' target='_top'>Mock Error Matrix</a>.</p>\n<span id='mock-error-matrix' style='display:block;position:relative;top:-8px;visibility:hidden;height:0;margin:0;padding:0;'></span>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>Mock Error Matrix</h3>\n<p style='margin:0 0 10px;line-height:1.45;'>Use these cases to test common create-error responses.</p>\n<table>\n<thead><tr><th style='text-align:left;'>Endpoint</th><th style='text-align:left;'>Input</th><th style='text-align:left;'>Condition</th><th style='text-align:left;'>Status</th><th style='text-align:left;'>Error Code</th></tr></thead>\n<tbody>\n<tr><td>Create verification</td><td><code>test_insufficient_balance</code></td><td>Any valid verification create body</td><td><code>400</code></td><td><code>InsufficientBalance</code></td></tr>\n<tr><td>Create verification</td><td><code>test_no_numbers</code></td><td>No numbers are available for a valid verification request</td><td><code>400</code></td><td><code>Unavailable</code></td></tr>\n<tr><td>Create verification</td><td>Any successful verification mock service name</td><td><code>maxPrice</code> is below <code>0.75</code></td><td><code>400</code></td><td><code>PricingFailure</code></td></tr>\n<tr><td>Create verification</td><td><code>test_too_many_unfinished_verifications</code></td><td>The account has too many pending verifications</td><td><code>400</code></td><td><code>TooManyUnfinishedVerifications</code></td></tr>\n<tr><td>Create rental</td><td><code>test_insufficient_balance</code></td><td>Any valid rental create body</td><td><code>400</code></td><td><code>InsufficientBalance</code></td></tr>\n<tr><td>Create rental</td><td><code>test_no_numbers</code></td><td>No numbers are available for a valid rental request</td><td><code>400</code></td><td><code>Unavailable</code></td></tr>\n<tr><td>Create rental</td><td><code>test_backorder</code></td><td><code>allowBackOrderReservations</code> is not <code>true</code></td><td><code>400</code></td><td><code>Unavailable</code></td></tr>\n<tr><td>Rental reactivation cost</td><td><code>mock_ren_30d</code></td><td>Rental is active and cannot be reactivated</td><td><code>400</code></td><td><code>ProcessingError</code></td></tr>\n<tr><td>Reactivate rental</td><td><code>mock_ren_expired_30d</code></td><td><code>maxPrice</code> is below <code>10.00</code></td><td><code>400</code></td><td><code>PricingFailure</code></td></tr>\n<tr><td>Reactivate rental</td><td><code>mock_ren_30d</code></td><td>Rental is active and cannot be reactivated</td><td><code>400</code></td><td><code>ProcessingError</code></td></tr>\n</tbody>\n</table>\n<h3 style='margin:14px 0 6px;color:#334155;font-size:18px;font-weight:500;line-height:1.25;'>Mock IDs</h3>\n<p style='margin:0 0 10px;line-height:1.45;'>Use these fixed IDs when you want to call a mock details or follow-up endpoint directly. For create requests, prefer following the returned <code>Location</code> header and response links.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>Delayed verification responses generate timestamped IDs such as <code>mock_ver_delay_*</code>; use the returned <code>Location</code> header for those.</p>\n<p style='margin:0 0 10px;line-height:1.45;'>Rental examples use <code>30d</code>; other supported rental duration suffixes are <code>1d</code>, <code>3d</code>, <code>7d</code>, <code>14d</code>, <code>90d</code>, and <code>1y</code>.</p>\n<table>\n<thead><tr><th style='text-align:left;'>Mock ID</th><th style='text-align:left;'>Represents</th><th style='text-align:left;'>Use With</th></tr></thead>\n<tbody>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_ver_success</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Completed verification with SMS code <code>123456</code>.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/verifications/{id}</code><br/><code>GET /api/pub/v2/sms?reservationId={id}</code><br/><code>GET /api/pub/v2/calls?reservationId={id}</code><br/><code>POST /api/pub/v2/verifications/{id}/reuse</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_ver_pending</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Pending verification with no SMS yet.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/verifications/{id}</code><br/><code>POST /api/pub/v2/verifications/{id}/cancel</code><br/><code>POST /api/pub/v2/verifications/{id}/report</code><br/><code>GET /api/pub/v2/sms?reservationId={id}</code><br/><code>GET /api/pub/v2/calls?reservationId={id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_ver_reactivatable</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Completed verification whose reuse window has expired.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/verifications/{id}</code><br/><code>POST /api/pub/v2/verifications/{id}/reactivate</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_ver_timeout</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Timed-out verification.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/verifications/{id}</code><br/><code>GET /api/pub/v2/sms?reservationId={id}</code><br/><code>GET /api/pub/v2/calls?reservationId={id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_ver_cancelled</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Cancelled verification final state.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/verifications/{id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_ver_reported</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Reported verification final state.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/verifications/{id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_ver_reused</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Verification created by a reuse action, with SMS results.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/verifications/{id}</code><br/><code>GET /api/pub/v2/sms?reservationId={id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_sale_ver_success</code><br/><code style='white-space:nowrap;'>mock_sale_ver_pending</code><br/><code style='white-space:nowrap;'>mock_sale_ver_timeout</code><br/><code style='white-space:nowrap;'>mock_sale_ver_reactivatable</code><br/><code style='white-space:nowrap;'>mock_sale_ver_cancelled</code><br/><code style='white-space:nowrap;'>mock_sale_ver_reported</code><br/><code style='white-space:nowrap;'>mock_sale_ver_reused</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Sale details for the matching verification mock.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/sales/{id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_ren_30d</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Active renewable rental.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/reservations/rental/renewable/{id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_nonren_30d</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Active non-renewable rental.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/reservations/rental/nonrenewable/{id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_ren_expired_30d</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Expired renewable rental.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/reservations/rental/renewable/{id}</code><br/><code>GET /api/pub/v2/reservations/rental/{id}/reactivate</code><br/><code>POST /api/pub/v2/reservations/rental/{id}/reactivate</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_nonren_expired_30d</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Expired non-renewable rental.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/reservations/rental/nonrenewable/{id}</code><br/><code>GET /api/pub/v2/reservations/rental/{id}/reactivate</code><br/><code>POST /api/pub/v2/reservations/rental/{id}/reactivate</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_ren_bo_fulfilled_30d</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Renewable rental created after a backorder is fulfilled.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/reservations/rental/renewable/{id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_sale_ren_30d</code><br/><code style='white-space:nowrap;'>mock_sale_nonren_30d</code><br/><code style='white-space:nowrap;'>mock_sale_ren_expired_30d</code><br/><code style='white-space:nowrap;'>mock_sale_nonren_expired_30d</code><br/><code style='white-space:nowrap;'>mock_sale_bo_success</code><br/><code style='white-space:nowrap;'>mock_sale_bo_fulfilled</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Sale details for rental and backorder mocks. Rental sale IDs use duration suffixes, for example <code style='white-space:nowrap;'>mock_sale_ren_30d</code>, <code style='white-space:nowrap;'>mock_sale_nonren_30d</code>, <code style='white-space:nowrap;'>mock_sale_ren_expired_30d</code>, and <code style='white-space:nowrap;'>mock_sale_nonren_expired_30d</code>.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/sales/{id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_bo_success</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Created backorder that has not been fulfilled.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/backorders/{id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_bo_fulfilled</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Fulfilled backorder with a resulting rental link.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/backorders/{id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_bc_success</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Alias for the active 30-day renewable billing cycle.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/billing-cycles/{id}</code><br/><code>GET /api/pub/v2/billing-cycles/{id}/invoices</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_bc_30d</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Active renewable billing cycle.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/billing-cycles/{id}</code><br/><code>GET /api/pub/v2/billing-cycles/{id}/invoices</code><br/><code>GET /api/pub/v2/reservations/rental/renewable?billingCycleId={id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_bc_expired_30d</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Expired renewable billing cycle.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/billing-cycles/{id}</code><br/><code>GET /api/pub/v2/billing-cycles/{id}/invoices</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_bc_paginated</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Billing cycle used to test pagination in renewable rental lists.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/reservations/rental/renewable?billingCycleId={id}</code></td></tr>\n<tr><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code style='white-space:nowrap;'>mock_bc_bo_fulfilled_30d</code></td><td style='text-align:left;vertical-align:top;white-space:normal;overflow-wrap:normal;word-break:normal;width:420px;max-width:420px;'><div style='max-width:420px;'>Billing cycle linked to the fulfilled backorder rental.</div></td><td style='text-align:left;vertical-align:top;white-space:nowrap;overflow-wrap:normal;word-break:normal;'><code>GET /api/pub/v2/billing-cycles/{id}</code><br/><code>GET /api/pub/v2/billing-cycles/{id}/invoices</code></td></tr>\n</tbody>\n</table>\n<hr style='margin:16px 0;border:0;border-top:1px solid #e5e7eb;'/>\n<span id='postman-mock-collection' style='display:block;position:relative;top:-8px;visibility:hidden;height:0;margin:0;padding:0;'></span>\n<h2>Postman Mock Collection</h2>\n<p style='margin:0 0 10px;line-height:1.45;'>Download the <a href='/api/pub/v2/docs/textverified-public-api-v2-mock-tests.postman_collection.json' download='textverified-public-api-v2-mock-tests.postman_collection.json'>Postman collection for mock test cases</a> to run the documented mock flows.</p>\n<ol>\n<li>Import the collection into Postman.</li>\n<li>Set <code>apiUsername</code>, <code>apiKey</code>, and <code>baseUrl</code> if needed.</li>\n<li>Run <code>Generate Bearer Token</code>.</li>\n<li>Run the pricing/inventory, verification, and rental folders you want to test.</li>\n</ol>\n<p style='margin:0 0 10px;line-height:1.45;'>The collection checks expected response statuses and stores returned IDs and links as collection variables for later requests.</p>\n",
     "version": "v2",
     "x-logo": {
       "url": "../../tvlogo.svg",
@@ -22,7 +22,7 @@
           "Bearer Tokens"
         ],
         "summary": "Generate Bearer Token",
-        "description": "Generate a bearer token to start making requests to <b>secured endpoints</b>. \nYou will need to supply the following <b>headers</b>:\n1) ```X-API-KEY``` (your primary API key)\n2) ```X-API-USERNAME``` (your username, which is the email you used to register)  \nAll <b>secured endpoints</b> will need your <b>bearer token</b> supplied to them.\n\nBecause bearer tokens can <b>expire</b> due to having a limited lifespan, you will need to obtain a new bearer token by generating a new one periodically.\n\nYou can view and manage your API keys on under <a href=\"https://www.textverified.com/app/api/configure\">API Settings</a>.\n\nAfter successfully generating a bearer token ```eyJh...```, you can use set the bearer token <a href=\"docs/api/v2#auth\" target=\"_top\">here</a> and explore our secured API endpoints.",
+        "description": "Generate a bearer token to start making requests to <b>secured endpoints</b>. \nYou will need to supply the following <b>headers</b>:\n1) ```X-API-KEY``` (your primary API key)\n2) ```X-API-USERNAME``` (your username, which is the email you used to register)  \nAll <b>secured endpoints</b> will need your <b>bearer token</b> supplied to them.\n\nBecause bearer tokens can <b>expire</b> due to having a limited lifespan, you will need to obtain a new bearer token by generating a new one periodically.\n\nYou can view and manage your API keys under <a href=\"https://www.textverified.com/app/api/configure\">API Settings</a>.\n\nAfter successfully generating a bearer token ```eyJh...```, you can set the bearer token <a href=\"docs/api/v2#auth\" target=\"_top\">here</a> and explore our secured API endpoints.",
         "parameters": [
           {
             "name": "X-API-USERNAME",
@@ -56,9 +56,6 @@
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "429": {
-            "description": "Too many requests"
           }
         }
       }
@@ -82,16 +79,16 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [ ]
           }
         ]
       }
@@ -102,7 +99,7 @@
           "Services"
         ],
         "summary": "Area Codes List",
-        "description": "Returns a list of our supported area codes.\n\nThese supported area codes you get in the ```areaCode``` property from the response can be used for API calls where an ```areaCodeSelectOption``` is in the body or parameter.",
+        "description": "Returns a list of supported area codes.\n\nUse returned ```areaCode``` values in requests that accept an ```areaCodeSelectOption``` body or query parameter.",
         "operationId": "ListAdvertisedAreaCodesPublic",
         "responses": {
           "200": {
@@ -114,25 +111,6 @@
                   "items": {
                     "$ref": "#/components/schemas/AreaCode"
                   }
-                },
-                "examples": {
-                  "areaCodeList": {
-                    "summary": "List of available area codes",
-                    "value": [
-  {
-    "areaCode": "205",
-    "state": "Alabama"
-  },
-  {
-    "areaCode": "251",
-    "state": "Alabama"
-  },
-  {
-    "areaCode": "307",
-    "state": "Wyoming"
-  }
-]
-                  }
                 }
               }
             }
@@ -140,16 +118,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -160,13 +140,13 @@
           "Services"
         ],
         "summary": "Service List",
-        "description": "Returns a list of our supported services.\n\nThese supported services you get in the ```serviceName``` property from the response will be used for API calls where a ```serviceName``` is required in the body or parameter.",
+        "description": "Returns a list of supported services.\n            \nThese service names are used in API calls that accept a ```serviceName``` value.\n            \nMock service names are intentionally not returned here. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```test_*``` values.",
         "operationId": "ListAdvertisedTargetsPublic",
         "parameters": [
           {
             "name": "numberType",
             "in": "query",
-            "description": "",
+            "description": "Required field",
             "schema": {
               "$ref": "#/components/schemas/NumberType"
             },
@@ -192,25 +172,6 @@
                   "items": {
                     "$ref": "#/components/schemas/Service"
                   }
-                },
-                "examples": {
-                  "serviceList": {
-                    "summary": "List of available services",
-                    "value": [
-  {
-    "serviceName": "yahoo",
-    "capability": "Sms"
-  },
-  {
-    "serviceName": "facebook",
-    "capability": "Sms"
-  },
-  {
-    "serviceName": "google",
-    "capability": "Sms"
-  }
-]
-                  }
                 }
               }
             }
@@ -218,16 +179,132 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/inventory/rentals": {
+      "post": {
+        "tags": [
+          "Services"
+        ],
+        "summary": "Rental Inventory",
+        "description": "Get available rental inventory quantity for a specific service and option(s). Supported services can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\n\nNot all services and options are compatible with each other. This endpoint will return a ```400 Bad Request``` for unsupported service and option combinations.\n\nThe returned ```availableQuantity``` is capped at ```9000```. A value of ```9000``` means ```9000 or more``` are available.\n            \nSupports documented mock service names. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```test_*``` values and behavior.",
+        "operationId": "CheckRentalInventoryPublic",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalInventoryCheckRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalInventoryCheckRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalInventoryCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryQuantity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/inventory/verifications": {
+      "post": {
+        "tags": [
+          "Services"
+        ],
+        "summary": "Verification Inventory",
+        "description": "Get available verification inventory quantity for a specific service and option(s). Supported services can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\n\nNot all services and options are compatible with each other. This endpoint will return a ```400 Bad Request``` for unsupported service and option combinations.\n\nThe returned ```availableQuantity``` is capped at ```9000```. A value of ```9000``` means ```9000 or more``` are available.\n            \nSupports documented mock service names. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```test_*``` values and behavior.",
+        "operationId": "CheckVerificationInventoryPublic",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationInventoryCheckRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationInventoryCheckRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationInventoryCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryQuantity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -238,7 +315,7 @@
           "Services"
         ],
         "summary": "Rental Pricing",
-        "description": "Get rental prices for a specific service and option(s). The ```serviceName``` is required, and the list of supported service names can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\n\nNot all service and options are compatible with each other. This endpoint point will return a ```400 Bad Request``` for unsupported service and option combinations.",
+        "description": "Get rental prices for a specific service and option(s). Supported services can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\n\n\nNot all services and options are compatible with each other. This endpoint will return a ```400 Bad Request``` for unsupported service and option combinations.\n            \nSupports documented mock service names. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```test_*``` values and behavior.",
         "operationId": "PriceCheckRentalPublic",
         "requestBody": {
           "content": {
@@ -273,16 +350,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -293,7 +372,7 @@
           "Services"
         ],
         "summary": "Verification Pricing",
-        "description": "Clients can call this endpoint to check the verification price of a specific service and option(s). The list of supported services (```serviceName```) can be found <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">here</a>.\n\nNot all service and options are compatible with each other. This endpoint point will return a ```400 Bad Request``` for unsupported service and option combinations.",
+        "description": "Get verification prices for a specific service and option(s). Supported services can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\n\nNot all services and options are compatible with each other. This endpoint will return a ```400 Bad Request``` for unsupported service and option combinations.\n            \nSupports documented mock service names. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```test_*``` values and behavior.",
         "operationId": "PriceCheckVerificationPublic",
         "requestBody": {
           "content": {
@@ -328,16 +407,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -348,7 +429,7 @@
           "Sales"
         ],
         "summary": "Get Reservation Sale Details",
-        "description": "Get the details on a reservation sale by ID.\n\nNote: This endpoint returns a paginated list of reservations and back ordered reservations (if applicable) associated with the provided sale ID, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Get the details on a reservation sale by ID.\n            \nSupports documented mock sale IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "GetReservationSaleExpandedPublic",
         "parameters": [
           {
@@ -375,16 +456,18 @@
           "404": {
             "description": "Not Found"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -395,7 +478,7 @@
           "Sales"
         ],
         "summary": "List Reservation Sales",
-        "description": "Get a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your reservation sales.\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Get a list of your reservation sales.\n\nThis endpoint is paginated. See <a href=\"docs/api/v2#paginated-list-responses\" target=\"_top\">Paginated List Responses</a> for details.",
         "responses": {
           "200": {
             "description": "OK",
@@ -407,16 +490,18 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -427,7 +512,7 @@
           "Billing Cycles"
         ],
         "summary": "Get Billing Cycle Details",
-        "description": "Get the details of a billing cycle by ID. A billing cycle can have one or many renewable rentals.\nOnly renewable rentals are associated with a billing cycle.",
+        "description": "Get the details of a billing cycle by ID. A billing cycle can have one or many renewable rentals.\nOnly renewable rentals are associated with a billing cycle.\n            \nSupports documented mock billing cycle IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "GetBillingCyclePublic",
         "parameters": [
           {
@@ -454,16 +539,18 @@
           "404": {
             "description": "Not Found"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       },
@@ -512,16 +599,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -532,7 +621,7 @@
           "Billing Cycles"
         ],
         "summary": "Get Billing Cycle Invoices",
-        "description": "Get a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> invoice history of a billing cycle by it's ID.\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Get the invoice history of a billing cycle by its ID.\n            \nThis endpoint is paginated. See <a href=\"docs/api/v2#paginated-list-responses\" target=\"_top\">Paginated List Responses</a> for details.\n            \nSupports documented mock billing cycle IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "ListBillingCycleInvoicesPublic",
         "parameters": [
           {
@@ -556,16 +645,18 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -576,7 +667,7 @@
           "Billing Cycles"
         ],
         "summary": "List Billing Cycles",
-        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your billing cycles. A billing cycle can have one or many renewable rentals. Only renewable rentals are associated with a billing cycle.\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Returns a list of your billing cycles. A billing cycle can have one or many renewable rentals. Only renewable rentals are associated with a billing cycle.\n\nThis endpoint is paginated. See <a href=\"docs/api/v2#paginated-list-responses\" target=\"_top\">Paginated List Responses</a> for details.",
         "operationId": "ListBillingCyclesPublic",
         "responses": {
           "200": {
@@ -589,16 +680,18 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -609,7 +702,7 @@
           "Billing Cycles"
         ],
         "summary": "Preview Billing Cycle Invoice",
-        "description": "Get an invoice <b>preview</b> for your next billing cycle by it's ID.",
+        "description": "Get an invoice <b>preview</b> for your next billing cycle by its ID.",
         "operationId": "GenerateNextBillingCycleRenewableInvoicePublic",
         "parameters": [
           {
@@ -636,16 +729,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -656,7 +751,7 @@
           "Billing Cycles"
         ],
         "summary": "Renew Billing Cycle",
-        "description": "Renew the active rentals on your billing cycle by it's ID.\n            \nThis will not renew overdue rentals. To renew overdue rentals, you must explicitly renew them using the\n<a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental/renewable/-id-/renew\" target=\"_top\">Renew Overdue Rental</a> endpoint.",
+        "description": "Renew the active rentals on your billing cycle by its ID.\n            \nThis does not renew overdue rentals. Renew overdue rentals separately with the\n<a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental/renewable/-id-/renew\" target=\"_top\">Renew Overdue Rental</a> endpoint.",
         "operationId": "RenewBillingCyclePublic",
         "parameters": [
           {
@@ -683,16 +778,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -703,7 +800,7 @@
           "Back Order Rental Reservations"
         ],
         "summary": "Get Back Order Reservation Detail",
-        "description": "Get the details on a back order reservation by ID.\n\nBack order reservations are created if you have a parameter set when creating a new rental and there is no available stock. See <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a> for more info.",
+        "description": "Get the details on a back order reservation by ID.\n            \nBack order reservations can be created when ```allowBackOrderReservations``` is ```true``` on a new rental request and there is no available stock. See <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a> for more info.\n            \nSupports documented mock backorder IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "GetBackOrderReservationExpandedPublic",
         "parameters": [
           {
@@ -730,16 +827,18 @@
           "404": {
             "description": "Not Found"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -750,7 +849,7 @@
           "Line Reservations"
         ],
         "summary": "Line Reservation Details",
-        "description": "Get the details on a line reservation by ID.\n\nSuccessfully getting the details of the line reservation will require following the ```href``` link provided in the response.",
+        "description": "Get the details of a line reservation by ID.\n            \nSupports documented mock IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "GetLineReservationExpandedPublic",
         "parameters": [
           {
@@ -785,16 +884,18 @@
           "404": {
             "description": "Not Found"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -832,16 +933,18 @@
           "404": {
             "description": "Not Found"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -852,7 +955,17 @@
           "New Verification"
         ],
         "summary": "Create Verification",
-        "description": "Create/purchase a new verification. The ```serviceName``` is required, and the list of supported service names can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\n            \nIf successful, a 201 response will be returned with the location of the newly created verification in the <b>http response 'location' header</b>.\nSome combinations of options are unavailable. Will return ```400 Bad Request``` if the request is invalid. To validate without the risk of using credits, use the <a href=\"docs/api/v2#post-/api/pub/v2/pricing/verifications\" target=\"_top\">verification pricing</a> endpoint.",
+        "description": "Create/purchase a new verification. Supported services can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\n\n            \nIf successful, the API returns 201 with a verification details link. Follow the returned ```Location``` header to get verification details.\nSome combinations of options are unavailable. Will return ```400 Bad Request``` if the request is invalid. To validate without the risk of using credits, use the <a href=\"docs/api/v2#post-/api/pub/v2/pricing/verifications\" target=\"_top\">verification pricing</a> endpoint.\n            \nOptional retry safety: send ```Idempotency-Key``` with a unique value for each verification purchase. Keys are trimmed and must be 1 to 256 characters.\nIf the request times out, retry with the same key. A completed purchase returns the same 201 verification link. A purchase that is still running returns ```409 Conflict``` with error code ```IdempotencyConflict```; wait and retry with the same key.\nA purchase that expired without completing returns ```400 Bad Request```; start a new purchase with a new key.\nRequests without this header are unchanged and should not be retried after an unclear timeout.\n            \nSupports documented mock service names. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```test_*``` values and behavior.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Optional unique key for safely retrying this verification purchase.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "",
           "content": {
@@ -904,16 +1017,28 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       },
@@ -922,7 +1047,7 @@
           "Verifications"
         ],
         "summary": "List Verifications",
-        "description": "Retrieves a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of current verifications.\n            \nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Returns a list of current verifications.\n            \nThis endpoint is paginated. See <a href=\"docs/api/v2#paginated-list-responses\" target=\"_top\">Paginated List Responses</a> for details.",
         "operationId": "ListVerificationsPublic",
         "responses": {
           "200": {
@@ -935,16 +1060,18 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -955,13 +1082,13 @@
           "Verifications"
         ],
         "summary": "Verification Details",
-        "description": "Retrieves the details of a verification. Also returns actions that can be performed on the verification, including the ability to <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/cancel\" target=\"_top\">cancel</a>, <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/report\" target=\"_top\">report</a>, <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/reactivate\" target=\"_top\">reactivate</a>, or <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/reuse\" target=\"_top\">reuse</a> the verification.",
+        "description": "Retrieves the details of a verification. Also returns actions that can be performed on the verification, including the ability to <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/cancel\" target=\"_top\">cancel</a>, <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/report\" target=\"_top\">report</a>, <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/reactivate\" target=\"_top\">reactivate</a>, or <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/reuse\" target=\"_top\">reuse</a> the verification.\n            \nSupports documented mock verification IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "GetVerificationExpandedPublic",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Id of the verification.",
+            "description": "ID of the verification.",
             "required": true,
             "schema": {
               "type": "string"
@@ -982,16 +1109,18 @@
           "404": {
             "description": "Not Found"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1002,7 +1131,7 @@
           "Verifications"
         ],
         "summary": "Cancel Verification",
-        "description": "Call this to <b>attempt</b> to cancel a verification by ID.\n\nReturns ```400 Bad Request``` if the verification does not allow cancellation.",
+        "description": "Call this to <b>attempt</b> to cancel a verification by ID.\n            \nReturns ```400 Bad Request``` if the verification does not allow cancellation.\n            \nSupports documented mock verification IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "CancelVerificationPublic",
         "parameters": [
           {
@@ -1022,16 +1151,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1042,7 +1173,7 @@
           "Verifications"
         ],
         "summary": "Reactivate Verification",
-        "description": "Call this to <b>attempt</b> to reactivate a completed verification that can no longer be <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/reuse\" target=\"_top\">reused</a>.\nThis may not be possible due to a number of reasons - to check eligibility, use <a href=\"docs/api/v2#get-/api/pub/v2/verifications/-id-\" target=\"_top\">verification details</a>.\n\nIf successful, a 201 response will be returned with the location of the newly created verification ID in the <b>http response 'location' header</b>.\nIf the verification is not eligible for reactivation, a ```400 Bad Request``` will be returned with an error message.",
+        "description": "Call this to <b>attempt</b> to reactivate a completed verification that can no longer be <a href=\"docs/api/v2#post-/api/pub/v2/verifications/-id-/reuse\" target=\"_top\">reused</a>.\nThis may not be possible due to a number of reasons - to check eligibility, use <a href=\"docs/api/v2#get-/api/pub/v2/verifications/-id-\" target=\"_top\">verification details</a>.\n            \nIf successful, the API returns 201 with a verification details link. Follow the returned ```Location``` header to get verification details.\nIf the verification is not eligible for reactivation, a ```400 Bad Request``` will be returned with an error message.\n            \nSupports documented mock verification IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "ReactivateVerificationPublic",
         "parameters": [
           {
@@ -1086,16 +1217,18 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1106,7 +1239,7 @@
           "Verifications"
         ],
         "summary": "Report Verification",
-        "description": "Call this to <b>attempt</b> to report a verification by ID for issues such as \"number already in use\", \"verification failed\", or \"code not received\".\n\nReturns ```400 Bad Request``` if the verification does not allow reporting.",
+        "description": "Call this to <b>attempt</b> to report a verification by ID for issues such as \"number already in use\", \"verification failed\", or \"code not received\".\n            \nReturns ```400 Bad Request``` if the verification does not allow reporting.\n            \nSupports documented mock verification IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "ReportVerificationPublic",
         "parameters": [
           {
@@ -1126,16 +1259,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1146,7 +1281,7 @@
           "Verifications"
         ],
         "summary": "Reuse Verification",
-        "description": "Call this to <b>attempt</b> to reuse a verification by ID.\nThis is usable only shortly after a verification has been completed successfully on this ID. To check eligibility, use <a href=\"docs/api/v2#get-/api/pub/v2/verifications/-id-\" target=\"_top\">verification details</a>.\n            \nIf successful, a 201 response will be returned with the location of the newly created verification ID in the <b>http response 'location' header</b>.\nIf the verification is not eligible for reuse, a ```400 Bad Request``` will be returned with an error message.",
+        "description": "Call this to <b>attempt</b> to reuse a verification by ID.\nThis is usable only shortly after a verification has been completed successfully on this ID. To check eligibility, use <a href=\"docs/api/v2#get-/api/pub/v2/verifications/-id-\" target=\"_top\">verification details</a>.\n            \nIf successful, the API returns 201 with a verification details link. Follow the returned ```Location``` header to get verification details.\nIf the verification is not eligible for reuse, a ```400 Bad Request``` will be returned with an error message.\n            \nSupports documented mock verification IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "ReuseVerificationPublic",
         "parameters": [
           {
@@ -1190,16 +1325,18 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1210,7 +1347,17 @@
           "New Rental"
         ],
         "summary": "Create New Rental",
-        "description": "Create/purchase a new rental. The ```serviceName``` is required, and the list of supported service names can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>. \n\nIf ```allowBackOrderReservations``` is ```true``` in the request body, a rental back order will be created if the requested rental is out of stock.\n            \nIf successful, a 201 response will be returned with the location of the sale in the <b>http response 'location' header</b>. This sale will have details on the outcome of the rental purchase.\nSome combinations of options are unavailable. Will return ```400 Bad Request``` if the request is invalid. To validate without the risk of using credits, use the <a href=\"docs/api/v2#post-/api/pub/v2/pricing/rentals\" target=\"_top\">rental pricing</a> endpoint.",
+        "description": "Create/purchase a new rental. Supported services can be found at <a href=\"docs/api/v2#get-/api/pub/v2/services\" target=\"_top\">Service List</a>.\n\nIf ```allowBackOrderReservations``` is ```true``` in the request body, a rental back order will be created if the requested rental is out of stock.\n            \nIf successful, the API returns 201 with a sale details link. Follow the returned ```Location``` header to get sale details.\nSome combinations of options are unavailable. Will return ```400 Bad Request``` if the request is invalid. To validate without the risk of using credits, use the <a href=\"docs/api/v2#post-/api/pub/v2/pricing/rentals\" target=\"_top\">rental pricing</a> endpoint.\n            \nOptional retry safety: send ```Idempotency-Key``` with a unique value for each rental purchase. Keys are trimmed and must be 1 to 256 characters.\nIf the request times out, retry with the same key. A completed purchase returns the same 201 sale link. A purchase that is still running returns ```409 Conflict``` with error code ```IdempotencyConflict```; wait and retry with the same key.\nA purchase that expired without completing returns ```400 Bad Request```; start a new purchase with a new key.\nRequests without this header are unchanged and should not be retried after an unclear timeout.\n            \nSupports documented mock service names. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```test_*``` values and behavior.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Optional unique key for safely retrying this rental purchase.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "",
           "content": {
@@ -1262,16 +1409,604 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/reservations/rental/{id}/reactivate": {
+      "get": {
+        "tags": [
+          "Rentals"
+        ],
+        "summary": "Rental Reactivation Cost",
+        "description": "Get the current cost to reactivate an expired rental. Use this before reactivating the rental because the cost may change over time.\n            \nIf the rental is not eligible for reactivation, a ```400 Bad Request``` will be returned with an error message.\n            \nSupports documented mock rental IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
+        "operationId": "GetRentalReactivationCostPublic",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the rental.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RentalReactivationCost"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Rentals"
+        ],
+        "summary": "Reactivate Rental",
+        "description": "Call this to <b>attempt</b> to reactivate an expired rental. The request must include ```maxPrice```; the API returns ```400 Bad Request``` if the current reactivation cost is greater than ```maxPrice```, the request is invalid, or the rental is not eligible for reactivation.\n            \nIf successful, the API returns 201 with a sale details link. Follow the returned ```Location``` header to get sale details.\n            \nSupports documented mock rental IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
+        "operationId": "ReactivateRentalPublic",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the rental.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Reactivation execution request.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalReactivationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalReactivationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalReactivationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Link"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Link"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Link"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/reservations/rental/{id}/user-notes": {
+      "get": {
+        "tags": [
+          "Rentals"
+        ],
+        "summary": "Get a Rental's User Notes",
+        "description": "Get the user notes of a rental by ID.",
+        "operationId": "GetRentalUserNotesPublic",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the line reservation. If the reservation ID does not exist, a 404 response will be returned.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RentalUserNotes"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/reservations/rental/tags/search": {
+      "post": {
+        "tags": [
+          "Rentals"
+        ],
+        "summary": "Search Rental Tags",
+        "description": "Returns a list of rental tags for the supplied ```reservationIds```. This is a read-only search operation.\n\nYou may supply up to 500 ```reservationIds``` per request. Duplicates are ignored and the result order is not guaranteed.\n\nThis endpoint is paginated. See <a href=\"docs/api/v2#paginated-list-responses\" target=\"_top\">Paginated List Responses</a> for details.",
+        "operationId": "SearchRentalTagsPublic",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalTagsSearch"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalTagsSearch"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalTagsSearch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedData.RentalTags"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedData.RentalTags"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedData.RentalTags"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/reservations/rental/{id}/billing-cycle-upgrade-options": {
+      "get": {
+        "tags": [
+          "Rentals / Rental Billing Cycle Upgrades"
+        ],
+        "summary": "List Rental Billing Cycle Upgrade Options",
+        "description": "Returns upgrade durations for this rental.\n\nRenewable rentals can move to a longer billing cycle. Non-renewable rentals can move onto a billing cycle.",
+        "operationId": "ListRentalBillingCycleUpgradeOptionsPublic",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the rental.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RentalDuration"
+                  }
+                },
+                "example": [
+                  "ninetyDay"
+                ],
+                "examples": {
+                  "default": {
+                    "value": [
+                      "ninetyDay"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/reservations/rental/{id}/billing-cycle-upgrade": {
+      "post": {
+        "tags": [
+          "Rentals / Rental Billing Cycle Upgrades"
+        ],
+        "summary": "Schedule Rental Billing Cycle Upgrade",
+        "description": "Schedules an upgrade for this rental.\n\nRenewable rentals move to a longer billing cycle. Non-renewable rentals move onto the selected billing cycle duration.\n\nSchedule more than 24 hours before the rental ends or renews. The upgrade runs right before that time.",
+        "operationId": "ScheduleRentalBillingCycleUpgradePublic",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the rental.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalBillingCycleUpgradeRequest"
+              },
+              "example": {
+                "desiredDuration": "ninetyDay"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "desiredDuration": "ninetyDay"
+                  }
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalBillingCycleUpgradeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalBillingCycleUpgradeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RentalBillingCycleUpgrade"
+                },
+                "example": {
+                  "reservationId": "string",
+                  "desiredRentalDuration": "ninetyDay",
+                  "scheduledFor": "1970-01-01T00:00:00.000Z",
+                  "cancellableBefore": "1970-01-01T00:00:00.000Z",
+                  "nextRenewalAfterJobCompleted": "1970-01-01T00:00:00.000Z",
+                  "cost": 0,
+                  "state": "created",
+                  "id": "string"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "reservationId": "string",
+                      "desiredRentalDuration": "ninetyDay",
+                      "scheduledFor": "1970-01-01T00:00:00.000Z",
+                      "cancellableBefore": "1970-01-01T00:00:00.000Z",
+                      "nextRenewalAfterJobCompleted": "1970-01-01T00:00:00.000Z",
+                      "cost": 0,
+                      "state": "created",
+                      "id": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Rentals / Rental Billing Cycle Upgrades"
+        ],
+        "summary": "Get Pending Rental Billing Cycle Upgrade",
+        "description": "Gets the pending upgrade for this rental.\n\nReturns ```404 Not Found``` if the rental is missing or has no pending upgrade.",
+        "operationId": "GetPendingRentalBillingCycleUpgradePublic",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the rental.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RentalBillingCycleUpgrade"
+                },
+                "example": {
+                  "reservationId": "string",
+                  "desiredRentalDuration": "ninetyDay",
+                  "scheduledFor": "1970-01-01T00:00:00.000Z",
+                  "cancellableBefore": "1970-01-01T00:00:00.000Z",
+                  "nextRenewalAfterJobCompleted": "1970-01-01T00:00:00.000Z",
+                  "cost": 0,
+                  "state": "created",
+                  "id": "string"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "reservationId": "string",
+                      "desiredRentalDuration": "ninetyDay",
+                      "scheduledFor": "1970-01-01T00:00:00.000Z",
+                      "cancellableBefore": "1970-01-01T00:00:00.000Z",
+                      "nextRenewalAfterJobCompleted": "1970-01-01T00:00:00.000Z",
+                      "cost": 0,
+                      "state": "created",
+                      "id": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/reservations/rental/{id}/billing-cycle-upgrade/{jobId}": {
+      "delete": {
+        "tags": [
+          "Rentals / Rental Billing Cycle Upgrades"
+        ],
+        "summary": "Cancel Rental Billing Cycle Upgrade",
+        "description": "Cancels a pending upgrade for this rental.\n\nYou must cancel more than 24 hours before the rental ends or renews. After that, the upgrade cannot be canceled or undone.\n\nReturns ```404 Not Found``` if the rental or pending upgrade is not found.",
+        "operationId": "CancelRentalBillingCycleUpgradePublic",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the rental.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "jobId",
+            "in": "path",
+            "description": "ID of the pending billing cycle upgrade job.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1279,10 +2014,10 @@
     "/api/pub/v2/reservations/rental/renewable/{id}": {
       "get": {
         "tags": [
-          "Renewable Rentals"
+          "Rentals / Renewable Rentals"
         ],
         "summary": "Renewable Rental Details",
-        "description": "Get the details of a renewable rental by ID. Also returns relevant links to the billing cycle, calls, SMS, and sale information as well as a refund action if applicable.",
+        "description": "Get the details of a renewable rental by ID. Also returns links to the billing cycle, SMS, calls, and sale information.\n            \nSupports documented mock rental IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "GetRenewableRentalPublic",
         "parameters": [
           {
@@ -1309,25 +2044,27 @@
           "404": {
             "description": "Not Found"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       },
       "post": {
         "tags": [
-          "Renewable Rentals"
+          "Rentals / Renewable Rentals"
         ],
         "summary": "Update a Renewable Rental",
-        "description": "Update a renewable rental by ID.\n\nWhat you can currently update are:\n- ```userNotes``` (Notes)\n- ```includeForRenewal``` (Include/Exclude rental for renew)\n- ```markAllSmsRead``` (Mark SMS as read)\n\nNot providing an update option will leave it unchanged. For example, not providing\n```userNotes``` but having ```\"includeForRenewal\": true``` will only include the rental for renew.",
+        "description": "Update a renewable rental by ID.\n\nWhat you can currently update are:\n- ```userNotes``` (Notes)\n- ```includeForRenewal``` (Include/Exclude rental for renew)\n- ```markAllSmsRead``` (Mark SMS as read)\n- ```tags``` (Replace or clear tags)\n\nNot providing an update option will leave it unchanged. For example, not providing\n```userNotes``` but having ```\"includeForRenewal\": true``` will only include the rental for renew.",
         "operationId": "UpdateRenewableRentalPublic",
         "parameters": [
           {
@@ -1367,16 +2104,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1384,10 +2123,10 @@
     "/api/pub/v2/reservations/rental/renewable": {
       "get": {
         "tags": [
-          "Renewable Rentals"
+          "Rentals / Renewable Rentals"
         ],
         "summary": "List Renewable Rentals",
-        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your renewable rentals.\n\nOptional Parameters:\n- ```billingCycleId``` (Get renewable rentals under this billing cycle ID)\n\nTo create a new rental, see <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a>.\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Returns a list of your renewable rentals.\n            \nOptional Parameters:\n- ```billingCycleId``` (Get renewable rentals under this billing cycle ID)\n            \nTo create a new rental, see <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a>.\n            \nThis endpoint is paginated. See <a href=\"docs/api/v2#paginated-list-responses\" target=\"_top\">Paginated List Responses</a> for details.\n            \nSupports documented mock ```billingCycleId``` values. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and pagination behavior.",
         "operationId": "ListRenewableLineRentalsPublic",
         "parameters": [
           {
@@ -1410,16 +2149,18 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1427,10 +2168,10 @@
     "/api/pub/v2/reservations/rental/renewable/{id}/refund": {
       "post": {
         "tags": [
-          "Renewable Rentals"
+          "Rentals / Renewable Rentals"
         ],
         "summary": "Refund Renewable Rental",
-        "description": "Call this to <b>attempt</b> to refund a renewable rental by ID.\n\nThis could fail if the rental is not refundable or the refund period has passsed.\nWill return ```400 Bad Request``` if the request is invalid or refund is not possible.",
+        "description": "Call this to <b>attempt</b> to refund a renewable rental by ID.\n\nThis could fail if the rental is not refundable or the refund period has passed.\nWill return ```400 Bad Request``` if the request is invalid or refund is not possible.",
         "operationId": "RenewableSelfServiceRefundRentalPublic",
         "parameters": [
           {
@@ -1450,16 +2191,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1467,7 +2210,7 @@
     "/api/pub/v2/reservations/rental/renewable/{id}/renew": {
       "post": {
         "tags": [
-          "Renewable Rentals"
+          "Rentals / Renewable Rentals"
         ],
         "summary": "Renew Overdue Rental",
         "description": "Renew an overdue rental by its ID. \n\nCalling this method will automatically include the rental for renewal and perform the renewal. Only overdue rentals may be renewed this way.",
@@ -1490,16 +2233,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1507,10 +2252,10 @@
     "/api/pub/v2/reservations/rental/nonrenewable/{id}": {
       "get": {
         "tags": [
-          "Non-Renewable Rentals"
+          "Rentals / Non-Renewable Rentals"
         ],
         "summary": "Non-Renewable Rental Details",
-        "description": "Get the details of a non-renewable rental by ID. Also returns relevant links to the billing cycle, calls, SMS, and sale information as well as a refund action if applicable.",
+        "description": "Get the details of a non-renewable rental by ID. Also returns links to SMS, calls, and sale information.\n            \nSupports documented mock rental IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "GetNonrenewableRentalPublic",
         "parameters": [
           {
@@ -1537,25 +2282,27 @@
           "404": {
             "description": "Not Found"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       },
       "post": {
         "tags": [
-          "Non-Renewable Rentals"
+          "Rentals / Non-Renewable Rentals"
         ],
         "summary": "Update a Non-Renewable Rental",
-        "description": "Update a non-renewable rental by ID.\n\nWhat you can currently update are:\n- ```userNotes``` (Notes)\n- ```markAllSmsRead``` (Mark SMS as read)",
+        "description": "Update a non-renewable rental by ID.\n\nWhat you can currently update are:\n- ```userNotes``` (Notes)\n- ```markAllSmsRead``` (Mark SMS as read)\n- ```tags``` (Replace or clear tags)\n\nNot providing an update option will leave it unchanged. For example, not providing\n```userNotes``` but having ```\"markAllSmsRead\": true``` will only mark all SMS for that rental as read.",
         "operationId": "UpdateNonrenewableRentalPublic",
         "parameters": [
           {
@@ -1595,16 +2342,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1612,10 +2361,10 @@
     "/api/pub/v2/reservations/rental/nonrenewable": {
       "get": {
         "tags": [
-          "Non-Renewable Rentals"
+          "Rentals / Non-Renewable Rentals"
         ],
         "summary": "List Non-Renewable Rentals",
-        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your non-renewable rentals.\n\nTo create a new rental, see <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a>.\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "description": "Returns a list of your non-renewable rentals.\n\nTo create a new rental, see <a href=\"docs/api/v2#post-/api/pub/v2/reservations/rental\" target=\"_top\">Create New Rental</a>.\n\nThis endpoint is paginated. See <a href=\"docs/api/v2#paginated-list-responses\" target=\"_top\">Paginated List Responses</a> for details.",
         "operationId": "ListNonrenewableRentalsPublic",
         "responses": {
           "200": {
@@ -1628,16 +2377,18 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1645,7 +2396,7 @@
     "/api/pub/v2/reservations/rentals/extensions": {
       "post": {
         "tags": [
-          "Non-Renewable Rentals"
+          "Rentals / Non-Renewable Rentals"
         ],
         "summary": "Extend a Non-Renewable rental",
         "description": "<span style=\"color:var(--red)\">\n  <p>Extensions are <b>NOT</b> refundable and cannot be undone.</p>\n</span>\n<p>\n  <b>Attempt</b> to extend the duration of a non-renewable rental by ID.</p>",
@@ -1672,21 +2423,30 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RentalExtension"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1694,10 +2454,10 @@
     "/api/pub/v2/reservations/rental/nonrenewable/{id}/refund": {
       "post": {
         "tags": [
-          "Non-Renewable Rentals"
+          "Rentals / Non-Renewable Rentals"
         ],
         "summary": "Refund Non-Renewable Rental",
-        "description": "Call this to <b>attempt</b> to refund a non-renewable rental by ID.\n\nThis could fail if the rental is not refundable or the refund period has passsed.\nWill return ```400 Bad Request``` if the request is invalid or refund is not possible.",
+        "description": "Call this to <b>attempt</b> to refund a non-renewable rental by ID.\n\nThis could fail if the rental is not refundable or the refund period has passed.\nWill return ```400 Bad Request``` if the request is invalid or refund is not possible.",
         "operationId": "NonrenewableSelfServiceRefundRentalPublic",
         "parameters": [
           {
@@ -1717,16 +2477,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1734,16 +2496,16 @@
     "/api/pub/v2/sms": {
       "get": {
         "tags": [
-          "Sms"
+          "SMS"
         ],
-        "summary": "List Sms",
-        "description": "Returns a <a href=\"docs/api/v2#overview\" target=\"_top\"><b>paginated</b></a> list of your latest sms.\n\nOptional Parameters:\n- ```to``` (A phone number)\n- ```reservationId``` (The reservation's ID)\n- ```reservationType``` (The reservation's type)\n\nNote: This endpoint returns a paginated result of the list, check\nthe <a href=\"docs/api/v2#overview\" target=\"_top\">Paginated List Responses</a> section of the overview page for more details\nif you are having problems.",
+        "summary": "List SMS",
+        "description": "Returns a list of your latest SMS.\n            \nOptional Parameters:\n- ```to``` (A phone number)\n- ```reservationId``` (The reservation's ID)\n- ```reservationType``` (The reservation's type)\n            \nThis endpoint is paginated. See <a href=\"docs/api/v2#paginated-list-responses\" target=\"_top\">Paginated List Responses</a> for details.\n            \nSupports documented mock reservation IDs. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "ListSmsPublic",
         "parameters": [
           {
             "name": "to",
             "in": "query",
-            "description": "If provided, will filter results to only include sms sent to the specified number.",
+            "description": "If provided, will filter results to only include SMS sent to the specified number.",
             "schema": {
               "type": "string"
             }
@@ -1751,7 +2513,7 @@
           {
             "name": "reservationId",
             "in": "query",
-            "description": "If provided, will filter results to only include sms associated with the specified reservation.",
+            "description": "If provided, will filter results to only include SMS associated with the specified reservation.",
             "schema": {
               "type": "string"
             }
@@ -1759,7 +2521,7 @@
           {
             "name": "reservationType",
             "in": "query",
-            "description": "If provided, will filter results to only include sms associated with the specified reservation types.",
+            "description": "If provided, will filter results to only include SMS associated with the specified reservation type.",
             "schema": {
               "$ref": "#/components/schemas/ReservationType"
             }
@@ -1776,16 +2538,120 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/sms/reply": {
+      "post": {
+        "tags": [
+          "SMS"
+        ],
+        "summary": "Reply to an SMS",
+        "description": "<p>\n  <b>Attempt</b> to reply to an SMS by ID.</p>",
+        "operationId": "ReplyToSmsPublic",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplySmsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplySmsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplySmsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/pub/v2/sms/send": {
+      "post": {
+        "tags": [
+          "SMS"
+        ],
+        "summary": "Send an SMS",
+        "description": "<p>\n  <b>Attempt</b> to send an SMS by reservation ID.</p>",
+        "operationId": "SendSmsPublic",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSmsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSmsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSmsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1796,7 +2662,7 @@
           "Calls And Voice - [ALPHA]"
         ],
         "summary": "List Calls",
-        "description": "Call this endpoint to obtain a list of calls associated with your account.",
+        "description": "Call this endpoint to obtain a list of calls associated with your account.\n            \nThis endpoint is paginated. See <a href=\"docs/api/v2#paginated-list-responses\" target=\"_top\">Paginated List Responses</a> for details.\n            \nSupports documented mock reservation IDs. Mock call lists return empty results. See <a href=\"docs/api/v2#testing-with-mock-responses\" target=\"_top\">Testing with Mock Responses</a> for supported ```mock_*``` values and behavior.",
         "operationId": "ListCallsPublic",
         "parameters": [
           {
@@ -1835,16 +2701,18 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1855,7 +2723,7 @@
           "Calls And Voice - [ALPHA]"
         ],
         "summary": "Create Call Access Token",
-        "description": "Call this endpoint to create a call access token. This supports <b>incoming calls only</b>.\n\nCall sessions are established by:\n\n1. <a href=\"docs/api/v2#post-/api/pub/v2/verifications\" target=\"_top\">Creating a voice verification</a> and getting the corresponding ```reservation id```.\n2. Posting to this endpoint to obtain a short-lived Twilio access token associated with the ```reservation id```.\n3. Using the access token with <a href=\"https://www.twilio.com/docs/voice/sdks/javascript\" target=\"_blank\">Twilio's integration</a> to handle an incoming call.\n\n\n<span style=\"color:var(--red)\"><b>Warning:</b></span>\nThis is an <b>advanced</b> integration. \n<span style=\"color:var(--red)\"><b>No integration/implementation/debugging support will be provided for this endpoint.</b></span> \nIt is up to you to implement the appropriate provider's integration (connectivity, acceptance, termination, etc.) to successfully handle an incoming call.",
+        "description": "Call this endpoint to create a call access token. This supports <b>incoming calls only</b>.\n            \nCall sessions are established by:\n            \n1. <a href=\"docs/api/v2#post-/api/pub/v2/verifications\" target=\"_top\">Creating a voice verification</a> and getting the corresponding reservation ID.\n2. Posting to this endpoint to obtain a short-lived Twilio access token associated with the reservation ID.\n3. Using the access token with <a href=\"https://www.twilio.com/docs/voice/sdks/javascript\" target=\"_blank\">Twilio's integration</a> to handle an incoming call.\n            \n            \n<span style=\"color:var(--red)\"><b>Warning:</b></span>\nThis is an <b>advanced</b> integration.\nSupport for custom Twilio client behavior is limited.\nYou are responsible for implementing and troubleshooting the client integration, including connectivity, call acceptance, and call termination.",
         "operationId": "SetupCallingContextPublic",
         "requestBody": {
           "content": {
@@ -1890,16 +2758,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1910,7 +2780,7 @@
           "Wake Requests"
         ],
         "summary": "Get Wake Request",
-        "description": "Get a wake request by ID.\n\nThe details of a wake request include:\n- ```isScheduled``` (Indicates if the wake request has been successfully created and enqueued.)\n- ```usageWindowStart``` (The datetime when you can start using the reservation.)\n- ```usageWindowEnd``` (The datetime when you will no longer be able to use the reservation.)\nRefer to the ```SCHEMA``` below for more details.\n\nTo create a wake request, see <a href=\"docs/api/v2#post-/api/pub/v2/wake-requests\" target=\"_top\">Create Wake Request</a>.",
+        "description": "Get a wake request by ID.\n            \nThe details of a wake request include:\n- ```isScheduled``` (Indicates if the wake request has been successfully created and enqueued.)\n- ```usageWindowStart``` (The datetime when you can start using the reservation.)\n- ```usageWindowEnd``` (The datetime when you will no longer be able to use the reservation.)\nRefer to the ```SCHEMA``` below for more details.\n            \nTo create a wake request, see <a href=\"docs/api/v2#post-/api/pub/v2/wake-requests\" target=\"_top\">Create Wake Request</a>.",
         "operationId": "GetWakeRequestPublic",
         "parameters": [
           {
@@ -1937,16 +2807,18 @@
           "404": {
             "description": "Not Found"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -1957,7 +2829,7 @@
           "Wake Requests"
         ],
         "summary": "Create Wake Request",
-        "description": "Create a wake request for a reservation. Some reservation types, including lines where alwaysOn=false, will require a wake request before the line reservation can be used.\n\nCreating a successful wake request will <b>enqueue</b> your request on that line reservation.\nTo see the details of your wake request, see <a href=\"docs/api/v2#get-/api/pub/v2/wake-requests/-id-\" target=\"_top\">Get Wake Request</a>.\n\nIf successful, a 201 response will be returned with the location of the newly created wake request in the <b>http response 'location' header</b>.",
+        "description": "Create a wake request for a reservation. Some reservation types, including lines where alwaysOn=false, will require a wake request before the line reservation can be used.\n            \nCreating a successful wake request will <b>enqueue</b> your request on that line reservation.\nTo see the details of your wake request, see <a href=\"docs/api/v2#get-/api/pub/v2/wake-requests/-id-\" target=\"_top\">Get Wake Request</a>.\n            \nIf successful, the API returns 201 with a wake request details link. Follow the returned ```Location``` header to get wake request details.",
         "operationId": "CreateWakeRequestPublic",
         "requestBody": {
           "description": "",
@@ -2003,16 +2875,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -2023,7 +2897,7 @@
           "Wake Requests"
         ],
         "summary": "Estimate Usage Window",
-        "description": "Estimate the usage window for a reservation if you were to create a wake request now.\n\nDoes <b>NOT</b> create a wake request. \nTo create a wake request, see <a href=\"docs/api/v2#post-/api/pub/v2/wake-requests\" target=\"_top\">Create Wake Request</a>.\n    \nThe details of an usage window estimate include:\n- ```estimatedWindowStart``` (The estimated datetime when you can start using the reservation.)\n- ```estimatedWindowEnd``` (The estimated datetime when you will no longer be able to use the reservation.)\nRefer to the ```SCHEMA``` below for more details.",
+        "description": "Estimate the usage window for a reservation if you were to create a wake request now.\n            \nDoes <b>NOT</b> create a wake request.\nTo create a wake request, see <a href=\"docs/api/v2#post-/api/pub/v2/wake-requests\" target=\"_top\">Create Wake Request</a>.\n            \nThe details of an usage window estimate include:\n- ```estimatedWindowStart``` (The estimated datetime when you can start using the reservation.)\n- ```estimatedWindowEnd``` (The estimated datetime when you will no longer be able to use the reservation.)\nRefer to the ```SCHEMA``` below for more details.",
         "operationId": "EstimateUsageWindow",
         "requestBody": {
           "description": "",
@@ -2059,16 +2933,18 @@
           "400": {
             "description": "Bad Request"
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -2079,17 +2955,27 @@
           "Webhooks"
         ],
         "summary": "List Webhook Events",
-        "description": "Returns a list of webhook events that can be subscribed to. You will need to configure your <a href=\"https://www.textverified.com/app/api/configure/webhooks\">API Webhook Settings</a> and subscribe to events first.\n\n\n\nThe schema of the webhook events are documented below. We serialize webhook event data using Json to the `Data` property. All of our webhooks are sent as a HTTP POST to the webhook uri configured on your account.\nWe sign all of our webhooks with HMAC and SHA512 which should be validated by your server.\n\n\n<b>Webhook validation:</b>\n\nWe sign all webhook requests using HMAC-SHA512 and your webhook secret (`whsec_...`).\nThe signature HTTP Header is `X-Webhook-Signature` and the HTTP Value will be\nprefixed by the signing algorithm `HMAC-SHA512='.\nThe signature after the prefix is BASE-64 encoded.\nThe process for validating a signature is as follows:\n1) Extract the HTTP Header with the name `X-Webhook-Signature`.\n2) Remove the prefix `HMAC-SHA512=` from the HTTP Header value, which is obtained from step 1.\n  - This BASE-64 encoded value will be compared to the HTTP Request body hash later.\n3) Apply the HMAC-SHA512 hashing algorithm to the HTTP Request body to obtain a byte array.\n4) Apply BASE-64 encoding to the byte array (obtained from step 3).\n5) Compare the value from step 2 to the value from step 4 and verify that they are the same.\n            \nWebhooks are automatically retried for a period of time with exponential back off. \nAfter multiple failed webhook send attempts, webhooks will be automatically disabled.\nIf this happens, you will have to manually re-enable your webhooks again.",
+        "description": "Returns an array of webhook event names that can be subscribed to, such as ```v2.sms.received``` and ```v2.reservation.created```. You must configure your <a href=\"https://www.textverified.com/app/api/configure/webhooks\">API Webhook Settings</a> and subscribe to events before webhooks will be sent.\n\n\n\nThe schemas of webhook event payloads are documented below. Webhook payloads contain event data in the ```Data``` property and are sent as HTTP POST requests to the webhook URI configured on your account.\nValidate the webhook signature on your server.\n\n\n<b>Webhook validation:</b>\n\nEach webhook request is signed using HMAC-SHA512 and your webhook secret (`whsec_...`).\nThe signature HTTP header is ```X-Webhook-Signature``` and the header value will be\nprefixed by the signing algorithm ```HMAC-SHA512=```.\nThe signature after the prefix is Base64 encoded.\nThe process for validating a signature is as follows:\n1) Extract the HTTP header with the name ```X-Webhook-Signature```.\n2) Remove the prefix ```HMAC-SHA512=``` from the HTTP header value, which is obtained from step 1. This Base64 encoded value will be compared to the HTTP request body hash later.\n3) Apply the HMAC-SHA512 hashing algorithm to the HTTP request body to obtain a byte array.\n4) Apply Base64 encoding to the byte array (obtained from step 3).\n5) Compare the value from step 2 to the value from step 4 and verify that they are the same.\n            \nWebhooks are automatically retried for a period of time with exponential backoff.\nAfter multiple failed webhook send attempts, webhooks may be automatically disabled.\nIf this happens, re-enable webhooks in your <a href=\"https://www.textverified.com/app/api/configure/webhooks\">API Webhook Settings</a>.",
         "operationId": "GetWebhookEventDefinitionsPublic",
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "429": {
-            "description": "Too many requests"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "callbacks": {
@@ -2108,13 +2994,13 @@
                 },
                 "responses": {
                   "200": {
-                    "description": "Your server implementation should return this HTTP status code if the data was received successfully."
+                    "description": "Your server should return this HTTP status code after receiving the webhook successfully."
                   },
                   "4XX": {
-                    "description": "If your server returns an HTTP status code indicating it does not understand the format of the payload, then the delivery attempt will be treated as a failure."
+                    "description": "If your server returns a 4XX status code, the delivery attempt will be treated as a failure."
                   },
                   "5XX": {
-                    "description": "If your server returns an HTTP status code indicating a server-side error, then the delivery attempt will be treated as a failure."
+                    "description": "If your server returns a 5XX status code, the delivery attempt will be treated as a failure."
                   }
                 }
               }
@@ -2135,13 +3021,13 @@
                 },
                 "responses": {
                   "200": {
-                    "description": "Your server implementation should return this HTTP status code if the data was received successfully."
+                    "description": "Your server should return this HTTP status code after receiving the webhook successfully."
                   },
                   "4XX": {
-                    "description": "If your server returns an HTTP status code indicating it does not understand the format of the payload, then the delivery attempt will be treated as a failure."
+                    "description": "If your server returns a 4XX status code, the delivery attempt will be treated as a failure."
                   },
                   "5XX": {
-                    "description": "If your server returns an HTTP status code indicating a server-side error, then the delivery attempt will be treated as a failure."
+                    "description": "If your server returns a 5XX status code, the delivery attempt will be treated as a failure."
                   }
                 }
               }
@@ -2162,13 +3048,13 @@
                 },
                 "responses": {
                   "200": {
-                    "description": "Your server implementation should return this HTTP status code if the data was received successfully."
+                    "description": "Your server should return this HTTP status code after receiving the webhook successfully."
                   },
                   "4XX": {
-                    "description": "If your server returns an HTTP status code indicating it does not understand the format of the payload, then the delivery attempt will be treated as a failure."
+                    "description": "If your server returns a 4XX status code, the delivery attempt will be treated as a failure."
                   },
                   "5XX": {
-                    "description": "If your server returns an HTTP status code indicating a server-side error, then the delivery attempt will be treated as a failure."
+                    "description": "If your server returns a 5XX status code, the delivery attempt will be treated as a failure."
                   }
                 }
               }
@@ -2189,13 +3075,13 @@
                 },
                 "responses": {
                   "200": {
-                    "description": "Your server implementation should return this HTTP status code if the data was received successfully."
+                    "description": "Your server should return this HTTP status code after receiving the webhook successfully."
                   },
                   "4XX": {
-                    "description": "If your server returns an HTTP status code indicating it does not understand the format of the payload, then the delivery attempt will be treated as a failure."
+                    "description": "If your server returns a 4XX status code, the delivery attempt will be treated as a failure."
                   },
                   "5XX": {
-                    "description": "If your server returns an HTTP status code indicating a server-side error, then the delivery attempt will be treated as a failure."
+                    "description": "If your server returns a 5XX status code, the delivery attempt will be treated as a failure."
                   }
                 }
               }
@@ -2216,13 +3102,13 @@
                 },
                 "responses": {
                   "200": {
-                    "description": "Your server implementation should return this HTTP status code if the data was received successfully."
+                    "description": "Your server should return this HTTP status code after receiving the webhook successfully."
                   },
                   "4XX": {
-                    "description": "If your server returns an HTTP status code indicating it does not understand the format of the payload, then the delivery attempt will be treated as a failure."
+                    "description": "If your server returns a 4XX status code, the delivery attempt will be treated as a failure."
                   },
                   "5XX": {
-                    "description": "If your server returns an HTTP status code indicating a server-side error, then the delivery attempt will be treated as a failure."
+                    "description": "If your server returns a 5XX status code, the delivery attempt will be treated as a failure."
                   }
                 }
               }
@@ -2231,7 +3117,9 @@
         },
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -2241,14 +3129,14 @@
         "tags": [
           "Legacy"
         ],
-        "summary": "Legacy Reservation Id Look Up",
-        "description": "You can use this legacy endpoint for looking up the 'new' ID of a rental reservation (begins with the prefix 'lr_') by supplying a legacy ID (GUID/UUID format). This may be helpful when migration from our deprecated endpoints to our current endpoints.\nThis endpoint will be removed in the future without notice.",
+        "summary": "Legacy Reservation ID Lookup",
+        "description": "You can use this legacy endpoint to look up the new ID of a rental reservation (begins with the prefix ```lr_```) by supplying a legacy ID (GUID/UUID format). This may be helpful when migrating from our deprecated endpoints to our current endpoints.\nThis endpoint will be removed in the future without notice.",
         "operationId": "GetNewReservationId",
         "parameters": [
           {
             "name": "oldReservationId",
             "in": "query",
-            "description": "The legacy reservation Id to look up which is formatted as a GUID/UUID. If the legacy ID supplied is invalid or not found, a 404 Not Found response will be returned.",
+            "description": "The legacy reservation ID to look up, formatted as a GUID/UUID. If the legacy ID supplied is invalid or not found, a 404 Not Found response will be returned.",
             "schema": {
               "type": "string"
             }
@@ -2268,17 +3156,19 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "deprecated": true,
         "security": [
           {
-            "Bearer": [ ]
+            "oauth2": [
+              "STANDARD_USER_POLICY"
+            ]
           }
         ]
       }
@@ -2427,7 +3317,7 @@
         "properties": {
           "backOrderId": {
             "type": "string",
-            "description": "Id of the back order reservation."
+            "description": "ID of the back order reservation."
           }
         },
         "additionalProperties": false
@@ -2479,7 +3369,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Id of the billing cycle"
+            "description": "ID of the billing cycle"
           },
           "billingCycleEndsAt": {
             "type": "string",
@@ -2509,7 +3399,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Id of the billing cycle"
+            "description": "ID of the billing cycle"
           },
           "renewedThrough": {
             "type": "string",
@@ -2624,8 +3514,7 @@
         "properties": {
           "billingCycleId": {
             "type": "string",
-            "description": "Id of the billing cycle.",
-            "nullable": true
+            "description": "ID of the billing cycle."
           }
         },
         "additionalProperties": false
@@ -2670,7 +3559,7 @@
         "properties": {
           "reservationId": {
             "type": "string",
-            "description": "Id of the verification that this call context is associated with."
+            "description": "ID of the verification that this call context is associated with."
           },
           "twilioContext": {
             "$ref": "#/components/schemas/TwilioCallingContextDto"
@@ -2720,6 +3609,21 @@
           "errorDescription": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InventoryQuantity": {
+        "required": [
+          "availableQuantity"
+        ],
+        "type": "object",
+        "properties": {
+          "availableQuantity": {
+            "type": "integer",
+            "description": "Available inventory quantity for the requested selection. A value of ```9000``` means ```9000 or more``` are available.",
+            "format": "int32",
+            "example": 37
           }
         },
         "additionalProperties": false
@@ -2784,7 +3688,6 @@
       "NewRentalRequest": {
         "required": [
           "allowBackOrderReservations",
-          "alwaysOn",
           "capability",
           "duration",
           "isRenewable",
@@ -2799,7 +3702,10 @@
           },
           "alwaysOn": {
             "type": "boolean",
-            "description": "If set to true, a line that does not require wake up will be assigned if in stock"
+            "description": "Deprecated. This value will always be true and should not be supplied.",
+            "nullable": true,
+            "example": true,
+            "deprecated": true
           },
           "areaCodeSelectOption": {
             "type": "array",
@@ -2817,7 +3723,8 @@
             "$ref": "#/components/schemas/RentalDuration"
           },
           "isRenewable": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Set to true to create a renewable rental. Set to false to create a non-renewable rental."
           },
           "numberType": {
             "$ref": "#/components/schemas/NumberType"
@@ -2829,7 +3736,7 @@
           },
           "serviceName": {
             "type": "string",
-            "description": "Name of the service",
+            "description": "Service name returned by Service List, or a supported ```test_*``` mock service name.",
             "example": "google"
           },
           "capability": {
@@ -2850,7 +3757,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Clients can specify a area code when creating a reservation. If provided, our service will try to reserve a number with the specified area code.",
+            "description": "Optional array of area codes. If provided, the API will try to reserve a number with one of the specified area codes.",
             "nullable": true,
             "example": [
               "775",
@@ -2862,7 +3769,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Clients can specify a carrier when creating a reservation. If provided, our service will try to reserve a number with the specified Carrier.",
+            "description": "Optional array of carriers. If provided, the API will try to reserve a number with one of the specified carriers.",
             "nullable": true,
             "example": [
               "vz",
@@ -2872,7 +3779,7 @@
           },
           "serviceName": {
             "type": "string",
-            "description": "",
+            "description": "Service name returned by Service List, or a supported ```test_*``` mock service name.",
             "example": "abra"
           },
           "capability": {
@@ -2922,7 +3829,7 @@
           },
           "saleId": {
             "type": "string",
-            "description": "Sale Id may not be available for older sales.",
+            "description": "Sale ID may not be available for older sales.",
             "nullable": true
           },
           "serviceName": {
@@ -2979,7 +3886,7 @@
           },
           "saleId": {
             "type": "string",
-            "description": "Sale Id may not be available for older sales.",
+            "description": "Sale ID may not be available for older sales.",
             "nullable": true
           },
           "serviceName": {
@@ -3018,6 +3925,14 @@
             "description": "Mark a non-renewable rental's SMS as read.",
             "nullable": true,
             "example": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Update a non-renewable rental’s tags. Omit the property or set it to null for no change. Provide an empty list to clear all tags, or a non-empty list to replace them.",
+            "nullable": true
           }
         },
         "additionalProperties": false,
@@ -3173,6 +4088,38 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/RenewableRentalCompact"
+            }
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "hasPrevious": {
+            "type": "boolean"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "links": {
+            "$ref": "#/components/schemas/PaginationLinks"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaginatedData.RentalTags": {
+        "required": [
+          "count",
+          "data",
+          "hasNext",
+          "hasPrevious",
+          "links"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RentalTags"
             }
           },
           "hasNext": {
@@ -3395,7 +4342,7 @@
           },
           "saleId": {
             "type": "string",
-            "description": "Sale Id may not be available for older sales.",
+            "description": "Sale ID may not be available for older sales.",
             "nullable": true
           },
           "serviceName": {
@@ -3456,6 +4403,11 @@
             "type": "string",
             "format": "date-time"
           },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
           "id": {
             "type": "string"
           },
@@ -3467,7 +4419,7 @@
           },
           "saleId": {
             "type": "string",
-            "description": "Sale Id may not be available for older sales.",
+            "description": "Sale ID may not be available for older sales.",
             "nullable": true
           },
           "serviceName": {
@@ -3515,10 +4467,95 @@
             "description": "Mark a renewable rental's SMS as read.",
             "nullable": true,
             "example": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Update a renewable rental’s tags. Omit the property or set it to null for no change. Provide an empty list to clear all tags, or a non-empty list to replace them.",
+            "nullable": true
           }
         },
         "additionalProperties": false,
         "description": "Supplying a value of 'null' or not supplying a value for any nullable properties will cause the property to be ignored."
+      },
+      "RentalBillingCycleUpgrade": {
+        "required": [
+          "cancellableBefore",
+          "cost",
+          "desiredRentalDuration",
+          "id",
+          "nextRenewalAfterJobCompleted",
+          "reservationId",
+          "scheduledFor",
+          "state"
+        ],
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "description": "ID of the rental.",
+            "example": "string"
+          },
+          "desiredRentalDuration": {
+            "$ref": "#/components/schemas/RentalDuration"
+          },
+          "scheduledFor": {
+            "type": "string",
+            "description": "Time when the upgrade is scheduled to run.",
+            "format": "date-time",
+            "example": "1970-01-01T00:00:00.000Z"
+          },
+          "cancellableBefore": {
+            "type": "string",
+            "description": "Last time the pending upgrade can be canceled.",
+            "format": "date-time",
+            "example": "1970-01-01T00:00:00.000Z"
+          },
+          "nextRenewalAfterJobCompleted": {
+            "type": "string",
+            "description": "Next renewal time after the upgrade completes.",
+            "format": "date-time",
+            "example": "1970-01-01T00:00:00.000Z"
+          },
+          "cost": {
+            "type": "number",
+            "description": "Cost charged when the upgrade is scheduled.",
+            "format": "double",
+            "example": 0
+          },
+          "state": {
+            "$ref": "#/components/schemas/RentalBillingCycleUpgradeState"
+          },
+          "id": {
+            "type": "string",
+            "description": "ID of the pending upgrade job.",
+            "example": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RentalBillingCycleUpgradeRequest": {
+        "required": [
+          "desiredDuration"
+        ],
+        "type": "object",
+        "properties": {
+          "desiredDuration": {
+            "$ref": "#/components/schemas/RentalDuration"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RentalBillingCycleUpgradeState": {
+        "enum": [
+          "created",
+          "cancelled",
+          "succeeded",
+          "suspended"
+        ],
+        "type": "string"
       },
       "RentalDuration": {
         "enum": [
@@ -3531,6 +4568,47 @@
           "oneYear"
         ],
         "type": "string"
+      },
+      "RentalExtension": {
+        "required": [
+          "cost",
+          "createdAt",
+          "extensionAmount",
+          "id",
+          "newEndsAt",
+          "originalEndsAt",
+          "reservationId"
+        ],
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string"
+          },
+          "extensionAmount": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "cost": {
+            "type": "number",
+            "format": "double"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "originalEndsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "newEndsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
       },
       "RentalExtensionRequest": {
         "required": [
@@ -3548,9 +4626,34 @@
         },
         "additionalProperties": false
       },
+      "RentalInventoryCheckRequest": {
+        "required": [
+          "capability",
+          "duration",
+          "numberType",
+          "serviceName"
+        ],
+        "type": "object",
+        "properties": {
+          "duration": {
+            "$ref": "#/components/schemas/RentalDuration"
+          },
+          "numberType": {
+            "$ref": "#/components/schemas/NumberType"
+          },
+          "serviceName": {
+            "type": "string",
+            "description": "Service name to check inventory for. Use the same value you plan to send when creating the rental.",
+            "example": "google"
+          },
+          "capability": {
+            "$ref": "#/components/schemas/ReservationCapability"
+          }
+        },
+        "additionalProperties": false
+      },
       "RentalPriceCheckRequest": {
         "required": [
-          "alwaysOn",
           "areaCode",
           "capability",
           "duration",
@@ -3562,7 +4665,7 @@
         "properties": {
           "serviceName": {
             "type": "string",
-            "description": "Name of the service",
+            "description": "Service name to price. Use the same value you plan to send when creating the rental.",
             "example": "yahoo"
           },
           "areaCode": {
@@ -3578,8 +4681,10 @@
           },
           "alwaysOn": {
             "type": "boolean",
-            "description": "",
-            "example": true
+            "description": "Deprecated. This value will always be true and should not be supplied.",
+            "nullable": true,
+            "example": true,
+            "deprecated": true
           },
           "callForwarding": {
             "type": "boolean",
@@ -3589,17 +4694,47 @@
           },
           "billingCycleIdToAssignTo": {
             "type": "string",
-            "description": "",
+            "description": "Optional billing cycle ID to include when pricing assignment of a renewable rental to an existing billing cycle.",
             "nullable": true,
             "example": "abcedfg"
           },
           "isRenewable": {
             "type": "boolean",
-            "description": "",
+            "description": "Set to true to price a renewable rental. Set to false to price a non-renewable rental.",
             "example": true
           },
           "duration": {
             "$ref": "#/components/schemas/RentalDuration"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RentalReactivationCost": {
+        "required": [
+          "price"
+        ],
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number",
+            "description": "Current total cost to reactivate the rental.",
+            "format": "double",
+            "example": 12.5
+          }
+        },
+        "additionalProperties": false
+      },
+      "RentalReactivationRequest": {
+        "required": [
+          "maxPrice"
+        ],
+        "type": "object",
+        "properties": {
+          "maxPrice": {
+            "type": "number",
+            "description": "Maximum total price you are willing to pay for the reactivation. The server recomputes the price at execution time and rejects the request if the total exceeds this value.",
+            "format": "double",
+            "example": 12.5
           }
         },
         "additionalProperties": false
@@ -3651,6 +4786,76 @@
         },
         "additionalProperties": false
       },
+      "RentalTags": {
+        "required": [
+          "reservationId",
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RentalTagsSearch": {
+        "required": [
+          "reservationIds"
+        ],
+        "type": "object",
+        "properties": {
+          "reservationIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Reservation IDs to get the tags of."
+          }
+        },
+        "additionalProperties": false
+      },
+      "RentalUserNotes": {
+        "required": [
+          "reservationId",
+          "userNotes"
+        ],
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string"
+          },
+          "userNotes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReplySmsRequest": {
+        "required": [
+          "content",
+          "replyToSmsId"
+        ],
+        "type": "object",
+        "properties": {
+          "replyToSmsId": {
+            "type": "string",
+            "description": "The SMS ID to reply to. If a valid SMS does not exist or the SMS cannot be replied to, a 400 response will be returned."
+          },
+          "content": {
+            "type": "string",
+            "description": "The SMS content to send. If the content is invalid, a 400 response will be returned."
+          }
+        },
+        "additionalProperties": false
+      },
       "ReportAction": {
         "required": [
           "canReport",
@@ -3678,7 +4883,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Id of the reservation"
+            "description": "ID of the reservation"
           },
           "link": {
             "$ref": "#/components/schemas/Link"
@@ -3711,7 +4916,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Id of the created reservation."
+            "description": "ID of the created reservation."
           },
           "type": {
             "$ref": "#/components/schemas/LineReservationType"
@@ -3860,6 +5065,29 @@
         },
         "additionalProperties": false
       },
+      "SendSmsRequest": {
+        "required": [
+          "content",
+          "reservationId",
+          "sendTo"
+        ],
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "description": "The reservation ID to send from. If a valid reservation does not exist or the reservation does not have sending capabilities, a 400 response will be returned."
+          },
+          "sendTo": {
+            "type": "string",
+            "description": "The number to send to. If the number is invalid, a 400 response will be returned."
+          },
+          "content": {
+            "type": "string",
+            "description": "The SMS content to send. If the content is invalid, a 400 response will be returned."
+          }
+        },
+        "additionalProperties": false
+      },
       "Service": {
         "required": [
           "capability",
@@ -3871,6 +5099,12 @@
             "type": "string",
             "description": "Name of the service. Supply this value when a ```ServiceName``` is required.",
             "example": "gmail"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable display name for the service.",
+            "nullable": true,
+            "example": "Gmail"
           },
           "capability": {
             "$ref": "#/components/schemas/ReservationCapability"
@@ -3917,7 +5151,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Sms"
+        "description": "SMS"
       },
       "SmsWebhookEvent": {
         "required": [
@@ -3952,11 +5186,11 @@
           },
           "encrypted": {
             "type": "boolean",
-            "description": "True if the contents of the sms is encrypted at rest."
+            "description": "True if the contents of the SMS are encrypted at rest."
           },
           "reservationId": {
             "type": "string",
-            "description": "The Id of the reservation that this sms was assigned to.",
+            "description": "The ID of the reservation that this SMS was assigned to.",
             "nullable": true
           }
         },
@@ -3984,7 +5218,7 @@
         "properties": {
           "reservationId": {
             "type": "string",
-            "description": "The reservation Id to get the estimated usage window for. If a valid reservation does not exist, a 400 response will be returned."
+            "description": "The reservation ID to get the estimated usage window for. If a valid reservation does not exist, a 400 response will be returned."
           }
         },
         "additionalProperties": false
@@ -3999,19 +5233,19 @@
         "properties": {
           "estimatedWindowStart": {
             "type": "string",
-            "description": "The estimated datetime after which the reservation will be woken up and ready for use. Your reservation is estimated to be active and receiving sms and calls after this datetime. This value will be 'null' if the estimate was not successfully calculated.",
+            "description": "The estimated datetime after which the reservation will be woken up and ready for use. Your reservation is estimated to be active and receiving SMS and calls after this datetime. This value will be 'null' if the estimate was not successfully calculated.",
             "format": "date-time",
             "nullable": true
           },
           "estimatedWindowEnd": {
             "type": "string",
-            "description": "The estimated datetime after which a wake request will end. Your line is estimated to become offline and no longer be receiving sms or calls after this datetime. This value will be 'null' if the estimate was not successfully calculated.",
+            "description": "The estimated datetime after which a wake request will end. Your line is estimated to become offline and no longer be receiving SMS or calls after this datetime. This value will be 'null' if the estimate was not successfully calculated.",
             "format": "date-time",
             "nullable": true
           },
           "reservationId": {
             "type": "string",
-            "description": "Id of the reservation that this usage window estimate is associated with."
+            "description": "ID of the reservation that this usage window estimate is associated with."
           }
         },
         "additionalProperties": false
@@ -4131,6 +5365,28 @@
         },
         "additionalProperties": false
       },
+      "VerificationInventoryCheckRequest": {
+        "required": [
+          "capability",
+          "numberType",
+          "serviceName"
+        ],
+        "type": "object",
+        "properties": {
+          "numberType": {
+            "$ref": "#/components/schemas/NumberType"
+          },
+          "serviceName": {
+            "type": "string",
+            "description": "Service name to check inventory for. Use the same value you plan to send when creating the verification.",
+            "example": "google"
+          },
+          "capability": {
+            "$ref": "#/components/schemas/ReservationCapability"
+          }
+        },
+        "additionalProperties": false
+      },
       "VerificationPriceCheckRequest": {
         "required": [
           "areaCode",
@@ -4143,7 +5399,7 @@
         "properties": {
           "serviceName": {
             "type": "string",
-            "description": "",
+            "description": "Service name to price. Use the same value you plan to send when creating the verification.",
             "example": "yahoo"
           },
           "areaCode": {
@@ -4173,7 +5429,7 @@
         "properties": {
           "reservationId": {
             "type": "string",
-            "description": "The reservation Id to create a wake request for. If a valid reservation does not exist, a 400 response will be returned."
+            "description": "The reservation ID to create a wake request for. If a valid reservation does not exist, a 400 response will be returned."
           }
         },
         "additionalProperties": false
@@ -4190,27 +5446,27 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "The Id of this wake request."
+            "description": "The ID of this wake request."
           },
           "usageWindowStart": {
             "type": "string",
-            "description": "The datetime after which the reservation will be woken up and ready for use. Your reservation will be active and receiving sms and calls after this datetime. This value will be 'null' if the wake request was not successfully scheduled.",
+            "description": "The datetime after which the reservation will be woken up and ready for use. Your reservation will be active and receiving SMS and calls after this datetime. This value will be 'null' if the wake request was not successfully scheduled.",
             "format": "date-time",
             "nullable": true
           },
           "usageWindowEnd": {
             "type": "string",
-            "description": "The datetime after which the wake request will end. Your line will become offline and no longer be receiving sms or calls after this datetime. You can then create another wake request to bring your reservation back online and being receiving sms and calls again. This value will be 'null' if the wake request was not successfully scheduled.",
+            "description": "The datetime after which the wake request will end. Your line will become offline and no longer be receiving SMS or calls after this datetime. You can then create another wake request to bring your reservation back online and begin receiving SMS and calls again. This value will be 'null' if the wake request was not successfully scheduled.",
             "format": "date-time",
             "nullable": true
           },
           "isScheduled": {
             "type": "boolean",
-            "description": "Indicates whether or not the wake request was successfully scheduled. If a wake request fails to be scheduled, then you will have to submit a new wake request. Too many wake requests may result in wake request throttling."
+            "description": "Indicates whether the wake request was successfully scheduled. If a wake request fails to schedule, submit a new wake request. Too many wake requests may result in wake request throttling."
           },
           "reservationId": {
             "type": "string",
-            "description": "Id of the reservation that this wake request is associated with.",
+            "description": "ID of the reservation that this wake request is associated with.",
             "nullable": true
           }
         },
@@ -4222,6 +5478,7 @@
           "data",
           "event",
           "id",
+          "idempotencyKey",
           "occurredAt"
         ],
         "type": "object",
@@ -4245,7 +5502,11 @@
           },
           "id": {
             "type": "string",
-            "description": "Id of event"
+            "description": "ID of the event."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "description": "Idempotency key for webhook delivery deduplication."
           }
         },
         "additionalProperties": false
@@ -4256,6 +5517,7 @@
           "data",
           "event",
           "id",
+          "idempotencyKey",
           "occurredAt"
         ],
         "type": "object",
@@ -4279,7 +5541,11 @@
           },
           "id": {
             "type": "string",
-            "description": "Id of event"
+            "description": "ID of the event."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "description": "Idempotency key for webhook delivery deduplication."
           }
         },
         "additionalProperties": false
@@ -4290,6 +5556,7 @@
           "data",
           "event",
           "id",
+          "idempotencyKey",
           "occurredAt"
         ],
         "type": "object",
@@ -4313,7 +5580,11 @@
           },
           "id": {
             "type": "string",
-            "description": "Id of event"
+            "description": "ID of the event."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "description": "Idempotency key for webhook delivery deduplication."
           }
         },
         "additionalProperties": false
@@ -4324,6 +5595,7 @@
           "data",
           "event",
           "id",
+          "idempotencyKey",
           "occurredAt"
         ],
         "type": "object",
@@ -4347,7 +5619,11 @@
           },
           "id": {
             "type": "string",
-            "description": "Id of event"
+            "description": "ID of the event."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "description": "Idempotency key for webhook delivery deduplication."
           }
         },
         "additionalProperties": false
@@ -4360,5 +5636,16 @@
         "scheme": "Bearer"
       }
     }
-  }
+  },
+  "x-tagGroups": [
+    {
+      "name": "Rentals",
+      "tags": [
+        "Rentals",
+        "Rentals / Rental Billing Cycle Upgrades",
+        "Rentals / Renewable Rentals",
+        "Rentals / Non-Renewable Rentals"
+      ]
+    }
+  ]
 }
