@@ -1,7 +1,6 @@
 from .action import _ActionPerformer, _Action
 from typing import List, Union
 from .paginated_list import PaginatedList
-from ._testing import INHERIT_TEST_MODE
 from .data import (
     VerificationPriceCheckRequest,
     NewVerificationRequest,
@@ -29,7 +28,7 @@ class VerificationsAPI:
         capability: ReservationCapability = None,
         service_not_listed_name: str = None,
         max_price: float = None,
-        test=INHERIT_TEST_MODE,
+        test=None,
     ) -> VerificationExpanded:
         """Create a new verification for phone number verification purposes.
 
@@ -106,7 +105,7 @@ class VerificationsAPI:
         carrier: bool = None,
         number_type: NumberType = None,
         capability: ReservationCapability = None,
-        test=INHERIT_TEST_MODE,
+        test=None,
     ) -> PricingSnapshot:
         """Get pricing information for a verification before creating it.
 

@@ -5,6 +5,7 @@ import textverified
 
 from .fixtures import mock_http_from_disk, tv
 from textverified import (
+    LIVE,
     MOCK_INSUFFICIENT_BALANCE,
     MOCK_NO_NUMBERS,
     MOCK_PENDING,
@@ -20,13 +21,13 @@ from textverified.verifications_api import VerificationsAPI
 
 @pytest.fixture(autouse=True)
 def reset_test_mode():
-    textverified.test_mode = None
+    textverified.test_mode = LIVE
     yield
-    textverified.test_mode = None
+    textverified.test_mode = LIVE
 
 
-def test_test_mode_is_disabled_by_default():
-    assert textverified.test_mode is None
+def test_test_mode_is_live_by_default():
+    assert textverified.test_mode is LIVE
 
 
 @pytest.mark.parametrize(
@@ -84,13 +85,33 @@ def test_method_test_mode_has_highest_precedence(tv, mock_http_from_disk):
     assert mock_http_from_disk.last_body_params == {"serviceName": "test_insufficient_balance"}
 
 
-def test_test_none_disables_testing_for_one_method(tv, mock_http_from_disk):
+def test_test_none_inherits_testing_for_one_method(tv, mock_http_from_disk):
     textverified.test_mode = MOCK_SUCCESS
     tv.test_mode = MOCK_NO_NUMBERS
 
     tv._perform_action(
         _Action(method="POST", href="/api/pub/v2/verifications"), json={"serviceName": "gmail"}, test=None
     )
+
+    assert mock_http_from_disk.last_body_params == {"serviceName": "test_no_numbers"}
+
+
+def test_live_overrides_an_inherited_test_mode(tv, mock_http_from_disk):
+    textverified.test_mode = MOCK_SUCCESS
+    tv.test_mode = MOCK_NO_NUMBERS
+
+    tv._perform_action(
+        _Action(method="POST", href="/api/pub/v2/verifications"), json={"serviceName": "gmail"}, test=LIVE
+    )
+
+    assert mock_http_from_disk.last_body_params == {"serviceName": "gmail"}
+
+
+def test_client_live_overrides_global_test_mode(tv, mock_http_from_disk):
+    textverified.test_mode = MOCK_SUCCESS
+    tv.test_mode = LIVE
+
+    tv._perform_action(_Action(method="POST", href="/api/pub/v2/verifications"), json={"serviceName": "gmail"})
 
     assert mock_http_from_disk.last_body_params == {"serviceName": "gmail"}
 
@@ -117,6 +138,7 @@ def test_set_test_mode_rejects_non_enum_values():
 
 def test_all_documented_server_test_modes_are_available():
     assert {mode.value for mode in TestMode} == {
+        "live",
         "test_success",
         "test_renewable_expired",
         "test_nonrenewable_expired",

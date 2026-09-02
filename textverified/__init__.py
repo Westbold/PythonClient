@@ -15,8 +15,9 @@ Example usage:
 import os
 import sys
 from typing import Optional
-from ._testing import INHERIT_TEST_MODE, TestMode, normalize_test_mode
+from ._testing import TestMode, normalize_test_mode
 
+LIVE = TestMode.LIVE
 MOCK_SUCCESS = TestMode.MOCK_SUCCESS
 MOCK_RENEWABLE_EXPIRED = TestMode.MOCK_RENEWABLE_EXPIRED
 MOCK_NONRENEWABLE_EXPIRED = TestMode.MOCK_NONRENEWABLE_EXPIRED
@@ -29,15 +30,15 @@ MOCK_TIMEOUT = TestMode.MOCK_TIMEOUT
 MOCK_REACTIVATABLE = TestMode.MOCK_REACTIVATABLE
 MOCK_BACKORDER = TestMode.MOCK_BACKORDER
 
-# Global server test scenario. ``None`` leaves testing disabled.
-test_mode = None
+# Global server test scenario. The default is live operation.
+test_mode = LIVE
 
 
-def set_test_mode(mode: Optional[TestMode]) -> None:
+def set_test_mode(mode: TestMode) -> None:
     """Set the global server-backed test scenario.
 
-    Pass a :class:`TestMode` value to enable a scenario, or ``None`` to turn
-    testing off. Direct assignment to :data:`textverified.test_mode` is also
+    Pass a :class:`TestMode` value. Use :data:`TestMode.LIVE` for ordinary API
+    behavior. Direct assignment to :data:`textverified.test_mode` is also
     supported.
     """
     global test_mode
@@ -91,7 +92,7 @@ def configure(
     api_username: str,
     base_url: str = "https://www.textverified.com",
     user_agent: str = "TextVerified-Python-Client/0.1.0",
-    test_mode=INHERIT_TEST_MODE,
+    test_mode=None,
 ) -> None:
     """Configure the static TextVerified instance."""
     global _static_instance
@@ -322,6 +323,7 @@ __all__ = [
     "test_mode",
     "set_test_mode",
     "TestMode",
+    "LIVE",
     "MOCK_SUCCESS",
     "MOCK_RENEWABLE_EXPIRED",
     "MOCK_NONRENEWABLE_EXPIRED",

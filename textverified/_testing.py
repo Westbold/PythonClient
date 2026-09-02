@@ -2,13 +2,14 @@ from enum import Enum
 
 
 class TestMode(Enum):
-    """Server-backed Phoneblur test scenarios.
+    """Live operation and server-backed Phoneblur test scenarios.
 
     Each value is the documented ``test_*`` service name understood by the
     Phoneblur API. Use a scenario only with the verification or rental routes
     that support it.
     """
 
+    LIVE = "live"
     MOCK_SUCCESS = "test_success"
     MOCK_RENEWABLE_EXPIRED = "test_renewable_expired"
     MOCK_NONRENEWABLE_EXPIRED = "test_nonrenewable_expired"
@@ -24,21 +25,8 @@ class TestMode(Enum):
     __test__ = False
 
 
-class _InheritedTestMode:
-    def __repr__(self):
-        return "INHERIT_TEST_MODE"
-
-
-INHERIT_TEST_MODE = _InheritedTestMode()
-
-
-def normalize_test_mode(value, allow_inherit=False):
-    """Return a valid test mode, ``None``, or the inheritance sentinel."""
-    if value is INHERIT_TEST_MODE:
-        if allow_inherit:
-            return value
-        raise ValueError("test mode cannot inherit in this context.")
-
+def normalize_test_mode(value):
+    """Return a valid test mode or ``None`` to inherit a parent setting."""
     if value is None or isinstance(value, TestMode):
         return value
 

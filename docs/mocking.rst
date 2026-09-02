@@ -6,8 +6,9 @@ deduct balance or create real resources. The client exposes those scenarios as
 ``TestMode`` enum values and sends their documented service name only for the
 operations that accept ``service_name``.
 
-Test modes are disabled by default: ``textverified.test_mode`` is ``None``.
-There is deliberately no "off" enum; use ``None`` to disable testing.
+The base mode is ``LIVE``: ``textverified.test_mode`` is
+``TestMode.LIVE`` by default. ``test=None`` inherits the client or global
+mode; use ``LIVE`` explicitly to force ordinary API behavior.
 
 Configuration Scopes
 --------------------
@@ -48,8 +49,9 @@ Every service-name operation accepts a per-call ``test`` override:
    )
 
 The order of precedence is per-call ``test``, per-client ``test_mode``, then
-global ``textverified.test_mode``. Omitting ``test`` inherits that setting;
-passing ``test=None`` explicitly disables testing for that call.
+global ``textverified.test_mode``. ``test=None`` (including the default)
+inherits that setting. Use ``test=LIVE`` to make one call live even when a
+parent scope selects a test scenario.
 
 Supported Operations
 --------------------
@@ -73,6 +75,7 @@ The enum values below correspond directly to Phoneblur's documented server
 scenarios. They are also available as module-level names, such as
 ``textverified.MOCK_SUCCESS``.
 
+* ``LIVE`` — normal API behavior; this is the default.
 * ``MOCK_SUCCESS`` — successful verification or active rental.
 * ``MOCK_DELAYED_SUCCESS`` and ``MOCK_PENDING`` — verification polling flows.
 * ``MOCK_TIMEOUT`` and ``MOCK_REACTIVATABLE`` — verification terminal states.

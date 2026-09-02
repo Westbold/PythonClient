@@ -1,6 +1,5 @@
 from .action import _ActionPerformer, _Action
 from typing import List
-from ._testing import INHERIT_TEST_MODE
 from .data import (
     AreaCode,
     InventoryQuantity,
@@ -64,7 +63,7 @@ class ServicesAPI:
         number_type: NumberType = None,
         service_name: str = None,
         capability: ReservationCapability = None,
-        test=INHERIT_TEST_MODE,
+        test=None,
     ) -> InventoryQuantity:
         """Get available inventory for a rental configuration.
 
@@ -96,7 +95,7 @@ class ServicesAPI:
         number_type: NumberType = None,
         service_name: str = None,
         capability: ReservationCapability = None,
-        test=INHERIT_TEST_MODE,
+        test=None,
     ) -> InventoryQuantity:
         """Get available inventory for a verification configuration.
 

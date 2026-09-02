@@ -11,7 +11,7 @@ from .sms_api import SMSApi
 from .verifications_api import VerificationsAPI
 from .wake_api import WakeAPI
 from .call_api import CallAPI
-from ._testing import INHERIT_TEST_MODE, TestMode, normalize_test_mode
+from ._testing import TestMode, normalize_test_mode
 import requests
 import datetime
 import sys
@@ -56,7 +56,7 @@ class TextVerified(_ActionPerformer):
     api_username: str
     base_url: str = "https://www.textverified.com"
     user_agent: str = "TextVerified-Python-Client/0.1.0"
-    test_mode: Optional[TestMode] = INHERIT_TEST_MODE
+    test_mode: Optional[TestMode] = None
 
     @property
     def account(self) -> AccountAPI:
@@ -95,7 +95,7 @@ class TextVerified(_ActionPerformer):
         return CallAPI(self)
 
     def __post_init__(self):
-        self.test_mode = normalize_test_mode(self.test_mode, allow_inherit=True)
+        self.test_mode = normalize_test_mode(self.test_mode)
 
         self.bearer = None
         self.base_url = self.base_url.rstrip("/")
@@ -135,7 +135,7 @@ class TextVerified(_ActionPerformer):
         :param action: The action to perform
         :return: Dictionary containing the API response
         """
-        test = normalize_test_mode(kwargs.pop("test", INHERIT_TEST_MODE), allow_inherit=True)
+        test = normalize_test_mode(kwargs.pop("test", None))
         if "://" in action.href and not action.href.startswith(self.base_url):
             return self.__perform_action_external(action.method, action.href, **kwargs)
         else:
@@ -144,7 +144,7 @@ class TextVerified(_ActionPerformer):
                 href = f"{self.base_url}{action.href}"
             return self.__perform_action_internal(action.method, href, test=test, **kwargs)
 
-    def __perform_action_internal(self, method: str, href: str, test=INHERIT_TEST_MODE, **kwargs) -> _ActionResponse:
+    def __perform_action_internal(self, method: str, href: str, test=None, **kwargs) -> _ActionResponse:
         """Internal action performance with authorization"""
         # Check if bearer token is set and valid
         self.refresh_bearer()
@@ -170,7 +170,7 @@ class TextVerified(_ActionPerformer):
         header. Copy the request data to avoid mutating a caller's payload.
         """
         mode = self.__effective_test_mode(test)
-        if mode is None:
+        if mode is TestMode.LIVE:
             return request_kwargs
 
         if method.upper() != "POST" or urlparse(href).path not in self._MOCKABLE_SERVICE_ENDPOINTS:
@@ -187,14 +187,15 @@ class TextVerified(_ActionPerformer):
         return request_kwargs
 
     def __effective_test_mode(self, test):
-        if test is not INHERIT_TEST_MODE:
+        if test is not None:
             return test
 
-        if self.test_mode is not INHERIT_TEST_MODE:
+        if self.test_mode is not None:
             return self.test_mode
 
         package = sys.modules.get(__package__)
-        return normalize_test_mode(getattr(package, "test_mode", None)) if package else None
+        mode = normalize_test_mode(getattr(package, "test_mode", TestMode.LIVE)) if package else TestMode.LIVE
+        return mode or TestMode.LIVE
 
     def __perform_action_external(self, method: str, href: str, **kwargs) -> _ActionResponse:
         """External action performance without authorization"""

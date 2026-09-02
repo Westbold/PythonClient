@@ -1,7 +1,6 @@
 from .action import _ActionPerformer, _Action
 from typing import List, Union
 from .paginated_list import PaginatedList
-from ._testing import INHERIT_TEST_MODE
 from .data import (
     RenewableRentalCompact,
     RenewableRentalExpanded,
@@ -54,7 +53,7 @@ class ReservationsAPI:
         billing_cycle_id_to_assign_to: str = None,
         service_name: str = None,
         capability: ReservationCapability = None,
-        test=INHERIT_TEST_MODE,
+        test=None,
     ) -> ReservationSaleExpanded:
         """Purchase a new rental. Returns a ReservationSaleExpanded, which contains a list of reservations and backorder reservations.
         You will need to call `.details(obj)` on each reservation to get its full details.
@@ -148,7 +147,7 @@ class ReservationsAPI:
         billing_cycle_id_to_assign_to: str = None,
         is_renewable: bool = None,
         duration: RentalDuration = None,
-        test=INHERIT_TEST_MODE,
+        test=None,
     ) -> PricingSnapshot:
         """Get rental pricing information for a potential rental reservation.
 
