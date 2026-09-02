@@ -28,6 +28,7 @@ class VerificationsAPI:
         capability: ReservationCapability = None,
         service_not_listed_name: str = None,
         max_price: float = None,
+        test=None,
     ) -> VerificationExpanded:
         """Create a new verification for phone number verification purposes.
 
@@ -86,7 +87,7 @@ class VerificationsAPI:
             )
 
         action = _Action(method="POST", href="/api/pub/v2/verifications")
-        response = self.client._perform_action(action, json=data.to_api())
+        response = self.client._perform_action(action, json=data.to_api(), test=test)
 
         # Note - response.data is another action to follow to get Verification details
 
@@ -104,6 +105,7 @@ class VerificationsAPI:
         carrier: bool = None,
         number_type: NumberType = None,
         capability: ReservationCapability = None,
+        test=None,
     ) -> PricingSnapshot:
         """Get pricing information for a verification before creating it.
 
@@ -167,7 +169,7 @@ class VerificationsAPI:
             )
 
         action = _Action(method="POST", href="/api/pub/v2/pricing/verifications")
-        response = self.client._perform_action(action, json=data.to_api())
+        response = self.client._perform_action(action, json=data.to_api(), test=test)
 
         return PricingSnapshot.from_api(response.data)
 

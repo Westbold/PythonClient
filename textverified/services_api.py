@@ -63,6 +63,7 @@ class ServicesAPI:
         number_type: NumberType = None,
         service_name: str = None,
         capability: ReservationCapability = None,
+        test=None,
     ) -> InventoryQuantity:
         """Get available inventory for a rental configuration.
 
@@ -83,7 +84,7 @@ class ServicesAPI:
             raise ValueError("All required fields must be provided: duration, number_type, service_name, capability.")
 
         response = self.client._perform_action(
-            _Action(method="POST", href="/api/pub/v2/inventory/rentals"), json=data.to_api()
+            _Action(method="POST", href="/api/pub/v2/inventory/rentals"), json=data.to_api(), test=test
         )
         return InventoryQuantity.from_api(response.data)
 
@@ -94,6 +95,7 @@ class ServicesAPI:
         number_type: NumberType = None,
         service_name: str = None,
         capability: ReservationCapability = None,
+        test=None,
     ) -> InventoryQuantity:
         """Get available inventory for a verification configuration.
 
@@ -113,6 +115,6 @@ class ServicesAPI:
             raise ValueError("All required fields must be provided: number_type, service_name, capability.")
 
         response = self.client._perform_action(
-            _Action(method="POST", href="/api/pub/v2/inventory/verifications"), json=data.to_api()
+            _Action(method="POST", href="/api/pub/v2/inventory/verifications"), json=data.to_api(), test=test
         )
         return InventoryQuantity.from_api(response.data)

@@ -15,6 +15,35 @@ Example usage:
 import os
 import sys
 from typing import Optional
+from ._testing import TestMode, normalize_test_mode
+
+LIVE = TestMode.LIVE
+MOCK_SUCCESS = TestMode.MOCK_SUCCESS
+MOCK_RENEWABLE_EXPIRED = TestMode.MOCK_RENEWABLE_EXPIRED
+MOCK_NONRENEWABLE_EXPIRED = TestMode.MOCK_NONRENEWABLE_EXPIRED
+MOCK_DELAYED_SUCCESS = TestMode.MOCK_DELAYED_SUCCESS
+MOCK_PENDING = TestMode.MOCK_PENDING
+MOCK_INSUFFICIENT_BALANCE = TestMode.MOCK_INSUFFICIENT_BALANCE
+MOCK_NO_NUMBERS = TestMode.MOCK_NO_NUMBERS
+MOCK_TOO_MANY_UNFINISHED_VERIFICATIONS = TestMode.MOCK_TOO_MANY_UNFINISHED_VERIFICATIONS
+MOCK_TIMEOUT = TestMode.MOCK_TIMEOUT
+MOCK_REACTIVATABLE = TestMode.MOCK_REACTIVATABLE
+MOCK_BACKORDER = TestMode.MOCK_BACKORDER
+
+# Global server test scenario. The default is live operation.
+test_mode = LIVE
+
+
+def set_test_mode(mode: TestMode) -> None:
+    """Set the global server-backed test scenario.
+
+    Pass a :class:`TestMode` value. Use :data:`TestMode.LIVE` for ordinary API
+    behavior. Direct assignment to :data:`textverified.test_mode` is also
+    supported.
+    """
+    global test_mode
+    test_mode = normalize_test_mode(mode)
+
 
 # Import the main TextVerified class and API modules
 from .textverified import TextVerified, BearerToken
@@ -63,11 +92,16 @@ def configure(
     api_username: str,
     base_url: str = "https://www.textverified.com",
     user_agent: str = "TextVerified-Python-Client/0.1.0",
+    test_mode=None,
 ) -> None:
     """Configure the static TextVerified instance."""
     global _static_instance
     _static_instance = TextVerified(
-        api_key=api_key, api_username=api_username, base_url=base_url, user_agent=user_agent
+        api_key=api_key,
+        api_username=api_username,
+        base_url=base_url,
+        user_agent=user_agent,
+        test_mode=test_mode,
     )
 
 
@@ -286,6 +320,21 @@ __all__ = [
     "TextVerifiedError",
     # Configuration
     "configure",
+    "test_mode",
+    "set_test_mode",
+    "TestMode",
+    "LIVE",
+    "MOCK_SUCCESS",
+    "MOCK_RENEWABLE_EXPIRED",
+    "MOCK_NONRENEWABLE_EXPIRED",
+    "MOCK_DELAYED_SUCCESS",
+    "MOCK_PENDING",
+    "MOCK_INSUFFICIENT_BALANCE",
+    "MOCK_NO_NUMBERS",
+    "MOCK_TOO_MANY_UNFINISHED_VERIFICATIONS",
+    "MOCK_TIMEOUT",
+    "MOCK_REACTIVATABLE",
+    "MOCK_BACKORDER",
     # Static API access
     "account",
     "billing_cycles",
