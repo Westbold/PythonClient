@@ -15,25 +15,33 @@ Example usage:
 import os
 import sys
 from typing import Optional
+from ._testing import INHERIT_TEST_MODE, TestMode, normalize_test_mode
 
-# Global API mock switch. When enabled, mock-capable requests use the server's
-# documented ``test_success`` service name instead of the supplied service name.
-# It is intentionally disabled by default.
-mock_api = False
+MOCK_SUCCESS = TestMode.MOCK_SUCCESS
+MOCK_RENEWABLE_EXPIRED = TestMode.MOCK_RENEWABLE_EXPIRED
+MOCK_NONRENEWABLE_EXPIRED = TestMode.MOCK_NONRENEWABLE_EXPIRED
+MOCK_DELAYED_SUCCESS = TestMode.MOCK_DELAYED_SUCCESS
+MOCK_PENDING = TestMode.MOCK_PENDING
+MOCK_INSUFFICIENT_BALANCE = TestMode.MOCK_INSUFFICIENT_BALANCE
+MOCK_NO_NUMBERS = TestMode.MOCK_NO_NUMBERS
+MOCK_TOO_MANY_UNFINISHED_VERIFICATIONS = TestMode.MOCK_TOO_MANY_UNFINISHED_VERIFICATIONS
+MOCK_TIMEOUT = TestMode.MOCK_TIMEOUT
+MOCK_REACTIVATABLE = TestMode.MOCK_REACTIVATABLE
+MOCK_BACKORDER = TestMode.MOCK_BACKORDER
+
+# Global server test scenario. ``None`` leaves testing disabled.
+test_mode = None
 
 
-def set_mock_api(enabled: bool) -> None:
-    """Enable or disable server-backed API mocking globally.
+def set_test_mode(mode: Optional[TestMode]) -> None:
+    """Set the global server-backed test scenario.
 
-    When enabled, verification and rental create, pricing, and inventory calls
-    use the API's ``test_success`` mock service. This never affects requests
-    while the flag is disabled.
+    Pass a :class:`TestMode` value to enable a scenario, or ``None`` to turn
+    testing off. Direct assignment to :data:`textverified.test_mode` is also
+    supported.
     """
-    if not isinstance(enabled, bool):
-        raise ValueError("enabled must be a bool.")
-
-    global mock_api
-    mock_api = enabled
+    global test_mode
+    test_mode = normalize_test_mode(mode)
 
 
 # Import the main TextVerified class and API modules
@@ -83,7 +91,7 @@ def configure(
     api_username: str,
     base_url: str = "https://www.textverified.com",
     user_agent: str = "TextVerified-Python-Client/0.1.0",
-    mock_api: bool = False,
+    test_mode=INHERIT_TEST_MODE,
 ) -> None:
     """Configure the static TextVerified instance."""
     global _static_instance
@@ -92,7 +100,7 @@ def configure(
         api_username=api_username,
         base_url=base_url,
         user_agent=user_agent,
-        mock_api=mock_api,
+        test_mode=test_mode,
     )
 
 
@@ -311,8 +319,20 @@ __all__ = [
     "TextVerifiedError",
     # Configuration
     "configure",
-    "mock_api",
-    "set_mock_api",
+    "test_mode",
+    "set_test_mode",
+    "TestMode",
+    "MOCK_SUCCESS",
+    "MOCK_RENEWABLE_EXPIRED",
+    "MOCK_NONRENEWABLE_EXPIRED",
+    "MOCK_DELAYED_SUCCESS",
+    "MOCK_PENDING",
+    "MOCK_INSUFFICIENT_BALANCE",
+    "MOCK_NO_NUMBERS",
+    "MOCK_TOO_MANY_UNFINISHED_VERIFICATIONS",
+    "MOCK_TIMEOUT",
+    "MOCK_REACTIVATABLE",
+    "MOCK_BACKORDER",
     # Static API access
     "account",
     "billing_cycles",

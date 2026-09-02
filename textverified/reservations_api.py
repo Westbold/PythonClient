@@ -1,6 +1,7 @@
 from .action import _ActionPerformer, _Action
 from typing import List, Union
 from .paginated_list import PaginatedList
+from ._testing import INHERIT_TEST_MODE
 from .data import (
     RenewableRentalCompact,
     RenewableRentalExpanded,
@@ -53,6 +54,7 @@ class ReservationsAPI:
         billing_cycle_id_to_assign_to: str = None,
         service_name: str = None,
         capability: ReservationCapability = None,
+        test=INHERIT_TEST_MODE,
     ) -> ReservationSaleExpanded:
         """Purchase a new rental. Returns a ReservationSaleExpanded, which contains a list of reservations and backorder reservations.
         You will need to call `.details(obj)` on each reservation to get its full details.
@@ -125,7 +127,7 @@ class ReservationsAPI:
             )
 
         action = _Action(method="POST", href="/api/pub/v2/reservations/rental")
-        response = self.client._perform_action(action, json=data.to_api())
+        response = self.client._perform_action(action, json=data.to_api(), test=test)
 
         # Note - response.data is another action to follow to get Sale details
         action = _Action.from_api(response.data)
@@ -146,6 +148,7 @@ class ReservationsAPI:
         billing_cycle_id_to_assign_to: str = None,
         is_renewable: bool = None,
         duration: RentalDuration = None,
+        test=INHERIT_TEST_MODE,
     ) -> PricingSnapshot:
         """Get rental pricing information for a potential rental reservation.
 
@@ -227,7 +230,7 @@ class ReservationsAPI:
             )
 
         action = _Action(method="POST", href="/api/pub/v2/pricing/rentals")
-        response = self.client._perform_action(action, json=data.to_api())
+        response = self.client._perform_action(action, json=data.to_api(), test=test)
 
         return PricingSnapshot.from_api(response.data)
 

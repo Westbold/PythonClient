@@ -11,6 +11,7 @@ from .sms_api import SMSApi
 from .verifications_api import VerificationsAPI
 from .wake_api import WakeAPI
 from .call_api import CallAPI
+from ._testing import INHERIT_TEST_MODE, TestMode, normalize_test_mode
 import requests
 import datetime
 import sys
@@ -51,13 +52,11 @@ class TextVerified(_ActionPerformer):
             "/api/pub/v2/inventory/rentals",
         )
     )
-    _MOCK_SERVICE_NAME = "test_success"
-
     api_key: str
     api_username: str
     base_url: str = "https://www.textverified.com"
     user_agent: str = "TextVerified-Python-Client/0.1.0"
-    mock_api: bool = False
+    test_mode: Optional[TestMode] = INHERIT_TEST_MODE
 
     @property
     def account(self) -> AccountAPI:
@@ -96,8 +95,7 @@ class TextVerified(_ActionPerformer):
         return CallAPI(self)
 
     def __post_init__(self):
-        if not isinstance(self.mock_api, bool):
-            raise ValueError("mock_api must be a bool.")
+        self.test_mode = normalize_test_mode(self.test_mode, allow_inherit=True)
 
         self.bearer = None
         self.base_url = self.base_url.rstrip("/")
@@ -137,20 +135,21 @@ class TextVerified(_ActionPerformer):
         :param action: The action to perform
         :return: Dictionary containing the API response
         """
+        test = normalize_test_mode(kwargs.pop("test", INHERIT_TEST_MODE), allow_inherit=True)
         if "://" in action.href and not action.href.startswith(self.base_url):
             return self.__perform_action_external(action.method, action.href, **kwargs)
         else:
             href = action.href
             if not action.href.startswith(self.base_url):
                 href = f"{self.base_url}{action.href}"
-            return self.__perform_action_internal(action.method, href, **kwargs)
+            return self.__perform_action_internal(action.method, href, test=test, **kwargs)
 
-    def __perform_action_internal(self, method: str, href: str, **kwargs) -> _ActionResponse:
+    def __perform_action_internal(self, method: str, href: str, test=INHERIT_TEST_MODE, **kwargs) -> _ActionResponse:
         """Internal action performance with authorization"""
         # Check if bearer token is set and valid
         self.refresh_bearer()
 
-        kwargs = self.__apply_mock_service_name(method, href, kwargs)
+        kwargs = self.__apply_test_service_name(method, href, test, kwargs)
 
         # Prepare and perform the request
         headers = {"Authorization": f"Bearer {self.bearer.token}", "User-Agent": self.user_agent}
@@ -163,15 +162,15 @@ class TextVerified(_ActionPerformer):
         TextVerified.__raise_for_status(method, href, response)
         return _ActionResponse(data=response.json() if response.text else {}, headers=response.headers)
 
-    def __apply_mock_service_name(self, method: str, href: str, request_kwargs: Dict) -> Dict:
-        """Apply the global server-backed mock setting to supported requests.
+    def __apply_test_service_name(self, method: str, href: str, test, request_kwargs: Dict) -> Dict:
+        """Apply the effective server-backed test scenario to supported requests.
 
-        The Phoneblur API enables mocks by receiving a documented ``test_*``
-        service name; ``X-Phoneblur-Mock`` is a response header, not a request
+        The API enables test scenarios by receiving a documented ``test_*``
+        service name. ``X-Phoneblur-Mock`` is a response header, not a request
         header. Copy the request data to avoid mutating a caller's payload.
         """
-        package = sys.modules.get(__package__)
-        if not self.mock_api and not (package and getattr(package, "mock_api", False)):
+        mode = self.__effective_test_mode(test)
+        if mode is None:
             return request_kwargs
 
         if method.upper() != "POST" or urlparse(href).path not in self._MOCKABLE_SERVICE_ENDPOINTS:
@@ -183,9 +182,19 @@ class TextVerified(_ActionPerformer):
 
         request_kwargs = request_kwargs.copy()
         request_json = request_json.copy()
-        request_json["serviceName"] = self._MOCK_SERVICE_NAME
+        request_json["serviceName"] = mode.value
         request_kwargs["json"] = request_json
         return request_kwargs
+
+    def __effective_test_mode(self, test):
+        if test is not INHERIT_TEST_MODE:
+            return test
+
+        if self.test_mode is not INHERIT_TEST_MODE:
+            return self.test_mode
+
+        package = sys.modules.get(__package__)
+        return normalize_test_mode(getattr(package, "test_mode", None)) if package else None
 
     def __perform_action_external(self, method: str, href: str, **kwargs) -> _ActionResponse:
         """External action performance without authorization"""
