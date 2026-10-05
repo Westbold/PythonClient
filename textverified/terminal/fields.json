@@ -1,0 +1,402 @@
+{
+  "manifest": {
+    "api_version": "v2",
+    "generator_version": 1,
+    "schema_sha256": "3195b3a8a42c5a6960d8fc10863ff1ad34603b5d7eb916ce9e11c6f1109c5e1d",
+    "schema_version": 1
+  },
+  "operations": {
+    "rental.buy": {
+      "fields": [
+        {
+          "api_field_name": "allowBackOrderReservations",
+          "client_field_name": "allow_back_order_reservations",
+          "has_default": false,
+          "operation_id": "rental.buy",
+          "python_field_name": "allow_back_order_reservations",
+          "required": true,
+          "schema": {
+            "description": "If set to true, a rental back order will be created if the requested rental is out of stock",
+            "type": "boolean"
+          }
+        },
+        {
+          "api_field_name": "alwaysOn",
+          "client_field_name": "always_on",
+          "has_default": false,
+          "operation_id": "rental.buy",
+          "python_field_name": "always_on",
+          "required": false,
+          "schema": {
+            "deprecated": true,
+            "description": "Deprecated. This value will always be true and should not be supplied.",
+            "example": true,
+            "nullable": true,
+            "type": "boolean"
+          }
+        },
+        {
+          "api_field_name": "areaCodeSelectOption",
+          "client_field_name": "area_code_select_option",
+          "has_default": false,
+          "operation_id": "rental.buy",
+          "python_field_name": "area_code_select_option",
+          "required": false,
+          "schema": {
+            "description": "Optional array of area codes",
+            "example": [
+              "222",
+              "333"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          }
+        },
+        {
+          "api_field_name": "duration",
+          "client_field_name": "duration",
+          "has_default": false,
+          "operation_id": "rental.buy",
+          "python_field_name": "duration",
+          "required": true,
+          "schema": {
+            "enum": [
+              "oneDay",
+              "threeDay",
+              "sevenDay",
+              "fourteenDay",
+              "thirtyDay",
+              "ninetyDay",
+              "oneYear"
+            ],
+            "schema_reference": "#/components/schemas/RentalDuration",
+            "type": "string"
+          }
+        },
+        {
+          "api_field_name": "isRenewable",
+          "client_field_name": "is_renewable",
+          "has_default": false,
+          "operation_id": "rental.buy",
+          "python_field_name": "is_renewable",
+          "required": true,
+          "schema": {
+            "description": "Set to true to create a renewable rental. Set to false to create a non-renewable rental.",
+            "type": "boolean"
+          }
+        },
+        {
+          "api_field_name": "numberType",
+          "client_field_name": "number_type",
+          "has_default": false,
+          "operation_id": "rental.buy",
+          "python_field_name": "number_type",
+          "required": true,
+          "schema": {
+            "enum": [
+              "mobile",
+              "voip",
+              "landline"
+            ],
+            "schema_reference": "#/components/schemas/NumberType",
+            "type": "string"
+          }
+        },
+        {
+          "api_field_name": "billingCycleIdToAssignTo",
+          "client_field_name": "billing_cycle_id_to_assign_to",
+          "has_default": false,
+          "operation_id": "rental.buy",
+          "python_field_name": "billing_cycle_id_to_assign_to",
+          "required": false,
+          "schema": {
+            "description": "Optional billing cycle to which the rental is assigned. If left empty, a new billing cycle will be created for the rental. Only renewable rentals can be assigned to a billing cycle.",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        {
+          "api_field_name": "serviceName",
+          "client_field_name": "service_name",
+          "has_default": false,
+          "operation_id": "rental.buy",
+          "python_field_name": "service_name",
+          "required": true,
+          "schema": {
+            "description": "Service name returned by Service List, or a supported ```test_*``` mock service name.",
+            "example": "google",
+            "type": "string"
+          }
+        },
+        {
+          "api_field_name": "capability",
+          "client_field_name": "capability",
+          "has_default": false,
+          "operation_id": "rental.buy",
+          "python_field_name": "capability",
+          "required": true,
+          "schema": {
+            "enum": [
+              "sms",
+              "voice",
+              "smsAndVoiceCombo"
+            ],
+            "schema_reference": "#/components/schemas/ReservationCapability",
+            "type": "string"
+          }
+        }
+      ],
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "allowBackOrderReservations": {
+            "description": "If set to true, a rental back order will be created if the requested rental is out of stock",
+            "type": "boolean"
+          },
+          "alwaysOn": {
+            "deprecated": true,
+            "description": "Deprecated. This value will always be true and should not be supplied.",
+            "example": true,
+            "nullable": true,
+            "type": "boolean"
+          },
+          "areaCodeSelectOption": {
+            "description": "Optional array of area codes",
+            "example": [
+              "222",
+              "333"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          },
+          "billingCycleIdToAssignTo": {
+            "description": "Optional billing cycle to which the rental is assigned. If left empty, a new billing cycle will be created for the rental. Only renewable rentals can be assigned to a billing cycle.",
+            "nullable": true,
+            "type": "string"
+          },
+          "capability": {
+            "enum": [
+              "sms",
+              "voice",
+              "smsAndVoiceCombo"
+            ],
+            "schema_reference": "#/components/schemas/ReservationCapability",
+            "type": "string"
+          },
+          "duration": {
+            "enum": [
+              "oneDay",
+              "threeDay",
+              "sevenDay",
+              "fourteenDay",
+              "thirtyDay",
+              "ninetyDay",
+              "oneYear"
+            ],
+            "schema_reference": "#/components/schemas/RentalDuration",
+            "type": "string"
+          },
+          "isRenewable": {
+            "description": "Set to true to create a renewable rental. Set to false to create a non-renewable rental.",
+            "type": "boolean"
+          },
+          "numberType": {
+            "enum": [
+              "mobile",
+              "voip",
+              "landline"
+            ],
+            "schema_reference": "#/components/schemas/NumberType",
+            "type": "string"
+          },
+          "serviceName": {
+            "description": "Service name returned by Service List, or a supported ```test_*``` mock service name.",
+            "example": "google",
+            "type": "string"
+          }
+        },
+        "required": [
+          "allowBackOrderReservations",
+          "capability",
+          "duration",
+          "isRenewable",
+          "numberType",
+          "serviceName"
+        ],
+        "type": "object"
+      },
+      "schema_reference": "NewRentalRequest"
+    },
+    "verification.buy": {
+      "fields": [
+        {
+          "api_field_name": "areaCodeSelectOption",
+          "client_field_name": "area_code_select_option",
+          "has_default": false,
+          "operation_id": "verification.buy",
+          "python_field_name": "area_code_select_option",
+          "required": false,
+          "schema": {
+            "description": "Optional array of area codes. If provided, the API will try to reserve a number with one of the specified area codes.",
+            "example": [
+              "775",
+              "301"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          }
+        },
+        {
+          "api_field_name": "carrierSelectOption",
+          "client_field_name": "carrier_select_option",
+          "has_default": false,
+          "operation_id": "verification.buy",
+          "python_field_name": "carrier_select_option",
+          "required": false,
+          "schema": {
+            "description": "Optional array of carriers. If provided, the API will try to reserve a number with one of the specified carriers.",
+            "example": [
+              "vz",
+              "tmo",
+              "att"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          }
+        },
+        {
+          "api_field_name": "serviceName",
+          "client_field_name": "service_name",
+          "has_default": false,
+          "operation_id": "verification.buy",
+          "python_field_name": "service_name",
+          "required": true,
+          "schema": {
+            "description": "Service name returned by Service List, or a supported ```test_*``` mock service name.",
+            "example": "abra",
+            "type": "string"
+          }
+        },
+        {
+          "api_field_name": "capability",
+          "client_field_name": "capability",
+          "has_default": false,
+          "operation_id": "verification.buy",
+          "python_field_name": "capability",
+          "required": true,
+          "schema": {
+            "enum": [
+              "sms",
+              "voice",
+              "smsAndVoiceCombo"
+            ],
+            "schema_reference": "#/components/schemas/ReservationCapability",
+            "type": "string"
+          }
+        },
+        {
+          "api_field_name": "serviceNotListedName",
+          "client_field_name": "service_not_listed_name",
+          "has_default": false,
+          "operation_id": "verification.buy",
+          "python_field_name": "service_not_listed_name",
+          "required": false,
+          "schema": {
+            "description": "Optional string to specify the service you are using with the \"servicenotlisted\" ```ServiceName```",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        {
+          "api_field_name": "maxPrice",
+          "client_field_name": "max_price",
+          "has_default": false,
+          "operation_id": "verification.buy",
+          "python_field_name": "max_price",
+          "required": false,
+          "schema": {
+            "description": "Optional decimal to specify the maximum total price you are willing to pay for the requested reservation. If the price exceeds this amount, the request will be rejected and no reservation will be created.",
+            "example": 2.95,
+            "format": "double",
+            "nullable": true,
+            "type": "number"
+          }
+        }
+      ],
+      "schema": {
+        "additionalProperties": false,
+        "properties": {
+          "areaCodeSelectOption": {
+            "description": "Optional array of area codes. If provided, the API will try to reserve a number with one of the specified area codes.",
+            "example": [
+              "775",
+              "301"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          },
+          "capability": {
+            "enum": [
+              "sms",
+              "voice",
+              "smsAndVoiceCombo"
+            ],
+            "schema_reference": "#/components/schemas/ReservationCapability",
+            "type": "string"
+          },
+          "carrierSelectOption": {
+            "description": "Optional array of carriers. If provided, the API will try to reserve a number with one of the specified carriers.",
+            "example": [
+              "vz",
+              "tmo",
+              "att"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          },
+          "maxPrice": {
+            "description": "Optional decimal to specify the maximum total price you are willing to pay for the requested reservation. If the price exceeds this amount, the request will be rejected and no reservation will be created.",
+            "example": 2.95,
+            "format": "double",
+            "nullable": true,
+            "type": "number"
+          },
+          "serviceName": {
+            "description": "Service name returned by Service List, or a supported ```test_*``` mock service name.",
+            "example": "abra",
+            "type": "string"
+          },
+          "serviceNotListedName": {
+            "description": "Optional string to specify the service you are using with the \"servicenotlisted\" ```ServiceName```",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "capability",
+          "serviceName"
+        ],
+        "type": "object"
+      },
+      "schema_reference": "NewVerificationRequest"
+    }
+  }
+}

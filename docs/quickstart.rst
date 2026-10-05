@@ -180,3 +180,17 @@ Next Steps
 - Check out the :doc:`api_reference` for detailed API documentation
 - See :doc:`examples` for more comprehensive usage examples
 - Visit the `TextVerified website <https://textverified.com>`_ for more information
+
+Optional terminal client
+------------------------
+
+The terminal application is an add-on. Install it explicitly:
+
+.. code-block:: bash
+
+   pip install "textverified[tui]"
+   textverified tui
+
+Use the same environment credentials as the SDK, or run
+``textverified auth login`` and then
+``textverified tui``. See :doc:`terminal`.

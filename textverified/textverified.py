@@ -12,6 +12,7 @@ from .verifications_api import VerificationsAPI
 from .wake_api import WakeAPI
 from .call_api import CallAPI
 from ._testing import TestMode, normalize_test_mode
+from ._version import __version__
 import requests
 import datetime
 import sys
@@ -20,6 +21,8 @@ from urllib3.util.retry import Retry
 import dateutil.parser
 from http.client import responses
 from urllib.parse import urlparse
+
+DEFAULT_USER_AGENT = f"TextVerified-Python-Client/{__version__}"
 
 
 @dataclass(frozen=True)
@@ -55,7 +58,7 @@ class TextVerified(_ActionPerformer):
     api_key: str
     api_username: str
     base_url: str = "https://www.textverified.com"
-    user_agent: str = "TextVerified-Python-Client/0.1.0"
+    user_agent: str = DEFAULT_USER_AGENT
     test_mode: Optional[TestMode] = None
 
     @property
@@ -102,6 +105,7 @@ class TextVerified(_ActionPerformer):
 
         # Mount session with basic retry strategy for 429 and 5xx errors
         self.session = requests.Session()
+        self.session.headers["User-Agent"] = self.user_agent
 
         retry_strategy = Retry(
             total=3,

@@ -3,6 +3,7 @@
 import os
 import sys
 from pathlib import Path
+from runpy import run_path
 
 try:
     import tomli as tomllib
@@ -23,7 +24,7 @@ project_data = pyproject_data["project"]
 project = "TextVerified Python Client"
 copyright = "2025, " + project_data["authors"][0]["name"]
 author = project_data["authors"][0]["name"]
-release = project_data["version"]
+release = run_path(str(Path(__file__).parent.parent / "textverified" / "_version.py"))["__version__"]
 
 # -- General configuration ---------------------------------------------------
 extensions = [

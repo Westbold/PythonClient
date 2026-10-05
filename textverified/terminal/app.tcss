@@ -1,0 +1,42 @@
+Screen { background: $background; color: $foreground; }
+#account-bar { dock: top; height: 3; padding: 1 2; background: $panel; color: $foreground; text-style: bold; }
+#controls { dock: bottom; height: 1; background: $panel; padding: 0 1; }
+Footer { width: 1fr; background: $panel; }
+#clock { width: 6; text-align: right; color: $text-muted; }
+#views { height: 1fr; overflow: hidden; margin: 0 1; }
+#views ContentTabs { background: $background; }
+#views ContentTabs Tab { color: $text-muted; background: $background; padding: 0 2; }
+#views ContentTabs Tab.-active { color: $accent; background: $surface; text-style: bold; }
+#controls FooterKey { background: $panel; color: $foreground; }
+#purchase-strip { height: 3; margin: 1 0; }
+#purchase-strip Button { margin-right: 1; }
+Button { border: tall $surface; background: $surface; }
+Button:hover { border: tall $primary; background: $panel; }
+Button:focus { text-style: bold; border: tall $accent; }
+Button.-primary { background: $primary; color: #ffffff; border: tall $primary; }
+.search-strip { height: 3; margin-bottom: 1; }
+.search-strip Input { width: 1fr; margin-right: 1; }
+.search-strip Select { width: 23; }
+Input, Select > SelectCurrent { background: $surface; border: tall $panel; }
+Input:focus, Select:focus > SelectCurrent { border: tall $primary; }
+DataTable { height: 1fr; background: $background; }
+DataTable > .datatable--header { background: $panel; color: $text-muted; text-style: bold; }
+DataTable > .datatable--odd-row { background: $surface; }
+DataTable > .datatable--cursor { background: $primary 28%; color: $foreground; text-style: bold; }
+DataTable:focus > .datatable--cursor { background: $primary 45%; color: $foreground; }
+#details { height: 8; margin: 0 1; border: round $primary; background: $surface; }
+#coverage { height: 1; padding: 0 2; color: $text-muted; }
+#small-terminal { height: 1; text-style: bold; color: $warning; }
+ModalScreen { align: center middle; background: $background 80%; }
+.dialog { width: 75; max-width: 95%; max-height: 95%; height: auto; padding: 1 2; border: round $primary; background: $surface; }
+.dialog Label { height: auto; margin-bottom: 1; }
+.dialog .dialog-title { color: $accent; text-style: bold; margin-bottom: 0; }
+.dialog .dialog-subtitle { height: auto; color: $text-muted; margin-bottom: 1; }
+.dialog Input, .dialog Select { margin-bottom: 1; }
+.dialog TextArea { height: 10; }
+.dialog .buttons { height: 3; margin-top: 1; }
+.dialog .buttons Button { margin-right: 1; }
+#login-dialog { width: 58; }
+#login-dialog Label { margin-bottom: 0; }
+#login-status { height: auto; color: $text-muted; }
+#review-text { height: 1fr; min-height: 8; max-height: 20; }

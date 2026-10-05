@@ -131,16 +131,12 @@ jobs:
       with:
         python-version: '3.11'
     
-    - name: Install toml
-      run: pip install toml
-    
-    - name: Get Version from pyproject.toml
+    - name: Get package version
       id: get-version
       run: |
         python -c "
-        import toml
-        pyproject = toml.load('pyproject.toml')
-        version = pyproject['project']['version']
+        from runpy import run_path
+        version = run_path('textverified/_version.py')['__version__']
         print(f'version={version}')
         " >> $GITHUB_OUTPUT
 

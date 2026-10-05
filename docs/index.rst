@@ -9,6 +9,12 @@ Python wrapper for the TextVerified API.
 
    quickstart
    mocking
+   terminal
+   terminal-cli
+   terminal-output
+   terminal-themes
+   terminal-maintenance
+   terminal-testing
    api_reference
    examples
 
@@ -18,6 +24,14 @@ Installation
 .. code-block:: bash
 
    pip install textverified
+
+For the optional full-screen terminal and CLI (Python 3.10+):
+
+.. code-block:: bash
+
+   pip install "textverified[tui]"
+
+See :doc:`terminal` for authentication, commands and shortcuts.
 
 Quick Start
 -----------
