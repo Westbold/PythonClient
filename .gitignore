@@ -1,6 +1,8 @@
 *.pyc
 .coverage
 coverage.*
+*.cast
+*.gif
 
 # Documentation builds
 docs/_build/

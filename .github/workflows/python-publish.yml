@@ -131,16 +131,12 @@ jobs:
       with:
         python-version: '3.11'
     
-    - name: Install toml
-      run: pip install toml
-    
-    - name: Get Version from pyproject.toml
+    - name: Get package version
       id: get-version
       run: |
         python -c "
-        import toml
-        pyproject = toml.load('pyproject.toml')
-        version = pyproject['project']['version']
+        from runpy import run_path
+        version = run_path('textverified/_version.py')['__version__']
         print(f'version={version}')
         " >> $GITHUB_OUTPUT
 
@@ -171,8 +167,10 @@ jobs:
           twine upload dist/*
 
   release-github:
-    needs: [combine-artifacts, load-pkg-version]
+    needs: [combine-artifacts, load-pkg-version, release-pypi]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v2
@@ -188,6 +186,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ needs.load-pkg-version.outputs.version }}
+          target_commitish: ${{ github.sha }}
           name: Release v${{ needs.load-pkg-version.outputs.version }}
           body: ${{ github.event.inputs.release_notes }}
           draft: false

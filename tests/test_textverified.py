@@ -6,6 +6,39 @@ from textverified.exceptions import TextVerifiedError
 import datetime
 
 
+def test_default_user_agents_track_package_version(monkeypatch):
+    import textverified
+
+    expected = f"TextVerified-Python-Client/{textverified.__version__}"
+    client = TextVerified(api_key="test-key", api_username="test-user")
+    assert client.user_agent == expected
+    assert client.session.headers["User-Agent"] == expected
+    client.session.close()
+    monkeypatch.setattr(textverified, "_static_instance", None)
+    monkeypatch.setenv("TEXTVERIFIED_API_KEY", "test-key")
+    monkeypatch.setenv("TEXTVERIFIED_API_USERNAME", "test-user")
+    monkeypatch.delenv("TEXTVERIFIED_USER_AGENT", raising=False)
+    assert textverified._get_static_instance().user_agent == expected
+    textverified.configure(api_key="test-key", api_username="test-user")
+    assert textverified._get_static_instance().user_agent == expected
+
+
+def test_custom_user_agents_remain_supported(monkeypatch):
+    import textverified
+
+    client = TextVerified(api_key="test-key", api_username="test-user", user_agent="custom-direct")
+    assert client.user_agent == "custom-direct"
+    assert client.session.headers["User-Agent"] == "custom-direct"
+    client.session.close()
+    monkeypatch.setattr(textverified, "_static_instance", None)
+    monkeypatch.setenv("TEXTVERIFIED_API_KEY", "test-key")
+    monkeypatch.setenv("TEXTVERIFIED_API_USERNAME", "test-user")
+    monkeypatch.setenv("TEXTVERIFIED_USER_AGENT", "custom-environment")
+    assert textverified._get_static_instance().user_agent == "custom-environment"
+    textverified.configure(api_key="test-key", api_username="test-user", user_agent="custom-configured")
+    assert textverified._get_static_instance().user_agent == "custom-configured"
+
+
 def test_bearer_get(tv_raw, mock_http_from_disk):
     tv_raw.refresh_bearer()
 

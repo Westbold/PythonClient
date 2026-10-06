@@ -1,9 +1,10 @@
 [project]
 name = "textverified"
-version = "0.1.0a2"
+dynamic = ["version"]
 description = "Python wrapper for the TextVerified API"
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Textverified" },
 ]
@@ -13,6 +14,8 @@ keywords = ["Textverified", "Verification", "Web Scraping", "API", "webhook", "p
 dependencies = ["requests>=2.31.0", "urllib3>=1.26.20", "python-dateutil>=2.9.0"]
 
 [project.optional-dependencies]
+tui = ["rich>=13,<15"]
+
 dev = [
     "black==23.3.0",
     "pytest>=7.4.4",
@@ -32,6 +35,10 @@ Download = "https://pypi.org/project/textverified/#files"
 Documentation = "https://textverified-python.readthedocs.io/en/latest/"
 Source = "https://github.com/Westbold/PythonClient"
 Issues = "https://github.com/Westbold/PythonClient/issues"
+
+[project.scripts]
+textverified = "textverified.terminal:main"
+tv = "textverified.terminal:main"
 
 [tool.black]
 line-length = 120
@@ -55,14 +62,16 @@ addopts = """
 --cov-report=xml"""
 python_files = ["tests/*.py"]
 
-[tool.setuptools]
-license-files = []
+[tool.setuptools.packages.find]
+include = ["textverified", "textverified.*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "textverified._version.__version__"}
 
 [build-system]
 requires = [
-    "setuptools>=45", 
-    "wheel", 
-    "setuptools_scm[toml]>=6.2",
+    "setuptools>=77.0.3",
+    "wheel",
     "tomli>=1.2.0; python_version<'3.11'",
     "packaging>=24.0"
 ]

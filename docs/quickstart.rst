@@ -180,3 +180,11 @@ Next Steps
 - Check out the :doc:`api_reference` for detailed API documentation
 - See :doc:`examples` for more comprehensive usage examples
 - Visit the `TextVerified website <https://textverified.com>`_ for more information
+
+Optional terminal app
+---------------------
+
+Install it with ``pip install "textverified[tui]"``. Try
+``tv login`` to save credentials, then ``tv --mock verify discord --yes``
+to test using the SDK mock mode. Use ``tv verify discord`` for a real verification.
+See :doc:`terminal`.

@@ -16,6 +16,7 @@ import os
 import sys
 from typing import Optional
 from ._testing import TestMode, normalize_test_mode
+from ._version import __version__
 
 LIVE = TestMode.LIVE
 MOCK_SUCCESS = TestMode.MOCK_SUCCESS
@@ -46,7 +47,7 @@ def set_test_mode(mode: TestMode) -> None:
 
 
 # Import the main TextVerified class and API modules
-from .textverified import TextVerified, BearerToken
+from .textverified import TextVerified, BearerToken, DEFAULT_USER_AGENT
 from .account_api import AccountAPI
 from .billing_cycle_api import BillingCycleAPI
 from .reservations_api import ReservationsAPI
@@ -72,7 +73,7 @@ def _get_static_instance() -> TextVerified:
         api_key = os.environ.get("TEXTVERIFIED_API_KEY")
         api_username = os.environ.get("TEXTVERIFIED_API_USERNAME")
         base_url = os.environ.get("TEXTVERIFIED_BASE_URL", "https://www.textverified.com")
-        user_agent = os.environ.get("TEXTVERIFIED_USER_AGENT", "TextVerified-Python-Client/0.1.0")
+        user_agent = os.environ.get("TEXTVERIFIED_USER_AGENT", DEFAULT_USER_AGENT)
 
         if not api_key or not api_username:
             raise ValueError(
@@ -91,7 +92,7 @@ def configure(
     api_key: str,
     api_username: str,
     base_url: str = "https://www.textverified.com",
-    user_agent: str = "TextVerified-Python-Client/0.1.0",
+    user_agent: str = DEFAULT_USER_AGENT,
     test_mode=None,
 ) -> None:
     """Configure the static TextVerified instance."""
